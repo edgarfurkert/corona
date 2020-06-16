@@ -1,0 +1,403 @@
+territories:
+  - territory: Denmark
+    territoryParent: Europe_North
+  - territory: Estonia
+    territoryParent: Europe_East
+  - territory: Faroe_Islands
+    territoryParent: Europe_North
+  - territory: Finland
+    territoryParent: Europe_North
+  - territory: Iceland
+    territoryParent: Europe_North
+  - territory: Lithuania
+    territoryParent: Europe_East
+  - territory: Norway
+    territoryParent: Europe_North
+  - territory: Sweden
+    territoryParent: Europe_North
+  - territory: Andorra
+    territoryParent: Europe_South
+  - territory: Cyprus
+    territoryParent: Europe_South
+  - territory: Greece
+    territoryParent: Europe_South
+  - territory: Holy_See
+    territoryParent: Europe_South
+  - territory: Italy
+    territoryParent: Europe_South
+  - territory: Malta
+    territoryParent: Europe_South
+  - territory: Monaco
+    territoryParent: Europe_South
+  - territory: Portugal
+    territoryParent: Europe_South
+  - territory: San_Marino
+    territoryParent: Europe_South
+  - territory: Spain
+    territoryParent: Europe_South
+  - territory: Gibraltar
+    territoryParent: Europe_South
+  - territory: Bulgaria
+    territoryParent: Europe_East
+  - territory: Czechia
+    territoryParent: Europe_East
+  - territory: Hungary
+    territoryParent: Europe_East
+  - territory: Moldova
+    territoryParent: Europe_East
+  - territory: Russia
+    territoryParent: Europe_East
+  - territory: Slovakia
+    territoryParent: Europe_East
+  - territory: Ukraine
+    territoryParent: Europe_East
+  - territory: Albania
+    territoryParent: Europe_East
+  - territory: Armenia
+    territoryParent: Europe_East
+  - territory: Azerbaijan
+    territoryParent: Europe_East
+  - territory: Belarus
+    territoryParent: Europe_East
+  - territory: Bosnia_and_Herzegovina
+    territoryParent: Europe_East
+  - territory: Georgia
+    territoryParent: Europe_East
+  - territory: Montenegro
+    territoryParent: Europe_East
+  - territory: North_Macedonia
+    territoryParent: Europe_East
+  - territory: Poland
+    territoryParent: Europe_East
+  - territory: Romania
+    territoryParent: Europe_East
+  - territory: Serbia
+    territoryParent: Europe_East
+  - territory: Slovenia
+    territoryParent: Europe_East
+  - territory: Kosovo
+    territoryParent: Europe_East
+  - territory: Croatia
+    territoryParent: Europe_East
+  - territory: Latvia
+    territoryParent: Europe_East
+  - territory: Guernsey
+    territoryParent: Europe_West
+  - territory: Isle_of_Man
+    territoryParent: Europe_West
+  - territory: Jersey
+    territoryParent: Europe_West
+  - territory: Ireland
+    territoryParent: Europe_West
+  - territory: United_Kingdom
+    territoryParent: Europe_West
+  - territory: Austria
+    territoryParent: Europe_West
+  - territory: Belgium
+    territoryParent: Europe_West
+  - territory: France
+    territoryParent: Europe_West
+  - territory: Germany
+    territoryParent: Europe_West
+  - territory: Liechtenstein
+    territoryParent: Europe_West
+  - territory: Luxembourg
+    territoryParent: Europe_West
+  - territory: Netherlands
+    territoryParent: Europe_West
+  - territory: Switzerland
+    territoryParent: Europe_West
+  - territory: Algeria
+    territoryParent: Africa_North
+  - territory: Egypt
+    territoryParent: Africa_North
+  - territory: Libya
+    territoryParent: Africa_North
+  - territory: Morocco
+    territoryParent: Africa_North
+  - territory: Sudan
+    territoryParent: Africa_North
+  - territory: Tunisia
+    territoryParent: Africa_North
+  - territory: Western_Sahara
+    territoryParent: Africa_North
+  - territory: Burundi
+    territoryParent: Africa_East
+  - territory: Comoros
+    territoryParent: Africa_East
+  - territory: Djibouti
+    territoryParent: Africa_East
+  - territory: Eritrea
+    territoryParent: Africa_East
+  - territory: Ethiopia
+    territoryParent: Africa_East
+  - territory: Kenya
+    territoryParent: Africa_East
+  - territory: Madagascar
+    territoryParent: Africa_East
+  - territory: Malawi
+    territoryParent: Africa_East
+  - territory: Mauritius
+    territoryParent: Africa_East
+  - territory: Mozambique
+    territoryParent: Africa_East
+  - territory: Rwanda
+    territoryParent: Africa_East
+  - territory: Seychelles
+    territoryParent: Africa_East
+  - territory: Somalia
+    territoryParent: Africa_East
+  - territory: South_Africa
+    territoryParent: Africa_South
+  - territory: South_Sudan
+    territoryParent: Africa_East
+  - territory: United_Republic_of_Tanzania
+    territoryParent: Africa_East
+  - territory: Uganda
+    territoryParent: Africa_East
+  - territory: Angola
+    territoryParent: Africa_Central
+  - territory: Cameroon
+    territoryParent: Africa_Central
+  - territory: Central_African_Republic
+    territoryParent: Africa_Central
+  - territory: Chad
+    territoryParent: Africa_Central
+  - territory: Congo
+    territoryParent: Africa_Central
+  - territory: Democratic_Republic_of_the_Congo
+    territoryParent: Africa_Central
+  - territory: Equatorial_Guinea
+    territoryParent: Africa_Central
+  - territory: Gabon
+    territoryParent: Africa_Central
+  - territory: Sao_Tome_and_Principe
+    territoryParent: Africa_Central
+  - territory: Botswana
+    territoryParent: Africa_South
+  - territory: Eswatini
+    territoryParent: Africa_South
+  - territory: Lesotho
+    territoryParent: Africa_South
+  - territory: Namibia
+    territoryParent: Africa_South
+  - territory: Zambia
+    territoryParent: Africa_Central
+  - territory: Zimbabwe
+    territoryParent: Africa_South
+  - territory: Benin
+    territoryParent: Africa_West
+  - territory: Burkina_Faso
+    territoryParent: Africa_West
+  - territory: Cape_Verde
+    territoryParent: Africa_West
+  - territory: Cote_dIvoire
+    territoryParent: Africa_West
+  - territory: Gambia
+    territoryParent: Africa_West
+  - territory: Ghana
+    territoryParent: Africa_West
+  - territory: Guinea
+    territoryParent: Africa_West
+  - territory: Guinea_Bissau
+    territoryParent: Africa_West
+  - territory: Liberia
+    territoryParent: Africa_West
+  - territory: Mali
+    territoryParent: Africa_West
+  - territory: Mauritania
+    territoryParent: Africa_West
+  - territory: Niger
+    territoryParent: Africa_West
+  - territory: Nigeria
+    territoryParent: Africa_West
+  - territory: Senegal
+    territoryParent: Africa_West
+  - territory: Sierra_Leone
+    territoryParent: Africa_West
+  - territory: Togo
+    territoryParent: Africa_West
+  - territory: Belize
+    territoryParent: America_North
+  - territory: Bermuda
+    territoryParent: America_North
+  - territory: Canada
+    territoryParent: America_North
+  - territory: Costa_Rica
+    territoryParent: America_North
+  - territory: El_Salvador
+    territoryParent: America_North
+  - territory: Greenland
+    territoryParent: America_North
+  - territory: Guatemala
+    territoryParent: America_North
+  - territory: Honduras
+    territoryParent: America_North
+  - territory: Nicaragua
+    territoryParent: America_North
+  - territory: Mexico
+    territoryParent: America_North
+  - territory: Panama
+    territoryParent: America_North
+  - territory: United_States_of_America
+    territoryParent: America_North
+  - territory: Anguilla
+    territoryParent: America_Caribbean
+  - territory: Antigua_and_Barbuda
+    territoryParent: America_Caribbean
+  - territory: Aruba
+    territoryParent: America_Caribbean
+  - territory: Bahamas
+    territoryParent: America_Caribbean
+  - territory: Barbados
+    territoryParent: America_Caribbean
+  - territory: Bonaire, Saint Eustatius and Saba
+    territoryParent: America_Caribbean
+  - territory: British_Virgin_Islands
+    territoryParent: America_Caribbean
+  - territory: Cayman_Islands
+    territoryParent: America_Caribbean
+  - territory: Cuba
+    territoryParent: America_Caribbean
+  - territory: Curaçao
+    territoryParent: America_Caribbean
+  - territory: Dominica
+    territoryParent: America_Caribbean
+  - territory: Dominican_Republic
+    territoryParent: America_Caribbean
+  - territory: Grenada
+    territoryParent: America_Caribbean
+  - territory: Haiti
+    territoryParent: America_Caribbean
+  - territory: Jamaica
+    territoryParent: America_Caribbean
+  - territory: Montserrat
+    territoryParent: America_Caribbean
+  - territory: Puerto_Rico
+    territoryParent: America_Caribbean
+  - territory: Saint_Kitts_and_Nevis
+    territoryParent: America_Caribbean
+  - territory: Saint_Lucia
+    territoryParent: America_Caribbean
+  - territory: Saint_Vincent_and_the_Grenadines
+    territoryParent: America_Caribbean
+  - territory: Sint_Maarten
+    territoryParent: America_Caribbean
+  - territory: Trinidad_and_Tobago
+    territoryParent: America_Caribbean
+  - territory: Turks_and_Caicos_islands
+    territoryParent: America_Caribbean
+  - territory: United_States_Virgin_Islands
+    territoryParent: America_Caribbean
+  - territory: Argentina
+    territoryParent: America_South
+  - territory: Bolivia
+    territoryParent: America_South
+  - territory: Brazil
+    territoryParent: America_South
+  - territory: Chile
+    territoryParent: America_South
+  - territory: Colombia
+    territoryParent: America_South
+  - territory: Ecuador
+    territoryParent: America_South
+  - territory: Falkland_Islands_(Malvinas)
+    territoryParent: America_South
+  - territory: Guyana
+    territoryParent: America_South
+  - territory: Paraguay
+    territoryParent: America_South
+  - territory: Peru
+    territoryParent: America_South
+  - territory: Suriname
+    territoryParent: America_South
+  - territory: Uruguay
+    territoryParent: America_South
+  - territory: Venezuela
+    territoryParent: America_South
+  - territory: China
+    territoryParent: Asia_Northeast
+  - territory: Mongolia
+    territoryParent: Asia_Northeast
+  - territory: Taiwan
+    territoryParent: Asia_Northeast
+  - territory: South_Korea
+    territoryParent: Asia_Northeast
+  - territory: Japan
+    territoryParent: Asia_Northeast
+  - territory: Afghanistan
+    territoryParent: Asia_South
+  - territory: Bangladesh
+    territoryParent: Asia_South
+  - territory: Bhutan
+    territoryParent: Asia_South
+  - territory: India
+    territoryParent: Asia_South
+  - territory: Maldives
+    territoryParent: Asia_South
+  - territory: Nepal
+    territoryParent: Asia_South
+  - territory: Pakistan
+    territoryParent: Asia_South
+  - territory: Sri_Lanka
+    territoryParent: Asia_South
+  - territory: Kazakhstan
+    territoryParent: Asia_Central
+  - territory: Kyrgyzstan
+    territoryParent: Asia_Central
+  - territory: Uzbekistan
+    territoryParent: Asia_Central
+  - territory: Tajikistan
+    territoryParent: Asia_Central
+  - territory: Brunei_Darussalam
+    territoryParent: Asia_Southeast
+  - territory: Cambodia
+    territoryParent: Asia_Southeast
+  - territory: Indonesia
+    territoryParent: Asia_Southeast
+  - territory: Laos
+    territoryParent: Asia_Southeast
+  - territory: Malaysia
+    territoryParent: Asia_Southeast
+  - territory: Myanmar
+    territoryParent: Asia_Southeast
+  - territory: Philippines
+    territoryParent: Asia_Southeast
+  - territory: Singapore
+    territoryParent: Asia_Southeast
+  - territory: Thailand
+    territoryParent: Asia_Southeast
+  - territory: Timor_Leste
+    territoryParent: Asia_Southeast
+  - territory: Vietnam
+    territoryParent: Asia_Southeast
+  - territory: Bahrain
+    territoryParent: Asia_West
+  - territory: Iran
+    territoryParent: Asia_West
+  - territory: Iraq
+    territoryParent: Asia_West
+  - territory: Israel
+    territoryParent: Asia_West
+  - territory: Jordan
+    territoryParent: Asia_West
+  - territory: Kuwait
+    territoryParent: Asia_West
+  - territory: Lebanon
+    territoryParent: Asia_West
+  - territory: Oman
+    territoryParent: Asia_West
+  - territory: Palestine
+    territoryParent: Asia_West
+  - territory: Qatar
+    territoryParent: Asia_West
+  - territory: Saudi_Arabia
+    territoryParent: Asia_West
+  - territory: Syria
+    territoryParent: Asia_West
+  - territory: Turkey
+    territoryParent: Asia_West
+  - territory: United_Arab_Emirates
+    territoryParent: Asia_West
+  - territory: Yemen
+    territoryParent: Asia_West

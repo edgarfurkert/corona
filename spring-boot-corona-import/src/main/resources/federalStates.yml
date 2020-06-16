@@ -1,0 +1,66 @@
+germany:
+  federalstates:
+    - key: Baden-Württemberg
+      name: Baden-Württemberg
+      code: DE-BW
+      population: 11069533
+    - key: Bavaria
+      name: Bayern
+      code: DE-BY
+      population: 13076721
+    - key: Berlin
+      name: Berlin
+      code: DE-BE
+      population: 3644826
+    - key: Brandenburg
+      name: Brandenburg
+      code: DE-BB
+      population: 2511917
+    - key: Bremen
+      name: Bremen
+      code: DE-HB
+      population: 682986
+    - key: Hamburg
+      name: Hamburg
+      code: DE-HH
+      population: 1841179
+    - key: Hesse
+      name: Hessen
+      code: DE-HE
+      population: 6265809
+    - key: Lower Saxony
+      name: Niedersachsen
+      code: DE-NI
+      population: 7982448
+    - key: Mecklenburg-Western Pomerania
+      name: Mecklenburg-Vorpommern
+      code: DE-MV
+      population: 1609675
+    - key: North Rhine-Westphalia
+      name: Nordrhein-Westfalen
+      code: DE-NW
+      population: 17932651
+    - key: Rhineland-Palatinate
+      name: Rheinland-Pfalz
+      code: DE-RP
+      population: 4084844
+    - key: Saarland
+      name: Saarland
+      code: DE-SL
+      population: 990509
+    - key: Saxony
+      name: Sachsen
+      code: DE-SN
+      population: 4077937
+    - key: Saxony-Anhalt
+      name: Sachsen-Anhalt
+      code: DE-ST
+      population: 2208321
+    - key: Schleswig-Holstein
+      name: Schleswig-Holstein
+      code: DE-SH
+      population: 2896712
+    - key: Thuringia
+      name: Thüringen
+      code: DE-TH
+      population: 2143145

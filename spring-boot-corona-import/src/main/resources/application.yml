@@ -1,0 +1,52 @@
+server:
+  port: 0
+
+spring:
+  application:
+    name: corona-import
+
+  datasource:
+    initialization-mode: always
+    platform: postgres
+    url: jdbc:postgresql://localhost:5432/corona
+    username: corona
+    password: corona
+    
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: false
+
+logging:
+  level:
+    org:
+      hibernate:
+        type: INFO
+
+corona:
+  data:
+    csv:
+      import:
+        path: /home/efurkert/Downloads
+        poller: 5000
+      download:
+        poller: 60000
+        connectTimeout: 5000
+        readTimeout: 5000
+        urls:
+          - url: https://opendata.ecdc.europa.eu/covid19/casedistribution/csv
+            fileName: covid19-world
+            header: dateRep,day,month,year,cases,deaths,countriesAndTerritories,geoId,countryterritoryCode,popData2018,continentExp
+            channel: worldChannel
+          - url: https://covid19publicdata.blob.core.windows.net/rki/covid19-germany-federalstates.csv
+            fileName: covid19-germany-federalstates
+            header: id,Country/Region,federalstate,infections,deaths,date,newinfections,newdeaths
+            channel: germanyChannel
+          - url: https://covid19publicdata.blob.core.windows.net/rki/covid19-germany-counties.csv
+            fileName: covid19-germany-counties
+            header: id,Country/Region,county,countyname,type,federalstate,population,infections,deaths,shapearea,shapelength,date,newinfections,newdeaths,infectionrate,deathrate
+            channel: germanyFederalStatesChannel
