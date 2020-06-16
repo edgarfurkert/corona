@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout.html}">
+
+<head>
+<title>Corona Data Analysis</title>
+</head>
+
+<body>
+	<section layout:fragment="main" class="content">
+	<table>
+		<tr>
+			<td>
+				<form method="POST" th:object="${coronaDataSession}" th:action="@{/}" id="coronaDataForm">
+					<table>
+						<tr>
+							<td><b>Territories:</b></td>
+						</tr>
+						<tr class="border">
+							<td>
+								<div class="territoryParents">
+								<div th:each="territoryParent : ${coronaDataSession.territoryParents}">
+									<input name="selectedTerritoryParents" type="checkbox"
+										th:field="*{selectedTerritoryParents}"
+										th:value="${territoryParent.key}" />
+									<span th:text="${territoryParent.name}">TERRITORY</span><br />
+								</div>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<input class="margin" type="submit" value="Select" />
+							</td>
+						</tr>
+					</table>
+				</form>
+				<form method="POST" th:object="${coronaDataSession}" th:action="@{/data}" id="coronaDataForm">
+					<table>
+						<tr>
+							<td><br/><b>Regions of selected territories:</b></td>
+						</tr>
+						<tr class="border">
+							<td>
+								<div class="territories">
+								<div th:each="territory : ${coronaDataSession.territories}">
+									<input name="selectedTerritories" type="checkbox"
+										th:field="*{selectedTerritories}"
+										th:value="${territory.key}" />
+									<span th:text="${territory.name}">REGION</span><br />
+								</div>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<input class="margin" type="submit" value="Get Data" />
+							</td>
+						</tr>
+					</table>
+				</form>
+			</td>
+			<td style="vertical-align:top">
+				<form method="POST" th:object="${coronaDataSession}" th:action="@{/data}" id="coronaDataForm">
+				<table>
+					<tr>
+						<td>
+							<table>
+								<tr class="timeRange">
+									<td colspan="2" style="text-align:center">
+										<b>Time range</b>
+									</td>
+									<td style="text-align:center">
+										<b>Data selection</b>
+									</td>
+									<td style="text-align:center">
+										<b>Y-Axis type</b>
+									</td>
+								</tr>
+								<tr>
+									<td style="vertical-align:top">
+										<label>&nbsp;from </label>
+										<input type="date" th:value="*{fromDate}" th:field="*{fromDate}"/>&nbsp;
+									</td>
+									<td style="vertical-align:top">
+										<label>to </label>
+										<input type="date" th:value="*{toDate}" th:field="*{toDate}"/>&nbsp;
+									</td>
+									<td rowSpan="2">
+										<div class="dataTypes">
+										<span th:each="dataType : ${coronaDataSession.dataTypes}">
+											<input name="selectedDataType" type="radio"
+												   th:field="*{selectedDataType}"
+												   th:value="${dataType.key}" />
+											<span th:text="${dataType.name}">DATATYPE</span>&nbsp;
+										</span>
+										</div>
+									</td>
+									<td class="yAxisTypes" rowSpan="2">
+									    <div th:if="${coronaDataSession.selectedGraphType} == 'line' or ${coronaDataSession.selectedGraphType} == 'infectionsDeaths'">
+										<span th:each="yAxisType : ${coronaDataSession.yAxisTypes}">
+											<input name="selectedYAxisType" type="radio"
+												   th:field="*{selectedYAxisType}"
+												   th:value="${yAxisType.key}" />
+											<span th:text="${yAxisType.name}">YAXISTYPE</span><br/>
+										</span>
+										</div>
+									    <div th:if="${coronaDataSession.selectedGraphType} == 'bar'">
+									    	numeric
+									    </div>
+									</td>
+									<td>
+										&nbsp;<input type="submit" value="Update" />
+									</td>
+								</tr>
+								<tr>
+									<td colspan="2">
+										&nbsp;Graph type:&nbsp;
+										<select th:field="*{selectedGraphType}">
+										    <option th:each="graphType : ${coronaDataSession.graphTypes}" th:value="${graphType.key}" th:text="${graphType.name}"></option>
+										</select>
+									</td>
+									<td>
+									</td>
+									<td>
+									</td>
+									<td>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td class="chartColumn">
+						    <!--div th:replace="chart :: (${coronaDataSession.selectedGraphType} ? #{footer.admin} : #{footer.normaluser})"></div-->
+						    <div th:if="${coronaDataSession.selectedGraphType} == 'line'">
+							    <div th:replace="fragments/lineChart.html :: chart"></div>
+						    </div>
+						    <div th:if="${coronaDataSession.selectedGraphType} == 'bar'">
+							    <div th:replace="fragments/barChart.html :: chart"></div>
+						    </div>
+						    <div th:if="${coronaDataSession.selectedGraphType} == 'infectionsDeaths'">
+							    <div th:replace="fragments/infectionsDeathsChart.html :: chart"></div>
+						    </div>
+   						</td>
+					</tr>
+				</table>
+				</form>
+			</td>
+		</tr>
+	</table>
+	</section>
+</body>
+</html>

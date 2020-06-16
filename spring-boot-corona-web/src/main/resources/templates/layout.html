@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+      
+<head th:fragment=scripts>
+	<meta charset="UTF-8">
+	<title>Corona Data Analysis</title>
+	<link rel="stylesheet" th:href="@{styles.css}"/>
+</head>
+
+<body>
+	<div class="header" layout:fragment="header">
+		<br/>Corona Data Analysis
+	</div>
+	
+    <section layout:fragment="main">
+      Main content goes here
+    </section>  
+	
+	<div layout:fragment="footer" class="footer">
+		<div class="vertical-center" style="margin-left: 40px">Edgar Furkert, 2020</div>
+	</div>
+	  
+</body>
+</html>

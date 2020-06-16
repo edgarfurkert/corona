@@ -1,0 +1,120 @@
+body {
+	font-family: arial;
+}
+
+div.header {
+	height: 80px;
+	font-size: 24px;
+	text-align: center;
+	vertical-align: middle;
+	text-shadow: 2px 2px black;
+    color: white;
+	background-image: url("images/corona_presse_471749f1c8.jpg");
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+
+div.territoryParents { 
+    margin:4px, 4px; 
+    padding:4px; 
+    background-color: white; 
+    width: 300px; 
+    height: 220px; 
+    overflow-x: hidden; 
+    overflow-y: auto; 
+    text-align:justify;
+    font-size: 14px;
+} 
+
+div.territories { 
+    margin:4px, 4px; 
+    padding:4px; 
+    background-color: white; 
+    width: 300px; 
+    height: 220px; 
+    overflow-x: hidden; 
+    overflow-y: auto; 
+    text-align:justify; 
+    font-size: 14px;
+} 
+
+section.content {
+	margin-top: 0px;
+	margin-left:20px;
+	margin=right:40px;
+	background-image: url("images/gettyimages-101240003-640x640.jpg");
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+
+div.footer {
+	height: 50px;
+	color: white;
+	vertical-align: middle;
+	background-image: url("images/corona_presse_471749f1c8.jpg");
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+
+
+div.ingredient-group:nth-child(odd) {
+	float: left;
+	padding-right: 20px;
+}
+
+div.ingredient-group:nth-child(even) {
+    float: left;
+	padding-right: 0;
+}
+
+div.ingredient-group {
+	width: 50%;
+}
+
+.grid:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+*, *:after, *:before {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+span.validationError {
+	color: red;
+}
+
+td.chartColumn {
+	width: 1000px;
+}
+
+div.dataTypes {
+	width: 360px;
+}
+
+td.yAxisTypes {
+	width: 100px;
+}
+
+tr.border {
+	border: 1px solid black;
+}
+
+tr.timeRange {
+	height: 35px;
+}
+
+input.margin {
+	margin-top: 3px;
+}
+
+.vertical-center {
+  margin: 0;
+  position: relative;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}

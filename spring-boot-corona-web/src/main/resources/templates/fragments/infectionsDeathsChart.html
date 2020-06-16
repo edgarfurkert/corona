@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+<div th:fragment="chart">
+    <link rel="stylesheet" th:href="@{/css/main.css}" href="../../css/main.css" />
+    <link rel="stylesheet" th:href="@{/css/highcharts.css}" href="../../css/highcharts.css" />
+    <link rel="stylesheet" th:href="@{/css/bootstrap.css}" href="../../css/bootstrap.css" />
+
+    <script th:src="@{/js/jquery-3.2.1.min.js}" src="../../js/jquery-3.2.1.min.js"></script>
+    <script th:src="@{/js/highcharts.js}" src="../../js/highcharts.js"></script>
+    <script th:src="@{/js/exporting.js}" src="../../js/exporting.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            loadLineChartData();
+        });
+
+        function loadLineChartData(params) {
+            $.get("/ajax/infectionsDeathsGraph", params, function (data, textStatus, jqXHR) {
+                console.log('textStatus : ' + textStatus);
+                console.log('result : ' + JSON.stringify(data));
+
+                if (textStatus == 'success') {
+
+                    $('#chartContainer').highcharts({
+                        chart: {
+                            type: 'spline',
+                            zoomType: 'xy'
+                        },
+                        title: {
+                            text: data.title
+                        },
+                        subtitle: {
+                            text: data.subTitle
+                        },
+                        xAxis: {
+                            categories: data.xaxis.dates
+                        },
+                        yAxis: [
+                        	{
+	                        	type: data.yaxis.type,
+	                        	min: 1,
+	                            title: {
+	                                text: data.yaxis.title1
+	                            }
+                        	},{
+                            	type: data.yaxis.type,
+	                        	min: 1,
+                                title: {
+                                    text: data.yaxis.title2
+                                },
+                                opposite: true
+                            }
+                        ],
+                        legend: {
+							maxHeight: 95
+						},
+                        plotOptions: {
+                            line: {
+                                dataLabels: {
+                                    enabled: false
+                                },
+                                enableMouseTracking: true
+                            }
+                        },
+                        series: data.series
+	                });
+                } else {
+                    console.log('Unable to retrive data');
+                }
+
+            });
+        }
+
+    </script>
+
+<div id="wrapper">
+    <div id="chartContainer"></div>
+</div>
+
+<script th:src="@{/js/bootstrap.min.js}" src="../../js/bootstrap.min.js"></script>
+</div>
+
+</body>
+</html>

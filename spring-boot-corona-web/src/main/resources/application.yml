@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: corona-web
+
+  datasource:
+    initialization-mode: always
+    platform: postgres
+    url: jdbc:postgresql://localhost:5432/corona
+    username: corona
+    password: corona
+    
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: false
+
+logging:
+  level:
+    org:
+      hibernate:
+        type: INFO
