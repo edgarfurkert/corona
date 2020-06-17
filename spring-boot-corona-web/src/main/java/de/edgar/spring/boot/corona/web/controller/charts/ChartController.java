@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import de.edgar.spring.boot.corona.web.cache.CoronaDataCache;
 import de.edgar.spring.boot.corona.web.config.ColorProperties;
 import de.edgar.spring.boot.corona.web.config.ColorProperty;
 import de.edgar.spring.boot.corona.web.jpa.CoronaDataJpaRepository;
@@ -45,6 +46,9 @@ public class ChartController {
 	
 	@Autowired
 	private ColorProperties colorProps;
+	
+	@Autowired
+	private CoronaDataCache cache;
 
     @GetMapping("/ajax/lineGraph")
     public LineChartData getLineGraph(@ModelAttribute CoronaDataSession cds) {
@@ -141,7 +145,8 @@ public class ChartController {
     	List<Series> series = new ArrayList<>();
 		territoryMap.keySet().forEach(t -> {
 	    	Series s = new Series();
-	    	s.setName(t.replaceAll("_", " "));
+	    	String name = cache.getTerritoryName(t);
+	    	s.setName(name);
 	    	s.setData(new ArrayList<>());
 	    	territoryMap.get(t).forEach(d -> {
 				log.debug(d.toString());
@@ -239,7 +244,7 @@ public class ChartController {
     		}
     		counter.incrementAndGet();
         	List<Object> barData = new ArrayList<>();
-        	barData.add(d.getTerritory().replaceAll("_", " "));
+        	barData.add(cache.getTerritoryName(d.getTerritory()));
         	Double value = 0.0;
     		switch(cds.getSelectedDataType()) {
     		case "infections": value = d.getCasesKum().doubleValue(); break;
@@ -376,12 +381,12 @@ public class ChartController {
 			String color = colorIterator.hasNext() ? colorIterator.next().getHexRGB() : "";
 			
 	    	Series i = new Series();
-	    	i.setName(tk.replaceAll("_", " ") + " - Infections");
+	    	i.setName(cache.getTerritoryName(tk) + " - Infections");
 	    	i.setColor(color);
 	    	i.setData(new ArrayList<>());
 	    	
 	    	Series d = new Series();
-	    	d.setName(tk.replaceAll("_", " ") + " - Deaths");
+	    	d.setName(cache.getTerritoryName(tk) + " - Deaths");
 	    	d.setYAxis(1);
 	    	d.setDashStyle("ShortDash");
 	    	d.setColor(color);

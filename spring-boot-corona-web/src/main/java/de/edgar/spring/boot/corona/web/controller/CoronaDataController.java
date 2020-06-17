@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import de.edgar.spring.boot.corona.web.cache.CoronaDataCache;
 import de.edgar.spring.boot.corona.web.jpa.CoronaDataEntity;
 import de.edgar.spring.boot.corona.web.jpa.CoronaDataJpaRepository;
 import de.edgar.spring.boot.corona.web.model.AxisType;
@@ -32,6 +33,9 @@ public class CoronaDataController {
 	
 	@Autowired
 	private CoronaDataJpaRepository repo;
+
+	@Autowired
+	private CoronaDataCache cache;
 
 	@ModelAttribute(name = "coronaDataSession")
 	public CoronaDataSession coronaDataSession() {
@@ -92,7 +96,8 @@ public class CoronaDataController {
 			if (entity.isPresent()) {
 				precision = entity.get().getPrecision();
 			}
-			territories.add(new Territory(k, k.replaceAll("_", " "), precision));
+			String name = cache.getTerritoryName(k);
+			territories.add(new Territory(k, name, precision));
 		});
 		cds.setTerritories(territories);
 		cds.getTerritories().sort(Comparator.comparing(Territory::getPrecision).thenComparing(Territory::getName));

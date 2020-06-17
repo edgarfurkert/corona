@@ -1,6 +1,6 @@
 package de.edgar.spring.boot.corona.web.config;
 
-import java.io.File;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 
@@ -20,7 +20,7 @@ public class CsvDataLoader {
 		try {
 			CsvSchema bootstrapSchema = CsvSchema.emptySchema().withHeader();
 			CsvMapper mapper = new CsvMapper();
-			File file = new ClassPathResource(fileName).getFile();
+			InputStream file = new ClassPathResource(fileName).getInputStream();
 			MappingIterator<T> readValues = mapper.readerFor(type)
 					                              .with(bootstrapSchema)
 					                              .readValues(file);
