@@ -22,4 +22,8 @@ public interface CoronaDataJpaRepository extends CrudRepository<CoronaDataEntity
 	public Optional<CoronaDataEntity> findFirstByTerritory(String territory);
 	
 	public Optional<CoronaDataEntity> findTopByCasesGreaterThanOrderByDateRep(Long isGreater);
+	
+	@Query("SELECT MAX(c.dateRep) FROM CoronaDataEntity c WHERE c.territory = ?1")
+	public Optional<LocalDate> getMaxDateRepByTerritory(String territory);
+
 }

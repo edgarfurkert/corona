@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -165,12 +166,22 @@ public class ChartController {
     public BarChartData getBarGraph(@ModelAttribute CoronaDataSession cds) {
     	BarChartData data = new BarChartData();
     	
-		LocalDate date = cds.getToDate();
+		LocalDate selectedDate = cds.getToDate();
 		
 		List<CoronaData> coronaData = new ArrayList<>();
 		if (!CollectionUtils.isEmpty(cds.getSelectedTerritories())) {
-			repo.findByTerritoryInAndDateRepBetween(cds.getSelectedTerritories(), date, date).forEach(d -> {
-				coronaData.add(d.toCoronaData());
+			cds.getSelectedTerritories().forEach(t -> {
+				LocalDate date = selectedDate;
+				Optional<LocalDate> maxDate = repo.getMaxDateRepByTerritory(t);
+				if (maxDate.isPresent() && selectedDate.isAfter(maxDate.get())) {
+					// get last data if no data available at selected date
+					date = maxDate.get();
+				}
+				List<String> territory = new ArrayList<>();
+				territory.add(t);
+				repo.findByTerritoryInAndDateRepBetween(territory, date, date).forEach(d -> {
+					coronaData.add(d.toCoronaData());
+				});
 			});
 		}
 		
@@ -207,7 +218,7 @@ public class ChartController {
 		}
 				
     	data.setTitle("Top 25 Chart");
-    	data.setSubTitle(date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+    	data.setSubTitle(selectedDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
     	
     	YAxis yAxis = new YAxis();
     	yAxis.setTitle(title);
