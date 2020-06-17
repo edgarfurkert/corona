@@ -134,7 +134,7 @@ public class ChartController {
         for (LocalDate date = cds.getFromDate(); date.isBefore(cds.getToDate().plusDays(1)); date=date.plusDays(1)) {
         	dates.add(date.format(DateTimeFormatter.ofPattern("dd.MM.")));
         }
-    	log.info("Dates: " + dates);
+    	log.debug("Dates: " + dates);
     	xAxis.setDates(dates);
     	data.setXAxis(xAxis);
     	
@@ -144,7 +144,7 @@ public class ChartController {
 	    	s.setName(t.replaceAll("_", " "));
 	    	s.setData(new ArrayList<>());
 	    	territoryMap.get(t).forEach(d -> {
-				log.info(d.toString());
+				log.debug(d.toString());
 	    		switch(cds.getSelectedDataType()) {
 	    		case "infections": s.getData().add(d.getCasesKum().doubleValue()); break;
 	    		case "infectionsPerDay": s.getData().add(d.getCases().doubleValue()); break;
@@ -365,7 +365,7 @@ public class ChartController {
         for (LocalDate date = cds.getFromDate(); date.isBefore(cds.getToDate().plusDays(1)); date=date.plusDays(1)) {
         	dates.add(date.format(DateTimeFormatter.ofPattern("dd.MM.")));
         }
-    	log.info("Dates: " + dates);
+    	log.debug("Dates: " + dates);
     	xAxis.setDates(dates);
     	data.setXAxis(xAxis);
     	
@@ -388,7 +388,7 @@ public class ChartController {
 	    	d.setData(new ArrayList<>());
 	    	
 	    	territoryMap.get(tk).forEach(t -> {
-				log.info(t.toString());
+				log.debug(t.toString());
 	    		switch(cds.getSelectedDataType()) {
 				case "infections":
 				case "deaths":

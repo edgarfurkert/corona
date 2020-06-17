@@ -70,7 +70,7 @@ public class CoronaDataController {
 		graphTypes.add(new GraphType("infectionsDeaths", "Infections and deaths"));
 		cds.setGraphTypes(graphTypes);
 		cds.setSelectedGraphType("line");
-		log.info("CoronaDataSession: " + cds);
+		log.debug("CoronaDataSession: " + cds);
 		return cds;
 	}
 	
@@ -99,7 +99,7 @@ public class CoronaDataController {
 		if (cds.getSelectedTerritories() != null) {
 			cds.getSelectedTerritories().clear();
 		}
-		log.info("CoronaDataSession: " + cds);
+		log.debug("CoronaDataSession: " + cds);
 		
 		return "home";
 	}
@@ -115,9 +115,9 @@ public class CoronaDataController {
 				}
 			});
 		}
-		log.info("selected territories: " + cds.getSelectedTerritories());
-		log.info("selected graph type: " + cds.getSelectedGraphType());
-		log.info("selected date type: " + cds.getSelectedDataType());
+		log.debug("selected territories: " + cds.getSelectedTerritories());
+		log.debug("selected graph type: " + cds.getSelectedGraphType());
+		log.debug("selected date type: " + cds.getSelectedDataType());
 
 		return "home";
 	}
