@@ -12,7 +12,7 @@
 	<section layout:fragment="main" class="content">
 	<table>
 		<tr>
-			<td>
+			<td class="left">
 				<form method="POST" th:object="${coronaDataSession}" th:action="@{/}" id="coronaDataForm">
 					<table>
 						<tr>
@@ -68,11 +68,11 @@
 					<tr>
 						<td>
 							<table>
-								<tr class="timeRange">
-									<td colspan="2" style="text-align:center">
+								<tr class="selectionTitles">
+									<td colspan="2" class="dateRange">
 										<b>Date range</b>
 									</td>
-									<td style="text-align:center">
+									<td class="dataSelection">
 										<b>Data selection</b>
 									</td>
 									<td style="text-align:center">
@@ -91,10 +91,12 @@
 									<td rowSpan="2">
 										<div class="dataTypes">
 										<span th:each="dataType : ${coronaDataSession.dataTypes}">
+										<span class="dataType">
 											<input name="selectedDataType" type="radio"
 												   th:field="*{selectedDataType}"
 												   th:value="${dataType.key}" />
 											<span th:text="${dataType.name}">DATATYPE</span>&nbsp;
+										</span>
 										</span>
 										</div>
 									</td>
