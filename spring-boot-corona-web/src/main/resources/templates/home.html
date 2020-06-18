@@ -67,7 +67,7 @@
 				<table>
 					<tr>
 						<td>
-							<table>
+							<table style="margin-left: 5px;">
 								<tr class="selectionTitles">
 									<td colspan="2" class="dateRange">
 										<b>Date range</b>
@@ -101,7 +101,7 @@
 										</div>
 									</td>
 									<td class="yAxisTypes" rowSpan="2">
-									    <div th:if="${coronaDataSession.selectedGraphType} == 'line' or ${coronaDataSession.selectedGraphType} == 'infectionsDeaths'">
+									    <div th:if="${coronaDataSession.selectedGraphType} == 'line' or ${coronaDataSession.selectedGraphType} == 'infectionsDeaths'" style="margin-left: 5px;">
 										<span th:each="yAxisType : ${coronaDataSession.yAxisTypes}">
 											<input name="selectedYAxisType" type="radio"
 												   th:field="*{selectedYAxisType}"

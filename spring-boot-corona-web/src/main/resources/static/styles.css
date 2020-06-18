@@ -94,6 +94,7 @@ td.chartColumn {
 
 div.dataTypes {
 	width: 100%;
+	margin-left: 5px;
 }
 
 span.dataType {
