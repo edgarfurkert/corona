@@ -142,11 +142,15 @@ public class ChartController {
     	xAxis.setDates(dates);
     	data.setXAxis(xAxis);
     	
+    	Iterator<ColorProperty> colorIterator = colorProps.getColors().iterator();
+
     	List<Series> series = new ArrayList<>();
 		territoryMap.keySet().forEach(t -> {
 	    	Series s = new Series();
 	    	String name = cache.getTerritoryName(t);
 	    	s.setName(name);
+			String color = colorIterator.hasNext() ? colorIterator.next().getHexRGB() : "";
+	    	s.setColor(color);
 	    	s.setData(new ArrayList<>());
 	    	territoryMap.get(t).forEach(d -> {
 				log.debug(d.toString());
@@ -236,6 +240,7 @@ public class ChartController {
     	
     	BarSeries series = new BarSeries();
     	series.setTitle(title);
+    	series.setColors(colorProps.getHexRGBColors());
     	series.setData(new ArrayList<>());
     	AtomicInteger counter = new AtomicInteger();
     	coronaData.forEach(d -> {

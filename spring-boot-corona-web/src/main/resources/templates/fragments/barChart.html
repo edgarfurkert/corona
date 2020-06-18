@@ -60,6 +60,12 @@
                         tooltip: {
                             pointFormat: '<b>{point.y:.1f}</b>'
                         },
+                        colors: data.series.colors,
+                        plotOptions: {
+                            series: {
+                                colorByPoint: true
+                            }
+                        },
                         series: [{
                             name: data.series.title,
                             data: data.series.data,

@@ -1,5 +1,6 @@
 package de.edgar.spring.boot.corona.web.config;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -18,7 +19,11 @@ public class ColorProperties {
 	@Getter
 	private List<ColorProperty> colors;
 	
+	@Getter
+	private List<String> hexRGBColors;
+	
 	private void loadColors() {
+		hexRGBColors = new ArrayList<>();
 		colors = csvDataLoader.loadObjectList(ColorProperty.class, "colors.csv");
 		colors.forEach(c -> {
 			c.setBlueRGB(c.getBlueRGB().trim());
@@ -31,6 +36,7 @@ public class ColorProperties {
 			c.setSaturHSL(c.getSaturHSL().trim());
 			c.setSaturHSV(c.getSaturHSV().trim());
 			c.setValueHSV(c.getValueHSV().trim());
+			hexRGBColors.add(c.getHexRGB());
 		});
 	}
 

@@ -9,5 +9,6 @@ public class BarSeries {
 
 	private String title;
 	private List<List<Object>> data;
+	private List<String> colors;
 	
 }
