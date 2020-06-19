@@ -46,7 +46,9 @@ public class CoronaDataController {
 			Optional<CoronaDataEntity> entity = repo.findFirstByTerritoryParent(k);
 			Long orderId = OrderIdEnum.UNKNOWN.getOrderId();
 			if (entity.isPresent()) {
-				orderId = entity.get().getOrderId();
+				if (entity.get().getOrderId() != null) {
+					orderId = entity.get().getOrderId();
+				}
 			}
 			cds.getTerritoryParents().add(new Territory(k, k.replaceAll("_", " "), orderId));
 		});
