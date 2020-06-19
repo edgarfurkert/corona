@@ -22,6 +22,7 @@ import de.edgar.spring.boot.corona.web.model.AxisType;
 import de.edgar.spring.boot.corona.web.model.CoronaDataSession;
 import de.edgar.spring.boot.corona.web.model.DataType;
 import de.edgar.spring.boot.corona.web.model.GraphType;
+import de.edgar.spring.boot.corona.web.model.OrderIdEnum;
 import de.edgar.spring.boot.corona.web.model.Territory;
 import lombok.extern.slf4j.Slf4j;
 
@@ -43,11 +44,11 @@ public class CoronaDataController {
 		List<String> keys = repo.findDistinctTerritoryParent();
 		keys.forEach(k -> {
 			Optional<CoronaDataEntity> entity = repo.findFirstByTerritoryParent(k);
-			Long precision = 100000L;
+			Long orderId = OrderIdEnum.UNKNOWN.getOrderId();
 			if (entity.isPresent()) {
-				precision = entity.get().getOrderId();
+				orderId = entity.get().getOrderId();
 			}
-			cds.getTerritoryParents().add(new Territory(k, k.replaceAll("_", " "), precision));
+			cds.getTerritoryParents().add(new Territory(k, k.replaceAll("_", " "), orderId));
 		});
 		cds.getTerritoryParents().sort(Comparator.comparing(Territory::getPrecision).thenComparing(Territory::getName));
 		cds.setFromDate(repo.findTopByCasesGreaterThanOrderByDateRep(0L).get().getDateRep());
@@ -92,12 +93,12 @@ public class CoronaDataController {
 		territories.add(allTerritories);
 		territoryKeys.forEach(k -> {
 			Optional<CoronaDataEntity> entity = repo.findFirstByTerritory(k);
-			Long precision = 100000L;
+			Long orderId = OrderIdEnum.UNKNOWN.getOrderId();
 			if (entity.isPresent()) {
-				precision = entity.get().getOrderId();
+				orderId = entity.get().getOrderId();
 			}
 			String name = cache.getTerritoryName(k);
-			territories.add(new Territory(k, name, precision));
+			territories.add(new Territory(k, name, orderId));
 		});
 		cds.setTerritories(territories);
 		cds.getTerritories().sort(Comparator.comparing(Territory::getPrecision).thenComparing(Territory::getName));

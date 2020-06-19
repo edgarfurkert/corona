@@ -1,4 +1,4 @@
-package de.edgar.corona.model;
+package de.edgar.spring.boot.corona.web.model;
 
 import lombok.Getter;
 
