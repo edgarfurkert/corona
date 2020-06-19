@@ -9,18 +9,18 @@ public class CoronaWorldData extends CoronaData implements Cloneable {
 	
 	public CoronaWorldData(String line) {
 		String[] a = line.split(",(?=([^\\\"]*\\\"[^\\\"]*\\\")*[^\\\"]*$)");
-		setDay(Integer.valueOf(a[1]));
-		setMonth(Integer.valueOf(a[2]));
-		setYear(Integer.valueOf(a[3]));
+		setDay(getInteger(a[1]));
+		setMonth(getInteger(a[2]));
+		setYear(getInteger(a[3]));
 		setDateRep(LocalDate.of(getYear(), getMonth(), getDay()));
-		setCases(Long.valueOf(a[4]));
-		setDeaths(Long.valueOf(a[5]));
+		setCases(getLong(a[4]));
+		setDeaths(getLong(a[5]));
 		setTerritory(a[6].replaceAll("\"", ""));
 		setGeoId(a[7]);
 		setTerritoryCode(a[8].length() > 0 ? a[8] : a[7]);
-		setPopulation(Long.valueOf(a[9].length() > 0 ? a[9] : "0"));
+		setPopulation(getLong(a[9]));
 		setTerritoryParent(a[10]);
-		setPrecision(10L);
+		setOrderId(OrderIdEnum.TERRITORY.getOrderId());
 	}
 
 	@Override

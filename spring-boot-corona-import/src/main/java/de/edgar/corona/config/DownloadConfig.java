@@ -32,6 +32,7 @@ import de.edgar.corona.model.CoronaGermanyData;
 import de.edgar.corona.model.CoronaGermanyFederalStateData;
 import de.edgar.corona.model.CoronaWorldData;
 import de.edgar.corona.model.Territory;
+import de.edgar.corona.service.UpdateCheckService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -51,6 +52,9 @@ public class DownloadConfig {
 	
 	@Autowired
 	private CoronaDataJpaRepository repository;
+	
+	@Autowired
+	private UpdateCheckService updateHandler;
 
 	@Value( "${corona.data.csv.import.path}" )
 	private String csvPath;
@@ -133,6 +137,7 @@ public class DownloadConfig {
 				LineIterator li = FileUtils.lineIterator(downloadFile, StandardCharsets.UTF_8.name());
 				while (li.hasNext()) {
 					header = li.next();
+					header = header.replaceAll("[\\p{Cf}]", ""); // remove category of unicode characters.
 					if (li.hasNext()) {
 						firstDataLine = li.next();
 					}
@@ -160,7 +165,8 @@ public class DownloadConfig {
 			// get channel of file
 			String channel = null;
 			for (DownloadUrlProperty p : props.getUrls()) {
-				if (header.equals(p.getHeader())) {
+				log.debug("Header match   : " + p.getHeader());
+				if (header.matches(p.getHeader())) {
 					channel = p.getChannel();
 					break;
 				}
@@ -169,51 +175,58 @@ public class DownloadConfig {
 				handleDownloadFile(downloadFile, new DataIntegrityViolationException("Unknown header found in file " + fileName));
 				return;
 			}
-			// check date by channel
-			CoronaData cd;
-			String territory = null;
-			String territoryParent = null;
-			switch (channel) {
-			case "worldChannel":
-				cd = new CoronaWorldData(firstDataLine);
-				territory = cd.getTerritory();
-				Territory t = territoryProps.findByKey(territory);
-				if (t != null) {
-					cd.setTerritoryParent(t.getTerritoryParent());
-				}
-				territoryParent = cd.getTerritoryParent();
-				Optional<LocalDate> lastDate = repository.getMaxDateRepByTerritoryAndTerritoryParent(territory, territoryParent);
-				if (lastDate.isPresent() && !lastDate.get().isBefore(cd.getDateRep())) {
-					// there are no new data -> delete file
-					handleDownloadFile(downloadFile, new Exception("No new data in file " + fileName));
+			
+			// check update file
+			boolean filterDisabled = updateHandler.checkUpdateFile(csvPath, getFileName(downloadUrlProperty.getFileName()), false);
+			
+			if (!filterDisabled) {
+				// check date by channel
+				log.info("Update only new data.");
+				CoronaData cd;
+				String territory = null;
+				String territoryParent = null;
+				switch (channel) {
+				case "worldChannel":
+					cd = new CoronaWorldData(firstDataLine);
+					territory = cd.getTerritory();
+					Territory t = territoryProps.findByKey(territory);
+					if (t != null) {
+						cd.setTerritoryParent(t.getTerritoryParent());
+					}
+					territoryParent = cd.getTerritoryParent();
+					Optional<LocalDate> lastDate = repository.getMaxDateRepByTerritoryAndTerritoryParent(territory, territoryParent);
+					if (lastDate.isPresent() && !lastDate.get().isBefore(cd.getDateRep())) {
+						// there are no new data -> delete file
+						handleDownloadFile(downloadFile, new Exception("No new data in file " + fileName));
+						return;
+					}
+					break;
+				case "germanyChannel":
+					cd = new CoronaGermanyData(lastDataLine, germanyProps);
+					territory = cd.getTerritory();
+					territoryParent = cd.getTerritoryParent();
+					lastDate = repository.getMaxDateRepByTerritoryAndTerritoryParent(territory, territoryParent);
+					if (lastDate.isPresent() && !lastDate.get().isBefore(cd.getDateRep())) {
+						// there are no new data -> delete file
+						handleDownloadFile(downloadFile, new Exception("No new data in file " + fileName));
+						return;
+					}
+					break;
+				case "germanyFederalStatesChannel":
+					cd = new CoronaGermanyFederalStateData(lastDataLine, germanyProps);
+					territory = cd.getTerritory();
+					territoryParent = cd.getTerritoryParent();
+					lastDate = repository.getMaxDateRepByTerritoryAndTerritoryParent(territory, territoryParent);
+					if (lastDate.isPresent() && !lastDate.get().isBefore(cd.getDateRep())) {
+						// there are no new data -> delete file
+						handleDownloadFile(downloadFile, new Exception("No new data in file " + fileName));
+						return;
+					}
+					break;
+				default:
+					handleDownloadFile(downloadFile, new DataIntegrityViolationException("Unknown channel to handle file " + fileName));
 					return;
 				}
-				break;
-			case "germanyChannel":
-				cd = new CoronaGermanyData(lastDataLine, germanyProps);
-				territory = cd.getTerritory();
-				territoryParent = cd.getTerritoryParent();
-				lastDate = repository.getMaxDateRepByTerritoryAndTerritoryParent(territory, territoryParent);
-				if (lastDate.isPresent() && !lastDate.get().isBefore(cd.getDateRep())) {
-					// there are no new data -> delete file
-					handleDownloadFile(downloadFile, new Exception("No new data in file " + fileName));
-					return;
-				}
-				break;
-			case "germanyFederalStatesChannel":
-				cd = new CoronaGermanyFederalStateData(lastDataLine, germanyProps);
-				territory = cd.getTerritory();
-				territoryParent = cd.getTerritoryParent();
-				lastDate = repository.getMaxDateRepByTerritoryAndTerritoryParent(territory, territoryParent);
-				if (lastDate.isPresent() && !lastDate.get().isBefore(cd.getDateRep())) {
-					// there are no new data -> delete file
-					handleDownloadFile(downloadFile, new Exception("No new data in file " + fileName));
-					return;
-				}
-				break;
-			default:
-				handleDownloadFile(downloadFile, new DataIntegrityViolationException("Unknown channel to handle file " + fileName));
-				return;
 			}
 			
 			// file with new data downloaded -> rename file to csv

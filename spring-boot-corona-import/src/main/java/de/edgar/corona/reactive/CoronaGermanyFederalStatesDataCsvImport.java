@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -20,12 +21,10 @@ import reactor.core.publisher.Flux;
 
 @Slf4j
 @Component
-public class CoronaGermanyFederalStatesDataCsvImport {
+public class CoronaGermanyFederalStatesDataCsvImport extends CoronaDataCsvImport {
 
 	@Autowired
 	private GermanyFederalStatesProperties props;
-	
-	private CoronaDataJpaRepository repository;
 	
 	public CoronaGermanyFederalStatesDataCsvImport(CoronaDataJpaRepository repository) {
 		this.repository = repository;
@@ -37,11 +36,18 @@ public class CoronaGermanyFederalStatesDataCsvImport {
 		Map<String, LocalDate> territoryLatestDateRepMap = Collections.synchronizedMap(new HashMap<>());
 
 		Path path = Paths.get(fileName);
+		
+		// check update file
+		AtomicBoolean filterDisabled = new AtomicBoolean(updateHandler.checkUpdateFile(path.getParent().toString(), path.getFileName().toString(), true));
+
 		Flux<CoronaDataEntity> coronaData = 
 				FluxFileReader.fromPath(path)
 						  .skip(1)
 						  .map(l -> { return new CoronaGermanyFederalStateData(l, props); })
 						  .filter(d -> {
+							  if (filterDisabled.get()) {
+								  return true; // do not filter
+							  }
 							  LocalDate latestDate = territoryLatestDateRepMap.get(d.getTerritory());
 							  if (latestDate == null) {
 								  Optional<LocalDate> date = repository.getMaxDateRepByTerritoryAndTerritoryParent(d.getTerritory(), d.getTerritoryParent());
@@ -58,16 +64,7 @@ public class CoronaGermanyFederalStatesDataCsvImport {
 						  .map(d -> { return new CoronaDataEntity(d); })
 						  ;//.log();
 
-		coronaData.subscribe(data -> {
-			Optional<CoronaDataEntity> d = repository.findByGeoIdAndDateRep(data.getGeoId(), data.getDateRep());
-			if (d.isPresent()) {
-				log.info("Overwritting data: " + data);
-				data.setId(d.get().getId());
-			} else {
-				log.info("Saving data: " + data);
-			}
-			repository.save(data);
-		});
+		coronaData.subscribe(data -> save(data));
 		
 	}
 

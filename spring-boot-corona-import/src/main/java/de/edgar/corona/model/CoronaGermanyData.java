@@ -35,15 +35,15 @@ public class CoronaGermanyData extends CoronaData {
 		} else {
 			log.error("CoronaGermanyData: federal state {} not found.", a[2]);
 		}
-		setCases(Long.valueOf(a[6]));
-		setCasesKum(Long.valueOf(a[3]));
+		setCases(getLong(a[6]));
+		setCasesKum(getLong(a[3]));
 		setCasesPer100000Pop(p > 0 ? getCasesKum() * 100000.0 / p : 0.0);
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		LocalDate date = LocalDate.parse((a[5]), formatter);
 		setDateRep(date);
 		setDay(getDateRep().getDayOfMonth());
-		setDeaths(Long.valueOf(a[7]));
-		setDeathsKum(Long.valueOf(a[4]));
+		setDeaths(getLong(a[7]));
+		setDeathsKum(getLong(a[4]));
 		setDeathsPer100000Pop(p > 0 ? getDeathsKum() * 100000.0 / p : 0.0);
 		setGeoId(c);
 		setMonth(getDateRep().getMonthValue());
@@ -52,7 +52,7 @@ public class CoronaGermanyData extends CoronaData {
 		setTerritoryCode(c);
 		setTerritoryParent(a[1]);
 		setYear(getDateRep().getYear());
-		setPrecision(100L);
+		setOrderId(OrderIdEnum.COUNTRY.getOrderId());
 	}
 	
 }

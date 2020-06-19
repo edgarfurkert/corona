@@ -81,7 +81,7 @@ public class CoronaDataCsvImportConfig {
 	@Bean
     @InboundChannelAdapter(value = "fileInputChannel", poller = @Poller(fixedDelay = "${corona.data.csv.import.poller}"))
     public MessageSource<File> fileReadingMessageSource() {
-    	log.info("Reading csv-files in path: " + csvPath);
+    	log.info("Reading csv-files in path: {}", csvPath);
         FileReadingMessageSource sourceReader = new FileReadingMessageSource();
         sourceReader.setDirectory(new File(csvPath));
         sourceReader.setFilter(new SimplePatternFileListFilter("*.csv"));
@@ -96,21 +96,24 @@ public class CoronaDataCsvImportConfig {
 
 	@Router(inputChannel="fileRouteChannel")
 	public String fileRouter(File file) {
-		log.info("Router: file " + file.getName() + "...");
+		log.info("Router: file {}...", file.getName());
 		String channel = "unknownChannel";
 		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-			String line = reader.readLine();
+			String header = reader.readLine();
+			header = header.replaceAll("[\\p{Cf}]", ""); // remove category of unicode characters.
+			log.debug("Header      : {}", header);
 			for (DownloadUrlProperty p : downloadProps.getUrls()) {
-				if (line.equals(p.getHeader())) {
+				log.debug("Header match: {}", p.getHeader());
+				if (header.matches(p.getHeader())) {
 					channel = p.getChannel();
 					break;
 				}
 			};
 		} catch (IOException e) {
-			log.error("Router: " + e.getMessage());
+			log.error("Router: {}", e.getMessage());
 			return "errorChannel";
 		}
-		log.info("Router: route to channel " + channel);
+		log.info("Router: route to channel {}", channel);
 		return channel;
 	}
     
@@ -119,12 +122,12 @@ public class CoronaDataCsvImportConfig {
     public MessageHandler worldData() {
     	return message -> {
     		File file = (File)message.getPayload();
-    		log.info("world file data: " + file.getAbsolutePath());
+    		log.info("world file data: {}", file.getAbsolutePath());
     		File inFile = new File(file.getAbsolutePath() + ".in");
     		if (file.renameTo(inFile)) {
         		csvImportWorldData.importData(inFile.getAbsolutePath());
     		} else {
-    			log.error("worldChannel: Cannot rename file " + file.getAbsolutePath());
+    			log.error("worldChannel: Cannot rename file {}", file.getAbsolutePath());
     		}
     	};
     }
@@ -138,7 +141,7 @@ public class CoronaDataCsvImportConfig {
     		if (file.renameTo(inFile)) {
         		csvImportGermanyData.importData(inFile.getAbsolutePath());
     		} else {
-    			log.error("germanyChannel: Cannot rename file " + file.getAbsolutePath());
+    			log.error("germanyChannel: Cannot rename file {}", file.getAbsolutePath());
     		}
     	};
     }
@@ -152,7 +155,7 @@ public class CoronaDataCsvImportConfig {
     		if (file.renameTo(inFile)) {
         		csvImportGermanyFederalStatesData.importData(inFile.getAbsolutePath());
     		} else {
-    			log.error("germanyFederalStatesChannel: Cannot rename file " + file.getAbsolutePath());
+    			log.error("germanyFederalStatesChannel: Cannot rename file {}", file.getAbsolutePath());
     		}
     	};
     }
@@ -162,7 +165,7 @@ public class CoronaDataCsvImportConfig {
     public MessageHandler unknownData() {
     	return message -> {
     		File file = (File)message.getPayload();
-    		log.error("unknownChannel: Cannot handle file " + file.getAbsolutePath());
+    		log.error("unknownChannel: Cannot handle file {}", file.getAbsolutePath());
     	};
     }
     
@@ -170,8 +173,8 @@ public class CoronaDataCsvImportConfig {
     @ServiceActivator(inputChannel="errorChannel")
     public MessageHandler errorData() {
     	return message -> {
-    		File file = (File)message.getPayload();
-    		log.error("errorChannel: Error while handle file " + file.getAbsolutePath());
+    		Exception e = (Exception)message.getPayload();
+    		log.error("errorChannel: {}", e);
     	};
     }
 }

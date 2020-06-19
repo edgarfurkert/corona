@@ -1,0 +1,4 @@
+logging:
+  level:
+    de.edgar: DEBUG
+    org.hibernate.type: INFO

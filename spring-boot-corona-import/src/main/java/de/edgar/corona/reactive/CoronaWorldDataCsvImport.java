@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,18 +17,17 @@ import de.edgar.corona.config.TerritoryProperties;
 import de.edgar.corona.jpa.CoronaDataEntity;
 import de.edgar.corona.jpa.CoronaDataJpaRepository;
 import de.edgar.corona.model.CoronaWorldData;
+import de.edgar.corona.model.OrderIdEnum;
 import de.edgar.corona.model.Territory;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 
 @Slf4j
 @Component
-public class CoronaWorldDataCsvImport {
+public class CoronaWorldDataCsvImport extends CoronaDataCsvImport {
 	
 	@Autowired
 	private TerritoryProperties territoryProps;
-	
-	private CoronaDataJpaRepository repository;
 	
 	public CoronaWorldDataCsvImport(CoronaDataJpaRepository repository) {
 		this.repository = repository;
@@ -40,6 +40,10 @@ public class CoronaWorldDataCsvImport {
 		Map<String, Map<String, CoronaWorldData>> territoryParentMap = Collections.synchronizedMap(new HashMap<>());
 		
 		Path path = Paths.get(fileName);
+		
+		// check update file
+		AtomicBoolean filterDisabled = new AtomicBoolean(updateHandler.checkUpdateFile(path.getParent().toString(), path.getFileName().toString(), true));
+		
 		Flux<CoronaDataEntity> file = 
 				FluxFileReader.fromPath(path)
 						  .skip(1) // skip header
@@ -112,7 +116,7 @@ public class CoronaWorldDataCsvImport {
 											c.setTerritory(orgTerritoryParent);
 											c.setTerritoryCode(orgTerritoryParent);
 											c.setTerritoryParent(worldKey);
-											c.setPrecision(1L);
+											c.setOrderId(OrderIdEnum.WORLD.getOrderId());
 											territoryParentPopulationMap.put(dateRepKey, c);
 										} catch (CloneNotSupportedException e) {
 											log.error("Cannot clone: {}", m);
@@ -139,7 +143,7 @@ public class CoronaWorldDataCsvImport {
 										c.setTerritory(worldKey);
 										c.setTerritoryCode(worldKey);
 										c.setTerritoryParent("Earth");
-										c.setPrecision(0L);
+										c.setOrderId(OrderIdEnum.EARTH.getOrderId());
 										territoryParentPopulationMap.put(dateRepKey, c);
 									} catch (CloneNotSupportedException e) {
 										log.error("Cannot clone: {}", m);
@@ -152,6 +156,9 @@ public class CoronaWorldDataCsvImport {
 								log.debug(c.getTerritoryParent() + ": " + c.toString());
 						  })
 						  .filter(d -> {
+							  if (filterDisabled.get()) {
+								  return true; // do not filter
+							  }
 							  LocalDate latestDate = territoryLatestDateRepMap.get(d.getTerritory());
 							  if (latestDate == null) {
 								  Optional<LocalDate> date = repository.getMaxDateRepByTerritoryAndTerritoryParent(d.getTerritory(), d.getTerritoryParent());
@@ -220,6 +227,9 @@ public class CoronaWorldDataCsvImport {
 							kummulativeDataMap.put(territoryKey, m);
 					  })
 					  .filter(d -> {
+						  if (filterDisabled.get()) {
+							  return true; // do not filter
+						  }
 						  LocalDate latestDate = territoryLatestDateRepMap.get(d.getTerritory());
 						  if (latestDate == null) {
 							  Optional<LocalDate> date = repository.getMaxDateRepByTerritoryAndTerritoryParent(d.getTerritory(), d.getTerritoryParent());
@@ -234,16 +244,8 @@ public class CoronaWorldDataCsvImport {
 					  })
 					  .map(d -> { return new CoronaDataEntity(d); })
 					  ;//.log();
-			worldFlux.subscribe(data -> {
-				Optional<CoronaDataEntity> d = repository.findByGeoIdAndDateRep(data.getGeoId(), data.getDateRep());
-				if (d.isPresent()) {
-					log.info("Overwritting data: " + data);
-					data.setId(d.get().getId());
-				} else {
-					log.info("Saving data: " + data);
-				}
-				repository.save(data);
-			});
+			
+			worldFlux.subscribe(data -> save(data));
 		});
 	}
 }

@@ -23,9 +23,8 @@ spring:
 
 logging:
   level:
-    org:
-      hibernate:
-        type: INFO
+    de.edgar: INFO
+    org.hibernate.type: INFO
 
 corona:
   data:
@@ -40,7 +39,7 @@ corona:
         urls:
           - url: https://opendata.ecdc.europa.eu/covid19/casedistribution/csv
             fileName: covid19-world
-            header: dateRep,day,month,year,cases,deaths,countriesAndTerritories,geoId,countryterritoryCode,popData2018,continentExp
+            header: dateRep,day,month,year,cases,deaths,countriesAndTerritories,geoId,countryterritoryCode,popData[0-9]{4},continentExp[.]*
             channel: worldChannel
           - url: https://covid19publicdata.blob.core.windows.net/rki/covid19-germany-federalstates.csv
             fileName: covid19-germany-federalstates

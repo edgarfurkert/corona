@@ -1,6 +1,7 @@
 package de.edgar.corona.jpa;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -36,7 +37,8 @@ public class CoronaDataEntity {
 		this.setTerritoryCode(data.getTerritoryCode());
 		this.setTerritoryParent(data.getTerritoryParent());
 		this.setYear(data.getYear());
-		this.setPrecision(data.getPrecision());
+		this.setOrderId(data.getOrderId());
+		this.setTimestamp(LocalDateTime.now());
 	}
 
 	@Id
@@ -58,5 +60,7 @@ public class CoronaDataEntity {
 	private Long deathsKum;
 	private Double casesPer100000Pop;
 	private Double deathsPer100000Pop;
-	private Long precision;
+	private Long orderId;
+	private LocalDateTime timestamp;
+	
 }
