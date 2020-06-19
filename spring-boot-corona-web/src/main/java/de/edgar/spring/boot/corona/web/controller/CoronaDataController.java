@@ -43,9 +43,9 @@ public class CoronaDataController {
 		List<String> keys = repo.findDistinctTerritoryParent();
 		keys.forEach(k -> {
 			Optional<CoronaDataEntity> entity = repo.findFirstByTerritoryParent(k);
-			Long precision = 10000L;
+			Long precision = 100000L;
 			if (entity.isPresent()) {
-				precision = entity.get().getPrecision();
+				precision = entity.get().getOrderId();
 			}
 			cds.getTerritoryParents().add(new Territory(k, k.replaceAll("_", " "), precision));
 		});
@@ -92,9 +92,9 @@ public class CoronaDataController {
 		territories.add(allTerritories);
 		territoryKeys.forEach(k -> {
 			Optional<CoronaDataEntity> entity = repo.findFirstByTerritory(k);
-			Long precision = 10000L;
+			Long precision = 100000L;
 			if (entity.isPresent()) {
-				precision = entity.get().getPrecision();
+				precision = entity.get().getOrderId();
 			}
 			String name = cache.getTerritoryName(k);
 			territories.add(new Territory(k, name, precision));

@@ -39,7 +39,7 @@ public class CoronaDataEntity {
 	private Long deathsKum;
 	private Double casesPer100000Pop;
 	private Double deathsPer100000Pop;
-	private Long precision;
+	private Long orderId;
 	
 	public CoronaData toCoronaData() {
 		CoronaData data = new CoronaData();
@@ -58,7 +58,7 @@ public class CoronaDataEntity {
 		data.setTerritoryCode(getTerritoryCode());
 		data.setTerritoryParent(getTerritoryParent());
 		data.setYear(getYear());
-		data.setPrecision(getPrecision());
+		data.setOrderId(getOrderId());
 		return data;
 	}
 }

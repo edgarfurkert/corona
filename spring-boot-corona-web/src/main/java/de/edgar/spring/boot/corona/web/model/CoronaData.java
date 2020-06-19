@@ -26,6 +26,6 @@ public class CoronaData {
 	private Long deathsKum;
 	private Double casesPer100000Pop;
 	private Double deathsPer100000Pop;
-	private Long precision;
+	private Long orderId;
 	
 }
