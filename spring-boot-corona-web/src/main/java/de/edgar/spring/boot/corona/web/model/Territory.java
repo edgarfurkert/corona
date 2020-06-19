@@ -7,6 +7,6 @@ public class Territory {
 
 	private final String key;
 	private final String name;
-	private final Long precision;
+	private final Long orderId;
 	
 }

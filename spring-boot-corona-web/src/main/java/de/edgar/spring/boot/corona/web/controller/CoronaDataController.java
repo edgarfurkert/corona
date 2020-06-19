@@ -50,7 +50,7 @@ public class CoronaDataController {
 			}
 			cds.getTerritoryParents().add(new Territory(k, k.replaceAll("_", " "), orderId));
 		});
-		cds.getTerritoryParents().sort(Comparator.comparing(Territory::getPrecision).thenComparing(Territory::getName));
+		cds.getTerritoryParents().sort(Comparator.comparing(Territory::getOrderId).thenComparing(Territory::getName));
 		cds.setFromDate(repo.findTopByCasesGreaterThanOrderByDateRep(0L).get().getDateRep());
 		cds.setToDate(LocalDate.now());
 		List<DataType> dataTypes = new ArrayList<>();
@@ -95,13 +95,15 @@ public class CoronaDataController {
 			Optional<CoronaDataEntity> entity = repo.findFirstByTerritory(k);
 			Long orderId = OrderIdEnum.UNKNOWN.getOrderId();
 			if (entity.isPresent()) {
-				orderId = entity.get().getOrderId();
+				if (entity.get().getOrderId() != null) {
+					orderId = entity.get().getOrderId();
+				}
 			}
 			String name = cache.getTerritoryName(k);
 			territories.add(new Territory(k, name, orderId));
 		});
 		cds.setTerritories(territories);
-		cds.getTerritories().sort(Comparator.comparing(Territory::getPrecision).thenComparing(Territory::getName));
+		cds.getTerritories().sort(Comparator.comparing(Territory::getOrderId).thenComparing(Territory::getName));
 		if (cds.getSelectedTerritories() != null) {
 			cds.getSelectedTerritories().clear();
 		}
