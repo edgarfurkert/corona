@@ -37,8 +37,13 @@ corona:
         connectTimeout: 5000
         readTimeout: 5000
         urls:
-          - url: https://opendata.ecdc.europa.eu/covid19/casedistribution/csv
-            fileName: covid19-world
+          # connect timed out
+          #- url: https://opendata.ecdc.europa.eu/covid19/casedistribution/csv
+          #  fileName: covid19-world
+          #  header: dateRep,day,month,year,cases,deaths,countriesAndTerritories,geoId,countryterritoryCode,popData[0-9]{4},continentExp[.]*
+          #  channel: worldChannel
+          - url: https://www.ecdc.europa.eu/sites/default/files/documents/COVID-19-geographic-disbtribution-worldwide.xlsx
+            fileName: covid19-world-xlsx
             header: dateRep,day,month,year,cases,deaths,countriesAndTerritories,geoId,countryterritoryCode,popData[0-9]{4},continentExp[.]*
             channel: worldChannel
           - url: https://covid19publicdata.blob.core.windows.net/rki/covid19-germany-federalstates.csv

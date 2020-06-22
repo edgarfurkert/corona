@@ -7,10 +7,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
@@ -32,6 +34,7 @@ import de.edgar.corona.model.CoronaGermanyData;
 import de.edgar.corona.model.CoronaGermanyFederalStateData;
 import de.edgar.corona.model.CoronaWorldData;
 import de.edgar.corona.model.Territory;
+import de.edgar.corona.service.ExcelService;
 import de.edgar.corona.service.UpdateCheckService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -54,7 +57,10 @@ public class DownloadConfig {
 	private CoronaDataJpaRepository repository;
 	
 	@Autowired
-	private UpdateCheckService updateHandler;
+	private UpdateCheckService updateCheckService;
+	
+	@Autowired
+	private ExcelService excelService;
 
 	@Value( "${corona.data.csv.import.path}" )
 	private String csvPath;
@@ -130,6 +136,23 @@ public class DownloadConfig {
 		    FileUtils.copyURLToFile(new URL(downloadUrlProperty.getUrl()), downloadFile, CONNECT_TIMEOUT, READ_TIMEOUT);
 		    log.info("Download finished: {}", fileName);
 		    
+		    if (downloadUrlProperty.getUrl().endsWith(".xlsx")) {
+		    	// handle excel file -> convert excel file to csv
+		    	String csvFileName = fileName.replace("xlsx", "csv");
+		    	Properties props = new Properties();
+		    	props.put("dateFormat0", "dd/MM/yyyy");
+		    	props.put("decimalFormat1", "#");
+		    	props.put("decimalFormat2", "#");
+		    	props.put("decimalFormat3", "#");
+		    	props.put("decimalFormat4", "#");
+		    	props.put("decimalFormat5", "#");
+		    	props.put("decimalFormat9", "#");
+		    	excelService.convertExcelToCSV(fileName, csvFileName, props);
+		    	
+		    	downloadFile = new File(csvFileName);
+		    	fileName = csvFileName;
+		    }
+		    
 		    log.info("Check actuality of file: {}", fileName);
 		    // read header and first data line
 		    String header = null, firstDataLine = null, lastDataLine = null;
@@ -143,6 +166,7 @@ public class DownloadConfig {
 					}
 					break;
 				}
+				li.close();
 			} catch (Exception e) {
 				handleDownloadFile(downloadFile, e);
 				return;
@@ -177,7 +201,7 @@ public class DownloadConfig {
 			}
 			
 			// check update file
-			boolean filterDisabled = updateHandler.checkUpdateFile(csvPath, getFileName(downloadUrlProperty.getFileName()), false);
+			boolean filterDisabled = updateCheckService.checkUpdateFile(csvPath, getFileName(downloadUrlProperty.getFileName()), false);
 			
 			if (!filterDisabled) {
 				// check date by channel
@@ -232,12 +256,17 @@ public class DownloadConfig {
 			// file with new data downloaded -> rename file to csv
 		    File file = new File(fileName);
 		    String renamedFileName = csvPath + "/" + getFileName(downloadUrlProperty.getFileName()) + ".csv";
-		    File renamedFile = new File(renamedFileName);
 		    
-		    if (file.renameTo(renamedFile)) {
-		        log.info("Download renamed: {}", renamedFileName);
-		    } else {
-		        log.info("Download rename failed: {}", fileName);
+		    Path source = file.toPath();
+		    try {
+		         Files.copy(source, source.resolveSibling(renamedFileName), StandardCopyOption.REPLACE_EXISTING);
+		         if (file.delete()) {
+		        	 log.info("File {} deleted.", fileName);
+		         } else {
+		        	 log.info("Cannot delete file: {}", fileName);
+		         }
+		    } catch (IOException e) {
+		         log.error("Download rename failed: {}", fileName, e);
 		    }
 		    
 		} catch (IOException e) {
