@@ -255,7 +255,7 @@ public class DownloadConfig {
 			
 			// file with new data downloaded -> rename file to csv
 		    File file = new File(fileName);
-		    String renamedFileName = csvPath + "/" + getFileName(downloadUrlProperty.getFileName()) + ".csv";
+		    String renamedFileName = getFileName(downloadUrlProperty.getFileName()) + ".csv";
 		    
 		    Path source = file.toPath();
 		    try {
