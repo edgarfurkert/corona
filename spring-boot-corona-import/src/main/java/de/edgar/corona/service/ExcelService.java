@@ -2,9 +2,11 @@ package de.edgar.corona.service;
 
 import java.io.BufferedWriter;
 import java.io.FileInputStream;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Properties;
@@ -42,7 +44,7 @@ public class ExcelService {
 	public void convertExcelToCSV(String excelFileName, String csvFileName, Properties props) throws InvalidFormatException, IOException {
 
 		log.info("Converting {} to {}...", excelFileName, csvFileName);
-		try (FileWriter writer = new FileWriter(csvFileName);
+		try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(csvFileName), StandardCharsets.UTF_8);
 	         BufferedWriter output = new BufferedWriter(writer)) {
 			InputStream is = new FileInputStream(excelFileName);
 
