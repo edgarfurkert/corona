@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+<div th:fragment="chart">
+    <link rel="stylesheet" th:href="@{/css/main.css}" href="../../css/main.css" />
+    <link rel="stylesheet" th:href="@{/css/highcharts.css}" href="../../css/highcharts.css" />
+    <link rel="stylesheet" th:href="@{/css/bootstrap.css}" href="../../css/bootstrap.css" />
+
+    <script th:src="@{/js/jquery-3.2.1.min.js}" src="../../js/jquery-3.2.1.min.js"></script>
+    <script th:src="@{/js/highcharts.js}" src="../../js/highcharts.js"></script>
+    <script th:src="@{/js/exporting.js}" src="../../js/exporting.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            loadBarChartData();
+        });
+
+        function loadBarChartData(params) {
+            $.get("/ajax/stackedBarGraph", params, function (data, textStatus, jqXHR) {
+                console.log('textStatus : ' + textStatus);
+                console.log('result : ' + JSON.stringify(data));
+
+                if (textStatus == 'success') {
+
+                    $('#chartContainer').highcharts({
+                        chart: {
+                            type: 'column',
+                            zoomType: 'xy'
+                        },
+                        title: {
+                            text: data.title
+                        },
+                        xAxis: {
+                            categories: data.xaxis.dates,
+                            labels: {
+                                rotation: -90,
+                                style: {
+                                    fontSize: '12px',
+                                    fontFamily: 'Verdana, sans-serif'
+                                }
+                            },
+                        },
+                        yAxis: {
+                            min: 0,
+                            title: {
+                                text: data.yaxis.title
+                            }
+                        },
+                        legend: {
+							maxHeight: 95
+						},
+                        tooltip: {
+                            pointFormat: '<span>{series.name}</span>: <b>{point.y}</b>',
+                            shared: false
+                        },
+                        plotOptions: {
+                            column: {
+                                stacking: 'normal'
+                            }
+                        },
+                        series: data.series
+					});
+                } else {
+                    console.log('Unable to retrive data');
+                }
+
+            });
+        }
+
+    </script>
+
+<div id="wrapper">
+    <div id="chartContainer"></div>
+</div>
+
+<script th:src="@{/js/bootstrap.min.js}" src="../../js/bootstrap.min.js"></script>
+</div>
+
+</body>
+</html>

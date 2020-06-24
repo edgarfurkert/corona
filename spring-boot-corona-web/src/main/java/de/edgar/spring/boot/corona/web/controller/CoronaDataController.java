@@ -76,6 +76,7 @@ public class CoronaDataController {
 		graphTypes.add(new GraphType("bubble", "Historical Bubbles"));
 		graphTypes.add(new GraphType("infectionsDeaths", "Infections and deaths"));
 		graphTypes.add(new GraphType("bar", "Top 25"));
+		graphTypes.add(new GraphType("stackedBar", "Start of..."));
 		cds.setGraphTypes(graphTypes);
 		cds.setSelectedGraphType("line");
 		log.debug("CoronaDataSession: " + cds);

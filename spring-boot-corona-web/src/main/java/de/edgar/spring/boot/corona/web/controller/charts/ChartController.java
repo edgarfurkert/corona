@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import de.edgar.spring.boot.corona.web.cache.CoronaDataCache;
 import de.edgar.spring.boot.corona.web.config.ColorProperties;
 import de.edgar.spring.boot.corona.web.config.ColorProperty;
+import de.edgar.spring.boot.corona.web.jpa.CoronaDataEntity;
 import de.edgar.spring.boot.corona.web.jpa.CoronaDataJpaRepository;
 import de.edgar.spring.boot.corona.web.model.CoronaData;
 import de.edgar.spring.boot.corona.web.model.CoronaDataSession;
@@ -31,6 +33,8 @@ import de.edgar.spring.boot.corona.web.model.charts.BubbleChartData;
 import de.edgar.spring.boot.corona.web.model.charts.BubbleSeries;
 import de.edgar.spring.boot.corona.web.model.charts.LineChartData;
 import de.edgar.spring.boot.corona.web.model.charts.Series;
+import de.edgar.spring.boot.corona.web.model.charts.StackedBarChartData;
+import de.edgar.spring.boot.corona.web.model.charts.StackedBarSeries;
 import de.edgar.spring.boot.corona.web.model.charts.XAxis;
 import de.edgar.spring.boot.corona.web.model.charts.YAxis;
 import lombok.extern.slf4j.Slf4j;
@@ -271,6 +275,106 @@ public class ChartController {
     	return data;
     }
 
+
+    @GetMapping("/ajax/stackedBarGraph")
+    public StackedBarChartData getStackedBarGraph(@ModelAttribute CoronaDataSession cds) {
+    	StackedBarChartData data = new StackedBarChartData();
+    	
+		Map<String, CoronaData> coronaData = new HashMap<>();
+		if (!CollectionUtils.isEmpty(cds.getSelectedTerritories())) {
+			cds.getSelectedTerritories().forEach(t -> {
+				Optional<CoronaDataEntity> entity;
+				switch (cds.getSelectedDataType()) {
+				case "infections":
+				case "infectionsPerDay":
+				case "infectionsPer100000":
+				default:
+					entity = repo.getFirstByTerritoryAndCasesKumGreaterThanOrderByCasesKumAscDateRepAsc(t, 0L);
+					break;
+				case "deaths":
+				case "deathsPerDay":
+				case "deathsPer100000":
+					entity = repo.getFirstByTerritoryAndDeathsKumGreaterThanOrderByDeathsKumAscDateRepAsc(t, 0L);
+					break;
+				}
+				if (entity.isPresent()) {
+					CoronaDataEntity e = entity.get();
+					if (e.getDateRep().isAfter(cds.getFromDate().minusDays(1)) && e.getDateRep().isBefore(cds.getToDate().plusDays(1))) {
+						log.debug("{}", e.toString());
+						coronaData.put(e.getTerritory(), e.toCoronaData());
+					}
+				}
+			});
+		}
+
+		AtomicBoolean infections = new AtomicBoolean();
+    	String title = "";
+    	String yAxisTitle = "";
+		switch (cds.getSelectedDataType()) {
+		case "infections":
+		case "infectionsPerDay":
+		case "infectionsPer100000":
+			title = "Start of Infections";
+			yAxisTitle = "Infections";
+			infections.set(true);
+			break;
+		case "deaths":
+		case "deathsPerDay":
+		case "deathsPer100000":
+			title = "Start of Deaths";
+			yAxisTitle = "Deaths";
+			infections.set(false);
+			break;
+		default:
+			title = "Start of Infections";
+			break;
+		}
+    	data.setTitle(title);
+    	
+    	YAxis yAxis = new YAxis();
+    	yAxis.setTitle(yAxisTitle);
+    	yAxis.setType(cds.getSelectedYAxisType());
+    	data.setYAxis(yAxis);
+    	
+    	List<String> dates = new ArrayList<>();
+        for (LocalDate date = cds.getFromDate(); date.isBefore(cds.getToDate().plusDays(1)); date=date.plusDays(1)) {
+        	dates.add(date.format(DateTimeFormatter.ofPattern("dd.MM.")));
+        }
+    	XAxis xAxis = new XAxis();
+    	xAxis.setTitle("Date");
+    	xAxis.setDates(dates);
+    	data.setXAxis(xAxis);
+    	
+    	data.setSeries(new ArrayList<>());
+    	AtomicInteger counter = new AtomicInteger();
+    	coronaData.keySet().forEach(t -> {
+        	StackedBarSeries series = new StackedBarSeries();
+        	series.setData(new ArrayList<>());
+        	if (counter.get() == colorProps.getColors().size()) {
+        		counter.set(0);
+        	}
+        	series.setColor(colorProps.getColors().get(counter.get()).getHexRGB());
+        	series.setName(cache.getTerritoryName(t));
+        	counter.incrementAndGet();
+        	
+        	CoronaData cd = coronaData.get(t);
+            for (LocalDate date = cds.getFromDate(); date.isBefore(cds.getToDate().plusDays(1)); date=date.plusDays(1)) {
+        		if (date.isEqual(cd.getDateRep())) {
+        			if (infections.get()) {
+            			series.getData().add(cd.getCases().doubleValue());
+        			} else {
+            			series.getData().add(cd.getDeaths().doubleValue());
+        			}
+        		} else {
+        			series.getData().add(0.0);
+        		}
+        	}
+            data.getSeries().add(series);
+    	});
+    	
+    	return data;
+    }
+    
     @GetMapping("/ajax/infectionsDeathsGraph")
     public LineChartData getInfectionsDeathsGraph(@ModelAttribute CoronaDataSession cds) {
     	LineChartData data = new LineChartData();

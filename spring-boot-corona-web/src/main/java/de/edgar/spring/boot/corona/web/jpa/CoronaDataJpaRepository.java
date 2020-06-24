@@ -12,7 +12,7 @@ public interface CoronaDataJpaRepository extends CrudRepository<CoronaDataEntity
 	@Query("SELECT DISTINCT c.territoryParent FROM CoronaDataEntity c ORDER BY c.territoryParent")
 	public List<String> findDistinctTerritoryParent();
 	
-	@Query("SELECT DISTINCT c.territory FROM CoronaDataEntity c WHERE c.territoryParent in ?1 ORDER BY c.territory")
+	@Query("SELECT DISTINCT c.territory FROM CoronaDataEntity c WHERE c.territoryParent IN ?1 ORDER BY c.territory")
 	public List<String> findDistinctTerritoryByTerritoryParent(List<String> parents);
 	
 	public List<CoronaDataEntity> findByTerritoryInAndDateRepBetween(List<String> territories, LocalDate from, LocalDate to);
@@ -25,5 +25,9 @@ public interface CoronaDataJpaRepository extends CrudRepository<CoronaDataEntity
 	
 	@Query("SELECT MAX(c.dateRep) FROM CoronaDataEntity c WHERE c.territory = ?1")
 	public Optional<LocalDate> getMaxDateRepByTerritory(String territory);
+	
+	public Optional<CoronaDataEntity> getFirstByTerritoryAndCasesKumGreaterThanOrderByCasesKumAscDateRepAsc(String territory, Long isGreater);
+
+	public Optional<CoronaDataEntity> getFirstByTerritoryAndDeathsKumGreaterThanOrderByDeathsKumAscDateRepAsc(String territory, Long isGreater);
 
 }
