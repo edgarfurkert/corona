@@ -56,13 +56,16 @@ public class CoronaWorldDataCsvImport extends CoronaDataCsvImport {
 								if (c != null) {
 									m.setCasesKum(m.getCases() + (c.getCasesKum() != null ? c.getCasesKum() : 0L));
 									m.setDeathsKum(m.getDeaths() + (c.getDeathsKum() != null ? c.getDeathsKum() : 0L));
-									if (m.getPopulation() > 0) {
-										m.setCasesPer100000Pop((m.getCasesKum() * 100000.0) / m.getPopulation().doubleValue());
-										m.setDeathsPer100000Pop((m.getDeathsKum() * 100000.0) / m.getPopulation().doubleValue());
-									} else {
-										m.setCasesPer100000Pop(0.0);
-										m.setDeathsPer100000Pop(0.0);
-									}
+								} else {
+									m.setCasesKum(m.getCases());
+									m.setDeathsKum(m.getDeaths());
+								}
+								if (m.getPopulation() > 0) {
+									m.setCasesPer100000Pop((m.getCasesKum() * 100000.0) / m.getPopulation().doubleValue());
+									m.setDeathsPer100000Pop((m.getDeathsKum() * 100000.0) / m.getPopulation().doubleValue());
+								} else {
+									m.setCasesPer100000Pop(0.0);
+									m.setDeathsPer100000Pop(0.0);
 								}
 								kummulativeDataMap.put(territoryKey, m);
 								
@@ -217,13 +220,16 @@ public class CoronaWorldDataCsvImport extends CoronaDataCsvImport {
 							if (c != null) {
 								m.setCasesKum(m.getCases() + (c.getCasesKum() != null ? c.getCasesKum() : 0L));
 								m.setDeathsKum(m.getDeaths() + (c.getDeathsKum() != null ? c.getDeathsKum() : 0L));
-								if (m.getPopulation() > 0) {
-									m.setCasesPer100000Pop((m.getCasesKum() * 100000.0) / m.getPopulation().doubleValue());
-									m.setDeathsPer100000Pop((m.getDeathsKum() * 100000.0) / m.getPopulation().doubleValue());
-								} else {
-									m.setCasesPer100000Pop(0.0);
-									m.setDeathsPer100000Pop(0.0);
-								}
+							} else {
+								m.setCasesKum(m.getCases());
+								m.setDeathsKum(m.getDeaths());
+							}
+							if (m.getPopulation() > 0) {
+								m.setCasesPer100000Pop((m.getCasesKum() * 100000.0) / m.getPopulation().doubleValue());
+								m.setDeathsPer100000Pop((m.getDeathsKum() * 100000.0) / m.getPopulation().doubleValue());
+							} else {
+								m.setCasesPer100000Pop(0.0);
+								m.setDeathsPer100000Pop(0.0);
 							}
 							kummulativeDataMap.put(territoryKey, m);
 					  })

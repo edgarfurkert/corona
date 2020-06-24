@@ -36,9 +36,10 @@ public class CoronaData {
 		}
 		Long l = 0L;
 		try {
-			l = Long.parseLong(v.trim());
+			v = v.trim();
+			l = Long.parseLong(v.length() > 0 ? v : "0");
 		} catch (NumberFormatException e) {
-			log.error("Value '{}' is not a Long.", v);
+			log.warn("Value '{}' is not a Long.", v);
 		}
 		return l;
 	}
@@ -49,9 +50,10 @@ public class CoronaData {
 		}
 		Integer i = 0;
 		try {
-			i = Integer.parseInt(v.trim());
+			v = v.trim();
+			i = Integer.parseInt(v.length() > 0 ? v : "0");
 		} catch (NumberFormatException e) {
-			log.error("Value '{}' is not a Integer.", v);
+			log.warn("Value '{}' is not a Integer.", v);
 		}
 		return i;
 	}
