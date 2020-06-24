@@ -38,7 +38,8 @@ public class CoronaGermanyFederalStatesDataCsvImport extends CoronaDataCsvImport
 		Path path = Paths.get(fileName);
 		
 		// check update file
-		AtomicBoolean filterDisabled = new AtomicBoolean(updateHandler.checkUpdateFile(path.getParent().toString(), path.getFileName().toString(), true));
+		fileName = path.getFileName().toString();
+		AtomicBoolean filterDisabled = new AtomicBoolean(updateCheckService.checkUpdateFile(path.getParent().toString(), fileName, true));
 
 		Flux<CoronaDataEntity> coronaData = 
 				FluxFileReader.fromPath(path)

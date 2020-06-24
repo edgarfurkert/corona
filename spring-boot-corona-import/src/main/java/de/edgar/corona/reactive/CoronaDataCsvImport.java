@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 public class CoronaDataCsvImport {
 
 	@Autowired
-	protected UpdateCheckService updateHandler;
+	protected UpdateCheckService updateCheckService;
 
 	protected CoronaDataJpaRepository repository;
 	

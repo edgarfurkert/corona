@@ -11,6 +11,19 @@ import lombok.extern.slf4j.Slf4j;
 public class UpdateCheckService {
 
 	public boolean checkUpdateFile(String path, String fileName, boolean rename) {
+		String f = fileName.replace(".csv.in", "");
+		String updateFileName = path + "/update." + f;
+		
+		boolean updateFileAvailable = checkFile(path, updateFileName, rename);
+		if (!updateFileAvailable) {
+			f = f.substring(0, f.length()-11); // delete -JJJJ-MM-DD
+			updateFileAvailable = checkFile(path, f, rename);
+		}
+		
+		return updateFileAvailable;
+	}
+	
+	private boolean checkFile(String path, String fileName, boolean rename) {
 		String updateFileName = path + "/update." + fileName.replace(".csv.in", "");
 		File updateFile = new File(updateFileName);
 		boolean updateFileAvailable = false;
@@ -27,7 +40,7 @@ public class UpdateCheckService {
 			}
 		} else {
 			log.info("Update only new data.");
-		}
+		}	
 		
 		return updateFileAvailable;
 	}

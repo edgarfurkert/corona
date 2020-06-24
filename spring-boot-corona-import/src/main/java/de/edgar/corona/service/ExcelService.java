@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -56,6 +57,8 @@ public class ExcelService {
 			// cells, else you'll have to pass in a max (yuck)
 			int maxColumns = sheet.getRow(0).getLastCellNum();
 
+			Charset sourceEncoding = StandardCharsets.ISO_8859_1;
+			Charset targetEncoding = StandardCharsets.UTF_8;
 			for (Row row : sheet) {
 
 				// row.getFirstCellNum() and row.getLastCellNum() don't return the
@@ -80,7 +83,7 @@ public class ExcelService {
 
 						switch (cell.getCellType()) {
 						case STRING:
-							v = cell.getRichStringCellValue().getString();
+							v = new String(cell.getRichStringCellValue().getString().getBytes(sourceEncoding), targetEncoding);
 							break;
 						case NUMERIC:
 							if (DateUtil.isCellDateFormatted(cell)) {
