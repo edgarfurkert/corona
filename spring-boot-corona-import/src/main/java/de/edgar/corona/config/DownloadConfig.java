@@ -149,6 +149,12 @@ public class DownloadConfig {
 		    	props.put("decimalFormat9", "#");
 		    	excelService.convertExcelToCSV(fileName, csvFileName, props);
 		    	
+		    	if (downloadFile.delete()) {
+		    		log.info("File deleted: {}", fileName);
+		    	} else {
+		    		log.error("Cannot delete file: {}", fileName);
+		    	}
+		    	
 		    	downloadFile = new File(csvFileName);
 		    	fileName = csvFileName;
 		    }

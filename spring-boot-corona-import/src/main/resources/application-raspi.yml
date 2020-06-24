@@ -24,5 +24,6 @@ corona:
       import:
         path: ./downloads
       download:
-        poller: 1800000
+        # 1 hour
+        poller: 3600000
         
