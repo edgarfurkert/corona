@@ -66,15 +66,16 @@ public class CoronaDataController {
 		cds.setSelectedDataType("infections");
 		
 		List<AxisType> axisTypes = new ArrayList<>();
-		axisTypes.add(new AxisType("numeric", "numeric"));
+		axisTypes.add(new AxisType("linear", "linear"));
 		axisTypes.add(new AxisType("logarithmic", "logarithmic"));
 		cds.setYAxisTypes(axisTypes);
-		cds.setSelectedYAxisType("numeric");
+		cds.setSelectedYAxisType("linear");
 
 		List<GraphType> graphTypes = new ArrayList<>();
 		graphTypes.add(new GraphType("line", "Historical"));
-		graphTypes.add(new GraphType("bar", "Top 25"));
+		graphTypes.add(new GraphType("bubble", "Historical Bubbles"));
 		graphTypes.add(new GraphType("infectionsDeaths", "Infections and deaths"));
+		graphTypes.add(new GraphType("bar", "Top 25"));
 		cds.setGraphTypes(graphTypes);
 		cds.setSelectedGraphType("line");
 		log.debug("CoronaDataSession: " + cds);

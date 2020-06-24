@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+<div th:fragment="chart">
+    <link rel="stylesheet" th:href="@{/css/main.css}" href="../../css/main.css" />
+    <link rel="stylesheet" th:href="@{/css/highcharts.css}" href="../../css/highcharts.css" />
+    <link rel="stylesheet" th:href="@{/css/bootstrap.css}" href="../../css/bootstrap.css" />
+
+    <script th:src="@{/js/jquery-3.2.1.min.js}" src="../../js/jquery-3.2.1.min.js"></script>
+    <script th:src="@{/js/highcharts.js}" src="../../js/highcharts.js"></script>
+	<script th:src="@{/js/highcharts-more.js}" src="../../js/highcharts-more.js"></script>
+    <script th:src="@{/js/exporting.js}" src="../../js/exporting.js"></script>
+	<script th:src="@{/js/export-data.js}" src="../../js/export-data.js"></script>
+	<script th:src="@{/js/accessibility.js}" src="../../js/accessibility.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            loadLineChartData();
+        });
+
+        function loadLineChartData(params) {
+            $.get("/ajax/bubbleGraph", params, function (data, textStatus, jqXHR) {
+                console.log('textStatus : ' + textStatus);
+                console.log('result : ' + JSON.stringify(data));
+
+                if (textStatus == 'success') {
+
+                    $('#chartContainer').highcharts({
+                        chart: {
+                            type: 'bubble',
+                            plotBorderWidth: 1,
+                            zoomType: 'xy'
+                        },
+
+                        title: {
+                            text: data.title
+                        },
+
+                        accessibility: {
+                            point: {
+                                valueDescriptionFormat: '{index}. {point.name}, Date: {point.x}, Value: {point.y}, value/day: {point.z}.'
+                            }
+                        },
+                        
+                        tooltip: {
+                            useHTML: true,
+                            headerFormat: '<table>',
+                            pointFormat: '<tr><th colspan="2"><h3>{point.territory}</h3></th></tr>' +
+                                '<tr><th>Date:</th><td>{point.date}</td></tr>' +
+                                '<tr><th>Value:</th><td>{point.y}</td></tr>' +
+                                '<tr><th>Day-Value:</th><td>{point.z}</td></tr>',
+                            footerFormat: '</table>',
+                            followPointer: true
+                        },
+
+                        xAxis: {
+                            gridLineWidth: 1,
+                            categories: data.xaxis.dates,
+                            title: {
+                                text: data.xaxis.title
+                            }
+                        },
+
+                        yAxis: {
+                            startOnTick: false,
+                            endOnTick: false,
+                            type: data.yaxis.type,
+                            title: {
+                                text: data.yaxis.title
+                            }
+                        },
+
+                        series: data.series
+                    });
+                } else {
+                    console.log('Unable to retrive data');
+                }
+
+            });
+        }
+
+    </script>
+
+<div id="wrapper">
+    <div id="chartContainer"></div>
+</div>
+
+<script th:src="@{/js/bootstrap.min.js}" src="../../js/bootstrap.min.js"></script>
+</div>
+
+</body>
+</html>

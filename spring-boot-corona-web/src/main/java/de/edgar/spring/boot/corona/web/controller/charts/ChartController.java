@@ -26,6 +26,9 @@ import de.edgar.spring.boot.corona.web.model.CoronaData;
 import de.edgar.spring.boot.corona.web.model.CoronaDataSession;
 import de.edgar.spring.boot.corona.web.model.charts.BarChartData;
 import de.edgar.spring.boot.corona.web.model.charts.BarSeries;
+import de.edgar.spring.boot.corona.web.model.charts.Bubble;
+import de.edgar.spring.boot.corona.web.model.charts.BubbleChartData;
+import de.edgar.spring.boot.corona.web.model.charts.BubbleSeries;
 import de.edgar.spring.boot.corona.web.model.charts.LineChartData;
 import de.edgar.spring.boot.corona.web.model.charts.Series;
 import de.edgar.spring.boot.corona.web.model.charts.XAxis;
@@ -423,6 +426,153 @@ public class ChartController {
 	    	});
 	    	series.add(i);
 	    	series.add(d);
+		});
+    	data.setSeries(series);
+    	
+        return data;
+    }
+
+    @GetMapping("/ajax/bubbleGraph")
+    public BubbleChartData getBubbleGraph(@ModelAttribute CoronaDataSession cds) {
+    	BubbleChartData data = new BubbleChartData();
+
+    	String title = "";
+		switch(cds.getSelectedDataType()) {
+		case "infections": title = "Infections"; break;
+		case "infectionsPerDay": title = "Infections/day"; break;
+		case "infectionsPer100000": title = "Infections/100.000 population"; break;
+		case "deaths": title = "Deaths"; break;
+		case "deathsPerDay": title = "Deaths/day"; break;
+		case "deathsPer100000": title = "Deaths/100.000 population"; break;
+		default: title = "Infections"; break;
+		}
+    	
+    	data.setTitle("Historical Bubble Chart");
+    	data.setSubTitle(title);
+    	
+    	YAxis yAxis = new YAxis();
+    	yAxis.setTitle(title);
+    	yAxis.setType(cds.getSelectedYAxisType());
+    	data.setYAxis(yAxis);
+    	
+    	Map<String,List<CoronaData>> territoryMap = new HashMap<>();
+		if (!CollectionUtils.isEmpty(cds.getSelectedTerritories())) {
+			List<CoronaData> coronaData = new ArrayList<>();
+			repo.findByTerritoryInAndDateRepBetween(cds.getSelectedTerritories(), cds.getFromDate(), cds.getToDate()).forEach(d -> {
+				coronaData.add(d.toCoronaData());
+			});
+			coronaData.sort(Comparator.comparing(CoronaData::getDateRep));
+			coronaData.forEach(d -> { 
+				List<CoronaData> coronaDataList = territoryMap.get(d.getTerritory());
+				LocalDate lastDate;
+				if (coronaDataList == null) {
+					coronaDataList = new ArrayList<>();
+					if (d.getDateRep().isAfter(cds.getFromDate())) {
+						CoronaData cd;
+				        for (LocalDate date = cds.getFromDate(); date.isBefore(d.getDateRep()); date=date.plusDays(1)) {
+				        	cd = new CoronaData();
+				        	cd.setDateRep(date);
+				        	cd.setTerritory(d.getTerritory());
+				        	cd.setTerritoryCode(d.getTerritoryCode());
+				        	cd.setTerritoryParent(d.getTerritoryParent());
+				        	cd.setCases(0L);
+				        	cd.setCasesKum(0L);
+				        	cd.setCasesPer100000Pop(0.0);
+				        	cd.setDeaths(0L);
+				        	cd.setDeathsKum(0L);
+				        	cd.setDeathsPer100000Pop(0.0);
+				        	cd.setGeoId(d.getGeoId());
+				        	cd.setPopulation(d.getPopulation());
+				        	coronaDataList.add(cd);
+				        	lastDate = date;
+				        }
+					}
+					territoryMap.put(d.getTerritory(), coronaDataList);
+				}
+				if (coronaDataList.size() > 0) {
+					lastDate = coronaDataList.get(coronaDataList.size()-1).getDateRep();
+					CoronaData cd;
+					for (LocalDate day = lastDate.plusDays(1L); day.isBefore(d.getDateRep()); day = day.plusDays(1)) {
+			        	cd = new CoronaData();
+			        	cd.setDateRep(day);
+			        	cd.setTerritory(d.getTerritory());
+			        	cd.setTerritoryCode(d.getTerritoryCode());
+			        	cd.setTerritoryParent(d.getTerritoryParent());
+			        	cd.setCases(0L);
+			        	cd.setCasesKum(d.getCasesKum());
+			        	cd.setCasesPer100000Pop(d.getCasesPer100000Pop());
+			        	cd.setDeaths(0L);
+			        	cd.setDeathsKum(d.getDeathsKum());
+			        	cd.setDeathsPer100000Pop(d.getDeathsPer100000Pop());
+			        	cd.setGeoId(d.getGeoId());
+			        	cd.setPopulation(d.getPopulation());
+			        	coronaDataList.add(cd);
+					}
+				}
+				coronaDataList.add(d);
+			});
+		}
+
+    	XAxis xAxis = new XAxis();
+    	xAxis.setTitle("Date");
+    	List<String> dates = new ArrayList<>();
+    	
+        for (LocalDate date = cds.getFromDate(); date.isBefore(cds.getToDate().plusDays(1)); date=date.plusDays(1)) {
+        	dates.add(date.format(DateTimeFormatter.ofPattern("dd.MM.")));
+        }
+    	log.debug("Dates: " + dates);
+    	xAxis.setDates(dates);
+    	data.setXAxis(xAxis);
+    	
+    	Iterator<ColorProperty> colorIterator = colorProps.getColors().iterator();
+
+    	List<BubbleSeries> series = new ArrayList<>();
+		territoryMap.keySet().forEach(t -> {
+			BubbleSeries s = new BubbleSeries();
+			s.setName(cache.getTerritoryName(t));
+			String color = colorIterator.hasNext() ? colorIterator.next().getHexRGB() : "";
+	    	s.setColor(color);
+	    	s.setData(new ArrayList<>());
+	    	AtomicInteger x = new AtomicInteger();
+	    	territoryMap.get(t).forEach(d -> {
+				log.debug(d.toString());
+				Double y;
+				Double z;
+				switch (cds.getSelectedDataType()) {
+				case "infections":
+					y = d.getCasesKum().doubleValue();
+					z = d.getCases().doubleValue();
+					break;
+				case "infectionsPerDay":
+					y = d.getCases().doubleValue();
+					z = d.getCases().doubleValue();
+					break;
+				case "infectionsPer100000":
+					y = d.getCasesPer100000Pop();
+					z = d.getCases().doubleValue();
+					break;
+				case "deaths":
+					y = d.getDeathsKum().doubleValue();
+					z = d.getDeaths().doubleValue();
+					break;
+				case "deathsPerDay":
+					y = d.getDeaths().doubleValue();
+					z = d.getDeaths().doubleValue();
+					break;
+				case "deathsPer100000":
+					y = d.getDeathsPer100000Pop();
+					z = d.getDeaths().doubleValue();
+					break;
+				default:
+					y = d.getCasesKum().doubleValue();
+					z = d.getCases().doubleValue();
+					break;
+				}
+				Bubble bubble = new Bubble(x.get(), y, z, cache.getTerritoryName(t), dates.get(x.get()));
+				s.getData().add(bubble);
+				x.incrementAndGet();
+	    	});
+	    	series.add(s);
 		});
     	data.setSeries(series);
     	

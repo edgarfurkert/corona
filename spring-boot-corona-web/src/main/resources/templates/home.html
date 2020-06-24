@@ -101,7 +101,7 @@
 										</div>
 									</td>
 									<td class="yAxisTypes" rowSpan="2">
-									    <div th:if="${coronaDataSession.selectedGraphType} == 'line' or ${coronaDataSession.selectedGraphType} == 'infectionsDeaths'" style="margin-left: 5px;">
+									    <div th:if="${coronaDataSession.selectedGraphType} == 'line' or ${coronaDataSession.selectedGraphType} == 'infectionsDeaths' or ${coronaDataSession.selectedGraphType} == 'bubble'" style="margin-left: 5px;">
 										<span th:each="yAxisType : ${coronaDataSession.yAxisTypes}">
 											<input name="selectedYAxisType" type="radio"
 												   th:field="*{selectedYAxisType}"
@@ -145,6 +145,9 @@
 						    </div>
 						    <div th:if="${coronaDataSession.selectedGraphType} == 'infectionsDeaths'">
 							    <div th:replace="fragments/infectionsDeathsChart.html :: chart"></div>
+						    </div>
+						    <div th:if="${coronaDataSession.selectedGraphType} == 'bubble'">
+							    <div th:replace="fragments/bubbleChart.html :: chart"></div>
 						    </div>
    						</td>
 					</tr>
