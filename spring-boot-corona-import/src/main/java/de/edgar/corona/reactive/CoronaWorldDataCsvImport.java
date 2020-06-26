@@ -51,6 +51,7 @@ public class CoronaWorldDataCsvImport extends CoronaDataCsvImport {
 					.skip(1) // skip header
 					.map(l -> { return new CoronaWorldData(l); })
 					.filter(d -> { return d.getDateRep().isBefore(now); })
+					.sort((d1, d2) -> d1.getDateRep().compareTo(d2.getDateRep()))
 					.doOnNext(m -> {
 						String territoryKey = m.getTerritory();
 						CoronaWorldData c = kummulativeDataMap.get(territoryKey);
@@ -176,7 +177,6 @@ public class CoronaWorldDataCsvImport extends CoronaDataCsvImport {
 					  }
 					  return d.getDateRep().isAfter(latestDate);
 				  })
-				  .sort((d1, d2) -> d1.getDateRep().compareTo(d2.getDateRep()))
 				  .map(d -> { return new CoronaDataEntity(d); })
 				  ;//.log();
 		
@@ -205,6 +205,7 @@ public class CoronaWorldDataCsvImport extends CoronaDataCsvImport {
 			Flux<CoronaDataEntity> worldFlux = 
 				Flux.fromIterable(worldData.values())
 					.filter(d -> { return d.getDateRep().isBefore(now); })
+					.sort((d1, d2) -> d1.getDateRep().compareTo(d2.getDateRep()))
 					.doOnNext(m -> {
 						String territoryKey = m.getTerritory();
 						CoronaWorldData c = kummulativeDataMap.get(territoryKey);
@@ -242,7 +243,6 @@ public class CoronaWorldDataCsvImport extends CoronaDataCsvImport {
 						}
 						return d.getDateRep().isAfter(latestDate);
 					})
-					.sort((d1, d2) -> d1.getDateRep().compareTo(d2.getDateRep()))
 					.map(d -> { return new CoronaDataEntity(d); })
 					;//.log();
 			
