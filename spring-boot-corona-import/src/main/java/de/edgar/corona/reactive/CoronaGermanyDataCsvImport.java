@@ -40,15 +40,15 @@ public class CoronaGermanyDataCsvImport extends CoronaDataCsvImport {
 		// check update file
 		fileName = path.getFileName().toString();
 		AtomicBoolean filterDisabled = new AtomicBoolean(updateCheckService.checkUpdateFile(path.getParent().toString(), fileName, true));
+		LocalDate now = LocalDate.now();
 
 		Flux<CoronaDataEntity> coronaData = 
 				FluxFileReader.fromPath(path)
 						  .skip(1)
 						  .map(l -> { return new CoronaGermanyData(l, props); })
+						  .filter(d -> { return d.getDateRep().isBefore(now); })
+						  .filter(d -> { return filterDisabled.get(); })
 						  .filter(d -> {
-							  if (filterDisabled.get()) {
-								  return true; // do not filter
-							  }
 							  LocalDate latestDate = territoryLatestDateRepMap.get(d.getTerritory());
 							  if (latestDate == null) {
 								  Optional<LocalDate> date = repository.getMaxDateRepByTerritoryAndTerritoryParent(d.getTerritory(), d.getTerritoryParent());

@@ -44,12 +44,13 @@ public class CoronaWorldDataCsvImport extends CoronaDataCsvImport {
 		// check update file
 		fileName = path.getFileName().toString();
 		AtomicBoolean filterDisabled = new AtomicBoolean(updateCheckService.checkUpdateFile(path.getParent().toString(), fileName, true));
+		LocalDate now = LocalDate.now();
 		
 		Flux<CoronaDataEntity> file = 
 				FluxFileReader.fromPath(path)
 						  .skip(1) // skip header
 						  .map(l -> { return new CoronaWorldData(l); })
-						  .sort((c1, c2) -> c1.getDateRep().compareTo(c2.getDateRep()))
+						  .filter(d -> { return d.getDateRep().isBefore(now); })
 						  .doOnNext(m -> {
 								String territoryKey = m.getTerritory();
 								CoronaWorldData c = kummulativeDataMap.get(territoryKey);
@@ -159,10 +160,8 @@ public class CoronaWorldDataCsvImport extends CoronaDataCsvImport {
 								}
 								log.debug(c.getTerritoryParent() + ": " + c.toString());
 						  })
+						  .filter(d -> { return filterDisabled.get(); })
 						  .filter(d -> {
-							  if (filterDisabled.get()) {
-								  return true; // do not filter
-							  }
 							  LocalDate latestDate = territoryLatestDateRepMap.get(d.getTerritory());
 							  if (latestDate == null) {
 								  Optional<LocalDate> date = repository.getMaxDateRepByTerritoryAndTerritoryParent(d.getTerritory(), d.getTerritoryParent());
@@ -175,6 +174,7 @@ public class CoronaWorldDataCsvImport extends CoronaDataCsvImport {
 							  }
 							  return d.getDateRep().isAfter(latestDate);
 						  })
+						  .sort((d1, d2) -> d1.getDateRep().compareTo(d2.getDateRep()))
 						  .map(d -> { return new CoronaDataEntity(d); })
 						  ;//.log();
 		
@@ -211,7 +211,7 @@ public class CoronaWorldDataCsvImport extends CoronaDataCsvImport {
 			Map<String, CoronaWorldData> worldData = territoryParentMap.get(territoryParentKey);
 			Flux<CoronaDataEntity> worldFlux = 
 				  Flux.fromIterable(worldData.values())
-					  .sort((c1, c2) -> c1.getDateRep().compareTo(c2.getDateRep()))
+				      .filter(d -> { return d.getDateRep().isBefore(now); })
 					  .doOnNext(m -> {
 							String territoryKey = m.getTerritory();
 							CoronaWorldData c = kummulativeDataMap.get(territoryKey);
@@ -233,10 +233,8 @@ public class CoronaWorldDataCsvImport extends CoronaDataCsvImport {
 							}
 							kummulativeDataMap.put(territoryKey, m);
 					  })
+					  .filter(d -> { return filterDisabled.get(); })
 					  .filter(d -> {
-						  if (filterDisabled.get()) {
-							  return true; // do not filter
-						  }
 						  LocalDate latestDate = territoryLatestDateRepMap.get(d.getTerritory());
 						  if (latestDate == null) {
 							  Optional<LocalDate> date = repository.getMaxDateRepByTerritoryAndTerritoryParent(d.getTerritory(), d.getTerritoryParent());
@@ -249,6 +247,7 @@ public class CoronaWorldDataCsvImport extends CoronaDataCsvImport {
 						  }
 						  return d.getDateRep().isAfter(latestDate);
 					  })
+					  .sort((d1, d2) -> d1.getDateRep().compareTo(d2.getDateRep()))
 					  .map(d -> { return new CoronaDataEntity(d); })
 					  ;//.log();
 			
