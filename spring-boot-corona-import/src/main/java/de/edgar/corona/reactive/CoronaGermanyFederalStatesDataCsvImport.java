@@ -47,8 +47,10 @@ public class CoronaGermanyFederalStatesDataCsvImport extends CoronaDataCsvImport
 						  .skip(1)
 						  .map(l -> { return new CoronaGermanyFederalStateData(l, props); })
 						  .filter(d -> { return d.getDateRep().isBefore(now); })
-						  .filter(d -> { return filterDisabled.get(); })
 						  .filter(d -> {
+							  if (filterDisabled.get()) {
+								  return true; // do not filter
+							  }
 							  LocalDate latestDate = territoryLatestDateRepMap.get(d.getTerritory());
 							  if (latestDate == null) {
 								  Optional<LocalDate> date = repository.getMaxDateRepByTerritoryAndTerritoryParent(d.getTerritory(), d.getTerritoryParent());
