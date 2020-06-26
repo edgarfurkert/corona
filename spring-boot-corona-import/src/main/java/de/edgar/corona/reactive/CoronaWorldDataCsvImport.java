@@ -180,16 +180,7 @@ public class CoronaWorldDataCsvImport extends CoronaDataCsvImport {
 				  .map(d -> { return new CoronaDataEntity(d); })
 				  ;//.log();
 		
-		file.subscribe(data -> {
-			Optional<CoronaDataEntity> d = repository.findByGeoIdAndDateRep(data.getGeoId(), data.getDateRep());
-			if (d.isPresent()) {
-				log.info("Overwritting data: " + data);
-				data.setId(d.get().getId());
-			} else {
-				log.info("Saving data: " + data);
-			}
-			repository.save(data);
-		});
+		file.subscribe(data -> save(data));
 		
 		// set population of territories
 		Map<String,AtomicLong> territoryParentPopulationMap = new HashMap<>();
