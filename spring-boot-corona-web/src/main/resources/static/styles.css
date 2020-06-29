@@ -30,12 +30,13 @@ div.territories {
     margin:4px, 4px; 
     padding:4px; 
     background-color: white; 
-    width: 100%; 
+    width: 16vw; 
     height: 30vh;
-    overflow-x: hidden; 
+    overflow-x: auto; 
     overflow-y: auto; 
     text-align:justify; 
     font-size: 14px;
+    white-space: nowrap;
 } 
 
 section.content {
@@ -102,7 +103,7 @@ span.dataType {
 }
 
 td.yAxisTypes {
-	width: 100px;
+	width: 120px;
 }
 
 tr.border {

@@ -33,17 +33,17 @@
                             plotBorderWidth: 1,
                             zoomType: 'xy'
                         },
-
                         title: {
                             text: data.title
                         },
-
+                        subtitle: {
+                            text: data.subTitle
+                        },
                         accessibility: {
                             point: {
                                 valueDescriptionFormat: '{index}. {point.name}, Date: {point.x}, Value: {point.y}, value/day: {point.z}.'
                             }
                         },
-                        
                         tooltip: {
                             useHTML: true,
                             headerFormat: '<table>',
@@ -54,24 +54,25 @@
                             footerFormat: '</table>',
                             followPointer: true
                         },
-
-                        xAxis: {
+                        legend: {
+							maxHeight: 95
+						},
+						xAxis: {
                             gridLineWidth: 1,
                             categories: data.xaxis.dates,
                             title: {
                                 text: data.xaxis.title
                             }
                         },
-
                         yAxis: {
                             startOnTick: false,
                             endOnTick: false,
                             type: data.yaxis.type,
+                            min: data.yaxis.min,
                             title: {
                                 text: data.yaxis.title
                             }
                         },
-
                         series: data.series
                     });
                 } else {

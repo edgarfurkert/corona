@@ -16,7 +16,7 @@
 				<form method="POST" th:object="${coronaDataSession}" th:action="@{/}" id="coronaDataForm">
 					<table>
 						<tr>
-							<td><b>Territories:</b></td>
+							<td><b><span th:text="#{label.territories}">TERRITORIES</span></b></td>
 						</tr>
 						<tr class="border">
 							<td>
@@ -25,14 +25,14 @@
 									<input name="selectedTerritoryParents" type="checkbox"
 										th:field="*{selectedTerritoryParents}"
 										th:value="${territoryParent.key}" />
-									<span th:text="${territoryParent.name}">TERRITORY</span><br />
+									<span th:text="#{${territoryParent.name}}">TERRITORY</span><br />
 								</div>
 								</div>
 							</td>
 						</tr>
 						<tr>
 							<td>
-								<input class="margin" type="submit" value="Select" />
+								<input class="margin" type="submit" th:value="#{label.select}" />
 							</td>
 						</tr>
 					</table>
@@ -40,7 +40,7 @@
 				<form method="POST" th:object="${coronaDataSession}" th:action="@{/data}" id="coronaDataForm">
 					<table>
 						<tr>
-							<td><br/><b>Regions of selected territories:</b></td>
+							<td><br/><b><span th:text="#{label.regions}">REGIONS</span></b></td>
 						</tr>
 						<tr class="border">
 							<td>
@@ -56,7 +56,7 @@
 						</tr>
 						<tr>
 							<td>
-								<input class="margin" type="submit" value="Get Data" />
+								<input class="margin" type="submit" th:value="#{label.getData}" />
 							</td>
 						</tr>
 					</table>
@@ -70,22 +70,22 @@
 							<table style="margin-left: 5px;">
 								<tr class="selectionTitles">
 									<td colspan="2" class="dateRange">
-										<b>Date range</b>
+										<b><span th:text="#{label.dateRange}">DATE_RANGE</span></b>
 									</td>
 									<td class="dataSelection">
-										<b>Data selection</b>
+										<b><span th:text="#{label.dataSelection}">DATA_SELECTION</span></b>
 									</td>
 									<td style="text-align:center">
-										<b>Y-Axis type</b>
+										<b><span th:text="#{label.yAxisType}">Y_AXIS_TYPE</span></b>
 									</td>
 								</tr>
 								<tr>
 									<td style="vertical-align:top">
-										<label>&nbsp;from </label>
+										<label>&nbsp;<span th:text="#{label.from}">FROM</span> </label>
 										<input type="date" th:value="*{fromDate}" th:field="*{fromDate}"/>&nbsp;
 									</td>
 									<td style="vertical-align:top">
-										<label>to </label>
+										<label><span th:text="#{label.to}">TO</span> </label>
 										<input type="date" th:value="*{toDate}" th:field="*{toDate}"/>&nbsp;
 									</td>
 									<td rowSpan="2">
@@ -110,16 +110,16 @@
 										</span>
 										</div>
 									    <div th:if="${coronaDataSession.selectedGraphType} == 'bar' or ${coronaDataSession.selectedGraphType} == 'stackedBar'">
-									    	numeric
+									    	<span th:text="#{label.linear}">LINEAR</span>
 									    </div>
 									</td>
 									<td>
-										&nbsp;<input type="submit" value="Update" />
+										&nbsp;<input type="submit" th:value="#{label.update}" />
 									</td>
 								</tr>
 								<tr>
 									<td colspan="2">
-										&nbsp;Graph type:&nbsp;
+										&nbsp;<span th:text="#{label.graphType}">GRAPHTYPE</span>:&nbsp;
 										<select th:field="*{selectedGraphType}">
 										    <option th:each="graphType : ${coronaDataSession.graphTypes}" th:value="${graphType.key}" th:text="${graphType.name}"></option>
 										</select>

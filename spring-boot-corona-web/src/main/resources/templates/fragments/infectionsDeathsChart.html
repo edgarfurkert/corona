@@ -36,18 +36,21 @@
                             text: data.subTitle
                         },
                         xAxis: {
+                            title: {
+                                text: data.xaxis.title
+                            },
                             categories: data.xaxis.dates
                         },
                         yAxis: [
                         	{
 	                        	type: data.yaxis.type,
-	                        	min: 1,
+	                        	min: data.yaxis.min1,
 	                            title: {
 	                                text: data.yaxis.title1
 	                            }
                         	},{
                             	type: data.yaxis.type,
-	                        	min: 1,
+	                        	min: data.yaxis.min2,
                                 title: {
                                     text: data.yaxis.title2
                                 },

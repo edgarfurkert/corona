@@ -3,6 +3,7 @@ package de.edgar.spring.boot.corona.web.model;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -13,6 +14,7 @@ public class CoronaDataSession {
 	
 	public CoronaDataSession() {
 		territoryParents = new ArrayList<>();
+		locale = Locale.GERMAN;
 	}
 
 	private List<Territory> territoryParents;
@@ -40,4 +42,7 @@ public class CoronaDataSession {
 	
 	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) 
 	private LocalDate toDate;
+	
+	private Locale locale;
+	
 }

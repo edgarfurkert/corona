@@ -9,5 +9,8 @@ public class YAxis {
 	private String title1;
 	private String title2;
 	private String type;
+	private Double min;
+	private Double min1;
+	private Double min2;
 	
 }

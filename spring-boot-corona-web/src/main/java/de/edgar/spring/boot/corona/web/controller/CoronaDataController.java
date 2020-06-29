@@ -25,6 +25,7 @@ import de.edgar.spring.boot.corona.web.model.DataType;
 import de.edgar.spring.boot.corona.web.model.GraphType;
 import de.edgar.spring.boot.corona.web.model.OrderIdEnum;
 import de.edgar.spring.boot.corona.web.model.Territory;
+import de.edgar.spring.boot.corona.web.service.MessageSourceService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -35,6 +36,9 @@ public class CoronaDataController {
 	
 	@Value( "${corona.data.daysToKum}" )
 	private Integer daysToKum;
+
+	@Autowired
+	private MessageSourceService messageSourceService;
 	
 	@Autowired
 	private CoronaDataJpaRepository repo;
@@ -54,34 +58,38 @@ public class CoronaDataController {
 					orderId = entity.get().getOrderId();
 				}
 			}
-			cds.getTerritoryParents().add(new Territory(k, k.replaceAll("_", " "), orderId));
+			String code = messageSourceService.getCode(k);
+			if (log.isDebugEnabled()) {
+				messageSourceService.getMessage(code, cds.getLocale());
+			}
+			cds.getTerritoryParents().add(new Territory(k, code, orderId));
 		});
 		cds.getTerritoryParents().sort(Comparator.comparing(Territory::getOrderId).thenComparing(Territory::getName));
 		cds.setFromDate(repo.findTopByCasesGreaterThanOrderByDateRep(0L).get().getDateRep());
 		cds.setToDate(LocalDate.now());
 		List<DataType> dataTypes = new ArrayList<>();
-		dataTypes.add(new DataType("infections", "Infections"));
-		dataTypes.add(new DataType("infectionsPerDay", "Infections/Day"));
-		dataTypes.add(new DataType("infectionsPer100000", "Infections/100.000"));
-		dataTypes.add(new DataType("infectionsDaysKum", "Infections last " + daysToKum + " days/100.000"));
-		dataTypes.add(new DataType("deaths", "Deaths"));
-		dataTypes.add(new DataType("deathsPerDay", "Deaths/Day"));
-		dataTypes.add(new DataType("deathsPer100000", "Deaths/100.000"));
+		dataTypes.add(new DataType("infections", messageSourceService.getMessage("infections", cds.getLocale())));
+		dataTypes.add(new DataType("infectionsPerDay", messageSourceService.getMessage("infectionsPerDay", cds.getLocale())));
+		dataTypes.add(new DataType("infectionsPer100000", messageSourceService.getMessage("infectionsPer100000", cds.getLocale())));
+		dataTypes.add(new DataType("infectionsPerDaysAnd100000",  messageSourceService.getMessage("infectionsPerDaysAnd100000", cds.getLocale(), daysToKum)));
+		dataTypes.add(new DataType("deaths", messageSourceService.getMessage("deaths", cds.getLocale())));
+		dataTypes.add(new DataType("deathsPerDay", messageSourceService.getMessage("deathsPerDay", cds.getLocale())));
+		dataTypes.add(new DataType("deathsPer100000", messageSourceService.getMessage("deathsPer100000", cds.getLocale())));
 		cds.setDataTypes(dataTypes);
 		cds.setSelectedDataType("infections");
 		
 		List<AxisType> axisTypes = new ArrayList<>();
-		axisTypes.add(new AxisType("linear", "linear"));
-		axisTypes.add(new AxisType("logarithmic", "logarithmic"));
+		axisTypes.add(new AxisType("linear", messageSourceService.getMessage("linear", cds.getLocale())));
+		axisTypes.add(new AxisType("logarithmic", messageSourceService.getMessage("logarithmic", cds.getLocale())));
 		cds.setYAxisTypes(axisTypes);
 		cds.setSelectedYAxisType("linear");
 
 		List<GraphType> graphTypes = new ArrayList<>();
-		graphTypes.add(new GraphType("line", "Historical"));
-		graphTypes.add(new GraphType("bubble", "Historical Bubbles"));
-		graphTypes.add(new GraphType("infectionsDeaths", "Infections and deaths"));
-		graphTypes.add(new GraphType("bar", "Top 25"));
-		graphTypes.add(new GraphType("stackedBar", "Start of..."));
+		graphTypes.add(new GraphType("line", messageSourceService.getMessage("historical", cds.getLocale())));
+		graphTypes.add(new GraphType("bubble", messageSourceService.getMessage("historicalBubbles", cds.getLocale())));
+		graphTypes.add(new GraphType("infectionsDeaths", messageSourceService.getMessage("infectionsAndDeaths", cds.getLocale())));
+		graphTypes.add(new GraphType("bar", messageSourceService.getMessage("top25Of", cds.getLocale())));
+		graphTypes.add(new GraphType("stackedBar", messageSourceService.getMessage("startOf", cds.getLocale())));
 		cds.setGraphTypes(graphTypes);
 		cds.setSelectedGraphType("line");
 		log.debug("CoronaDataSession: " + cds);
@@ -98,7 +106,7 @@ public class CoronaDataController {
 		
 		List<String> territoryKeys = repo.findDistinctTerritoryByTerritoryParent(cds.getSelectedTerritoryParents());
 		List<Territory> territories = new ArrayList<>();
-		Territory allTerritories = new Territory("all", "All Regions", 0L);
+		Territory allTerritories = new Territory("all", messageSourceService.getMessage("allRegions", cds.getLocale()), 0L);
 		territories.add(allTerritories);
 		territoryKeys.forEach(k -> {
 			Optional<CoronaDataEntity> entity = repo.findFirstByTerritory(k);
@@ -108,7 +116,7 @@ public class CoronaDataController {
 					orderId = entity.get().getOrderId();
 				}
 			}
-			String name = cache.getTerritoryName(k);
+			String name = cache.getTerritoryName(k, cds.getLocale());
 			territories.add(new Territory(k, name, orderId));
 		});
 		cds.setTerritories(territories);
