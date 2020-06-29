@@ -36,6 +36,7 @@ public class CoronaDataEntity {
 	private Long population;
 	private String territoryParent;
 	private Long casesKum;
+	private Long casesDaysKum;
 	private Long deathsKum;
 	private Double casesPer100000Pop;
 	private Double deathsPer100000Pop;
@@ -45,6 +46,7 @@ public class CoronaDataEntity {
 		CoronaData data = new CoronaData();
 		data.setCases(getCases() != null ? getCases() : 0L);
 		data.setCasesKum(getCasesKum() != null ? getCasesKum() : 0L);
+		data.setCasesDaysKum(getCasesDaysKum() != null ? getCasesDaysKum() : 0L);
 		data.setCasesPer100000Pop(getCasesPer100000Pop() != null ? getCasesPer100000Pop() : 0.0);
 		data.setDateRep(getDateRep());
 		data.setDay(getDay());

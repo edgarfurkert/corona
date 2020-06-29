@@ -13,6 +13,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -47,6 +48,12 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @SessionAttributes("coronaDataSession")
 public class ChartController {
+	
+	@Value( "${corona.data.daysToKum}" )
+	private Integer daysToKum;
+
+	@Value( "${corona.data.daysToKumPop}" )
+	private Long daysToKumPop;
 
 	@Autowired
 	private CoronaDataJpaRepository repo;
@@ -66,6 +73,7 @@ public class ChartController {
 		case "infections": title = "Infections"; break;
 		case "infectionsPerDay": title = "Infections/day"; break;
 		case "infectionsPer100000": title = "Infections/100.000 population"; break;
+		case "infectionsDaysKum": title = "Infections last " + daysToKum + " days/100.000 population"; break;
 		case "deaths": title = "Deaths"; break;
 		case "deathsPerDay": title = "Deaths/day"; break;
 		case "deathsPer100000": title = "Deaths/100.000 population"; break;
@@ -102,6 +110,7 @@ public class ChartController {
 				        	cd.setTerritoryParent(d.getTerritoryParent());
 				        	cd.setCases(0L);
 				        	cd.setCasesKum(0L);
+				        	cd.setCasesDaysKum(0L);
 				        	cd.setCasesPer100000Pop(0.0);
 				        	cd.setDeaths(0L);
 				        	cd.setDeathsKum(0L);
@@ -125,6 +134,7 @@ public class ChartController {
 			        	cd.setTerritoryParent(d.getTerritoryParent());
 			        	cd.setCases(0L);
 			        	cd.setCasesKum(d.getCasesKum());
+			        	cd.setCasesDaysKum(d.getCasesDaysKum());
 			        	cd.setCasesPer100000Pop(d.getCasesPer100000Pop());
 			        	cd.setDeaths(0L);
 			        	cd.setDeathsKum(d.getDeathsKum());
@@ -165,6 +175,7 @@ public class ChartController {
 	    		case "infections": s.getData().add(d.getCasesKum().doubleValue()); break;
 	    		case "infectionsPerDay": s.getData().add(d.getCases().doubleValue()); break;
 	    		case "infectionsPer100000": s.getData().add(d.getCasesPer100000Pop()); break;
+	    		case "infectionsDaysKum": s.getData().add(d.getCasesDaysKum() * (double)daysToKumPop / d.getPopulation()); break;
 	    		case "deaths": s.getData().add(d.getDeathsKum().doubleValue()); break;
 	    		case "deathsPerDay": s.getData().add(d.getDeaths().doubleValue()); break;
 	    		case "deathsPer100000": s.getData().add(d.getDeathsPer100000Pop()); break;
@@ -215,6 +226,10 @@ public class ChartController {
 			title = "Infections/100.000 population";
 			coronaData.sort(Comparator.comparing(CoronaData::getCasesPer100000Pop).reversed());
 			break;
+		case "infectionsDaysKum":
+			title = "Infections last " + daysToKum + " days/100.000 population";
+			coronaData.sort(Comparator.comparing(CoronaData::getCasesDaysKum).reversed());
+			break;
 		case "deaths":
 			title = "Deaths";
 			coronaData.sort(Comparator.comparing(CoronaData::getDeathsKum).reversed());
@@ -262,6 +277,7 @@ public class ChartController {
     		case "infections": value = d.getCasesKum().doubleValue(); break;
     		case "infectionsPerDay": value = d.getCases().doubleValue(); break;
     		case "infectionsPer100000": value = d.getCasesPer100000Pop(); break;
+    		case "infectionsDaysKum": value = (d.getCasesDaysKum() * (double)daysToKumPop) / d.getPopulation(); break;
     		case "deaths": value = d.getDeathsKum().doubleValue(); break;
     		case "deathsPerDay": value = d.getDeaths().doubleValue(); break;
     		case "deathsPer100000": value = d.getDeathsPer100000Pop(); break;
@@ -314,6 +330,7 @@ public class ChartController {
 		case "infections":
 		case "infectionsPerDay":
 		case "infectionsPer100000":
+		default:
 			title = "Start of Infections";
 			yAxisTitle = "Infections";
 			infections.set(true);
@@ -324,9 +341,6 @@ public class ChartController {
 			title = "Start of Deaths";
 			yAxisTitle = "Deaths";
 			infections.set(false);
-			break;
-		default:
-			title = "Start of Infections";
 			break;
 		}
     	data.setTitle(title);

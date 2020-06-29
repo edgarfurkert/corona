@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,6 +32,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/")
 @SessionAttributes("coronaDataSession")
 public class CoronaDataController {
+	
+	@Value( "${corona.data.daysToKum}" )
+	private Integer daysToKum;
 	
 	@Autowired
 	private CoronaDataJpaRepository repo;
@@ -59,6 +63,7 @@ public class CoronaDataController {
 		dataTypes.add(new DataType("infections", "Infections"));
 		dataTypes.add(new DataType("infectionsPerDay", "Infections/Day"));
 		dataTypes.add(new DataType("infectionsPer100000", "Infections/100.000"));
+		dataTypes.add(new DataType("infectionsDaysKum", "Infections last " + daysToKum + " days/100.000"));
 		dataTypes.add(new DataType("deaths", "Deaths"));
 		dataTypes.add(new DataType("deathsPerDay", "Deaths/Day"));
 		dataTypes.add(new DataType("deathsPer100000", "Deaths/100.000"));
@@ -113,6 +118,11 @@ public class CoronaDataController {
 		}
 		log.debug("CoronaDataSession: " + cds);
 		
+		return "home";
+	}
+	
+	@GetMapping(path="/data")
+	public String getDataGet(@ModelAttribute CoronaDataSession cds) {
 		return "home";
 	}
 	

@@ -18,6 +18,11 @@ spring:
         format_sql: true
     show-sql: false
 
+corona:
+  data:
+    daysToKum: 7
+    daysToKumPop: 100000
+    
 logging:
   level:
     org:
