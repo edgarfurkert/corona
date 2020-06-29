@@ -25,6 +25,7 @@ public class CoronaData {
 	private Long population;
 	private String territoryParent;
 	private Long casesKum;
+	private Long casesDaysKum;
 	private Long deathsKum;
 	private Double casesPer100000Pop;
 	private Double deathsPer100000Pop;

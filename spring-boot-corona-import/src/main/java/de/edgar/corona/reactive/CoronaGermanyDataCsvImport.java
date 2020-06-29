@@ -34,6 +34,7 @@ public class CoronaGermanyDataCsvImport extends CoronaDataCsvImport {
 		log.info("Importing file " + fileName);
 		
 		Map<String, LocalDate> territoryLatestDateRepMap = Collections.synchronizedMap(new HashMap<>());
+		Map<String, Long> territoryDateRepDaysMap = Collections.synchronizedMap(new HashMap<>());
 		
 		Path path = Paths.get(fileName);
 		
@@ -47,6 +48,18 @@ public class CoronaGermanyDataCsvImport extends CoronaDataCsvImport {
 						  .skip(1)
 						  .map(l -> { return new CoronaGermanyData(l, props); })
 						  .filter(d -> { return d.getDateRep().isBefore(now); })
+						  .sort((c1, c2) -> c1.getDateRep().compareTo(c2.getDateRep()))
+						  .doOnNext(d -> {
+							  LocalDate date = d.getDateRep();
+							  Long daysSum;
+							  String key;
+							  for (int i = 0; i < (daysToSum == null ? 0 : daysToSum); i++) {
+								  key = d.getTerritory() + date;
+								  daysSum = territoryDateRepDaysMap.get(key);
+								  territoryDateRepDaysMap.put(key, (daysSum == null ? d.getCases() : daysSum + d.getCases()));
+								  date = date.plusDays(1);
+							  }
+						  })
 						  .filter(d -> {
 							  if (filterDisabled.get()) {
 								  return true; // do not filter
@@ -63,11 +76,13 @@ public class CoronaGermanyDataCsvImport extends CoronaDataCsvImport {
 							  }
 							  return d.getDateRep().isAfter(latestDate);
 						  })
-						  .sort((c1, c2) -> c1.getDateRep().compareTo(c2.getDateRep()))
 						  .map(d -> { return new CoronaDataEntity(d); })
 						  ;//.log();
 
-		coronaData.subscribe(data -> save(data));
+		coronaData.subscribe(data -> {
+			data.setCasesDaysKum(territoryDateRepDaysMap.get(data.getTerritory() + data.getDateRep()));
+			save(data);
+		});
 		
 	}
 

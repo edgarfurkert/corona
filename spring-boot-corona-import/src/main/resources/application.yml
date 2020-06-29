@@ -32,6 +32,7 @@ corona:
       import:
         path: /home/efurkert/Downloads
         poller: 5000
+        daysToSum: 7
       download:
         poller: 60000
         connectTimeout: 5000

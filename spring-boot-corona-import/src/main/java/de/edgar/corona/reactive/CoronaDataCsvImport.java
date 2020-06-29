@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import de.edgar.corona.jpa.CoronaDataEntity;
 import de.edgar.corona.jpa.CoronaDataJpaRepository;
@@ -12,6 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class CoronaDataCsvImport {
+	
+	@Value( "${corona.data.csv.import.daysToSum}" )
+	protected Integer daysToSum;
 
 	@Autowired
 	protected UpdateCheckService updateCheckService;

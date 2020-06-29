@@ -24,6 +24,7 @@ public class CoronaDataEntity {
 	public CoronaDataEntity(CoronaData data) {
 		this.setCases(data.getCases());
 		this.setCasesKum(data.getCasesKum());
+		this.setCasesDaysKum(data.getCasesDaysKum());
 		this.setCasesPer100000Pop(data.getCasesPer100000Pop());
 		this.setDateRep(data.getDateRep());
 		this.setDay(data.getDay());
@@ -57,6 +58,7 @@ public class CoronaDataEntity {
 	private Long population;
 	private String territoryParent;
 	private Long casesKum;
+	private Long casesDaysKum;
 	private Long deathsKum;
 	private Double casesPer100000Pop;
 	private Double deathsPer100000Pop;
