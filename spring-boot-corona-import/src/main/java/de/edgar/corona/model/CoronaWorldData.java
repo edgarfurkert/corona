@@ -2,7 +2,7 @@ package de.edgar.corona.model;
 
 import java.time.LocalDate;
 
-public class CoronaWorldData extends CoronaData implements Cloneable {
+public class CoronaWorldData extends CoronaData {
 
 	public CoronaWorldData() {
 	}
@@ -16,6 +16,7 @@ public class CoronaWorldData extends CoronaData implements Cloneable {
 		setCases(getLong(a[4]));
 		setDeaths(getLong(a[5]));
 		setTerritory(a[6].replaceAll("\"", ""));
+		setTerritoryId(getTerritoryId(getTerritory()));
 		setGeoId(a[7]);
 		setTerritoryCode(a[8].length() > 0 ? a[8] : a[7]);
 		setPopulation(getLong(a[9]));

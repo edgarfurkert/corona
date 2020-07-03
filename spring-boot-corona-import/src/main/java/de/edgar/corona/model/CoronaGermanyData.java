@@ -48,6 +48,7 @@ public class CoronaGermanyData extends CoronaData {
 		setGeoId(c);
 		setMonth(getDateRep().getMonthValue());
 		setPopulation(p);
+		setTerritoryId(getTerritoryId(a[2]));
 		setTerritory(t);
 		setTerritoryCode(c);
 		setTerritoryParent(a[1]);

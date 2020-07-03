@@ -21,7 +21,7 @@ import reactor.core.publisher.Flux;
 
 @Slf4j
 @Component
-public class CoronaGermanyDataCsvImport extends CoronaDataCsvImport {
+public class CoronaGermanyDataCsvImport extends CoronaDataImport {
 
 	@Autowired
 	private GermanyFederalStatesProperties props;

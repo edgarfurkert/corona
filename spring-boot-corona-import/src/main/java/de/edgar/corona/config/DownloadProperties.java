@@ -9,7 +9,7 @@ import org.springframework.context.annotation.PropertySource;
 import lombok.Data;
 
 @Configuration
-@ConfigurationProperties(prefix="corona.data.csv.download")
+@ConfigurationProperties(prefix="corona.data.download")
 @PropertySource(value="classpath:application.yml", encoding="UTF-8", factory=YamlPropertySourceFactory.class)
 @Data
 public class DownloadProperties {

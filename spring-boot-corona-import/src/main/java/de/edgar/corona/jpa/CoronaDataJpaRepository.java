@@ -12,4 +12,15 @@ public interface CoronaDataJpaRepository extends CrudRepository<CoronaDataEntity
 	
 	@Query("SELECT MAX(c.dateRep) FROM CoronaDataEntity c WHERE c.territory = ?1 AND c.territoryParent = ?2")
 	public Optional<LocalDate> getMaxDateRepByTerritoryAndTerritoryParent(String territory, String territoryParent);
+	
+	@Query("SELECT MAX(c.dateRep) FROM CoronaDataEntity c WHERE c.territoryId = ?1")
+	public Optional<LocalDate> getMaxDateRepByTerritoryId(String territoryId);
+
+	@Query("SELECT MIN(c.dateRep) FROM CoronaDataEntity c WHERE c.territory = ?1 AND c.territoryParent = ?2")
+	public Optional<LocalDate> getMinDateRepByTerritoryAndTerritoryParent(String territory, String territoryParent);
+	
+	@Query("SELECT MIN(c.dateRep) FROM CoronaDataEntity c WHERE c.territoryId = ?1")
+	public Optional<LocalDate> getMinDateRepByTerritoryId(String territoryId);
+	
+	public Optional<CoronaDataEntity> findByTerritoryIdAndDateRep(String territoryId, LocalDate dateRep);
 }

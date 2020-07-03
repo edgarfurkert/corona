@@ -62,10 +62,10 @@ public class DownloadConfig {
 	@Autowired
 	private ExcelService excelService;
 
-	@Value( "${corona.data.csv.import.path}" )
-	private String csvPath;
+	@Value( "${corona.data.import.path}" )
+	private String importPath;
 
-    @Scheduled(fixedDelayString = "${corona.data.csv.download.poller}")
+    @Scheduled(fixedDelayString = "${corona.data.download.poller}")
 	public void downloadAsync() throws InterruptedException {
         log.info("Check download urls");
         
@@ -85,7 +85,7 @@ public class DownloadConfig {
      * @return DownloadUrlProperty or null if download is not necessary.
      */
 	private DownloadUrlProperty checkFiles(DownloadUrlProperty u) {
-		Path path = Paths.get(csvPath);
+		Path path = Paths.get(importPath);
 		DownloadUrlProperty downloadUrlProperty = null;
 		try {
 			String fileName = getFileName(u.getFileName());
@@ -115,7 +115,7 @@ public class DownloadConfig {
 	 * @return String extended filename
 	 */
 	private String getFileName(String urlFileName) {
-		String now = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+		String now = dateToString(LocalDate.now());
 		return urlFileName + "-" + now;
 	}
 
@@ -131,10 +131,16 @@ public class DownloadConfig {
 		int READ_TIMEOUT = props.getReadTimeout();
 		try {
 		    log.info("Download file from url {}...", downloadUrlProperty.getUrl());
-		    String fileName = csvPath + "/" + getFileName(downloadUrlProperty.getFileName()) + ".download";
+		    String fileName = importPath + "/" + getFileName(downloadUrlProperty.getFileName()) + ".download";
 		    File downloadFile = new File(fileName);
-		    FileUtils.copyURLToFile(new URL(downloadUrlProperty.getUrl()), downloadFile, CONNECT_TIMEOUT, READ_TIMEOUT);
-		    log.info("Download finished: {}", fileName);
+		    String downloadUrl = downloadUrlProperty.getUrl();
+		    if ("worldApiChannel".equals(downloadUrlProperty.getChannel())) {
+		    	handleWorldApiChannel(downloadUrlProperty);
+		    	return;
+		    } else {
+			    FileUtils.copyURLToFile(new URL(downloadUrl), downloadFile, CONNECT_TIMEOUT, READ_TIMEOUT);
+			    log.info("Download finished: {}", fileName);
+		    }
 		    
 		    if (downloadUrlProperty.getUrl().endsWith(".xlsx")) {
 		    	// handle excel file -> convert excel file to csv
@@ -207,7 +213,7 @@ public class DownloadConfig {
 			}
 			
 			// check update file
-			boolean filterDisabled = updateCheckService.checkUpdateFile(csvPath, getFileName(downloadUrlProperty.getFileName()), false);
+			boolean filterDisabled = updateCheckService.checkUpdateFile(importPath, getFileName(downloadUrlProperty.getFileName()), false);
 			
 			if (!filterDisabled) {
 				// check date by channel
@@ -219,7 +225,7 @@ public class DownloadConfig {
 				case "worldChannel":
 					cd = new CoronaWorldData(firstDataLine);
 					territory = cd.getTerritory();
-					Territory t = territoryProps.findByKey(territory);
+					Territory t = territoryProps.findByTerritoryId(cd.getTerritoryId());
 					if (t != null) {
 						cd.setTerritoryParent(t.getTerritoryParent());
 					}
@@ -260,23 +266,28 @@ public class DownloadConfig {
 			}
 			
 			// file with new data downloaded -> rename file to csv
-		    File file = new File(fileName);
-		    String renamedFileName = getFileName(downloadUrlProperty.getFileName()) + ".csv";
-		    
-		    Path source = file.toPath();
-		    try {
-		         Files.copy(source, source.resolveSibling(renamedFileName), StandardCopyOption.REPLACE_EXISTING);
-		         if (file.delete()) {
-		        	 log.info("File {} deleted.", fileName);
-		         } else {
-		        	 log.info("Cannot delete file: {}", fileName);
-		         }
-		    } catch (IOException e) {
-		         log.error("Download rename failed: {}", fileName, e);
-		    }
+		    renameFile(fileName, getFileName(downloadUrlProperty.getFileName()), "csv");
 		    
 		} catch (IOException e) {
 		    log.error("Download of file {} failed: {}", downloadUrlProperty.getUrl(), e.getMessage());
+		}
+	}
+
+	private void renameFile(String fromFullFileName, String toFileName, String fileExt) {
+		File file = new File(fromFullFileName);
+		String renamedFileName = toFileName + "." + fileExt;
+		
+		Path source = file.toPath();
+		try {
+		     Files.copy(source, source.resolveSibling(renamedFileName), StandardCopyOption.REPLACE_EXISTING);
+	    	 log.info("File {} renamed to {}.", fromFullFileName, renamedFileName);
+		     if (file.delete()) {
+		    	 log.info("File {} deleted.", fromFullFileName);
+		     } else {
+		    	 log.info("Cannot delete file: {}", fromFullFileName);
+		     }
+		} catch (IOException e) {
+		     log.error("Download rename failed: {}", fromFullFileName, e);
 		}
 	}
 
@@ -285,5 +296,47 @@ public class DownloadConfig {
 		if (downloadFile.delete()) {
 			log.info("File deleted: " + downloadFile.getAbsolutePath());
 		}
+	}
+	
+	private String dateToString(LocalDate date) {
+		return date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+	}
+	
+	private void handleWorldApiChannel(DownloadUrlProperty downloadUrlProperty) {
+		int CONNECT_TIMEOUT = props.getConnectTimeout();
+		int READ_TIMEOUT = props.getReadTimeout();
+		
+    	LocalDate fromDate = LocalDate.now();
+    	
+		// check update file
+		boolean filterDisabled = updateCheckService.checkUpdateFile(importPath, getFileName(downloadUrlProperty.getFileName()), true);
+		if (filterDisabled) {
+			log.debug("{}: filter disabled", downloadUrlProperty.getFileName());
+	    	Optional<LocalDate> minDate = repository.getMinDateRepByTerritoryAndTerritoryParent("World", "Earth");
+	    	if (minDate.isPresent()) {
+	    		fromDate = minDate.get();
+	    	}
+		} else {
+			log.debug("{}: filter enabled", downloadUrlProperty.getFileName());
+		}
+		
+		// download data
+    	LocalDate toDate = LocalDate.now();
+    	String url, fileName, renameFileName;
+    	File downloadFile;
+    	for (LocalDate date = fromDate; date.isBefore(toDate) || date.isEqual(toDate); date = date.plusDays(1)) {
+    		fileName = importPath + "/" + downloadUrlProperty.getFileName() + "-" + dateToString(date) + ".download";
+    		downloadFile = new File(fileName);
+	    	url = downloadUrlProperty.getUrl() + "/" + dateToString(date.minusDays(2));
+		    try {
+			    log.info("Download: {}", url);
+				FileUtils.copyURLToFile(new URL(url), downloadFile, CONNECT_TIMEOUT, READ_TIMEOUT);
+			    log.info("Download finished: {}", fileName);
+			    renameFileName = downloadUrlProperty.getFileName() + "-" + dateToString(date);
+			    renameFile(fileName, renameFileName, "json");
+			} catch (Exception e) {
+			    log.error("Download of file {} failed: {}", downloadUrlProperty.getUrl(), e.getMessage());
+			}
+    	}
 	}
 }

@@ -1,0 +1,26 @@
+countries:
+  - nameId: brunei
+    territoryId: bruneiDarussalam
+  - nameId: caboVerde
+    territoryId: capeVerde
+  - nameId: congoBrazzaville
+    territoryId: congo
+  - nameId: congoKinshasa
+    territoryId: democraticRepublicOfTheCongo
+  - nameId: eastTimor
+    territoryId: timorLeste
+  - nameId: koreaSouth
+    territoryId: southKorea
+  - nameId: tanzania
+    territoryId: unitedRepublicOfTanzania
+  - nameId: us
+    territoryId: unitedStatesOfAmerica
+  - nameId: badenWuerttemberg
+    territoryId: badenWu00FCrttemberg
+  - nameId: virginIslands
+    territoryId: unitedStatesVirginIslands
+  - nameId: channelIslands
+    territoryId: britishVirginIslands
+  - nameId: coteDivoire
+    territoryId: coteDIvoire
+    

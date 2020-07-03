@@ -3,9 +3,9 @@ package de.edgar.corona.model;
 import lombok.Data;
 
 @Data
-public class Territory {
+public class CountryId {
 
+	private String nameId;
 	private String territoryId;
-	private String territoryParent;
 	
 }

@@ -21,11 +21,11 @@ public class TerritoryProperties {
 	
 	private Map<String, Territory> territoryMap;
 	
-	public Territory findByKey(String key) {
+	public Territory findByTerritoryId(String key) {
 		if (territoryMap == null) {
 			territoryMap = new HashMap<>();
 			territories.forEach(fs -> {
-				territoryMap.put(fs.getTerritory(), fs);
+				territoryMap.put(fs.getTerritoryId(), fs);
 			});
 		}
 		

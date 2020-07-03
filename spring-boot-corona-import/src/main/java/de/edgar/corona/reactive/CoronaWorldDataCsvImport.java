@@ -24,7 +24,7 @@ import reactor.core.publisher.Flux;
 
 @Slf4j
 @Component
-public class CoronaWorldDataCsvImport extends CoronaDataCsvImport {
+public class CoronaWorldDataCsvImport extends CoronaDataImport {
 	
 	@Autowired
 	private TerritoryProperties territoryProps;
@@ -53,8 +53,8 @@ public class CoronaWorldDataCsvImport extends CoronaDataCsvImport {
 					.filter(d -> { return d.getDateRep().isBefore(now); })
 					.sort((d1, d2) -> d1.getDateRep().compareTo(d2.getDateRep()))
 					.doOnNext(m -> {
-						String territoryKey = m.getTerritory();
-						CoronaWorldData c = kummulativeDataMap.get(territoryKey);
+						String territoryId = m.getTerritoryId();
+						CoronaWorldData c = kummulativeDataMap.get(territoryId);
 						if (c != null) {
 							m.setCasesKum(m.getCases() + (c.getCasesKum() != null ? c.getCasesKum() : 0L));
 							m.setDeathsKum(m.getDeaths() + (c.getDeathsKum() != null ? c.getDeathsKum() : 0L));
@@ -69,11 +69,11 @@ public class CoronaWorldDataCsvImport extends CoronaDataCsvImport {
 							m.setCasesPer100000Pop(0.0);
 							m.setDeathsPer100000Pop(0.0);
 						}
-						kummulativeDataMap.put(territoryKey, m);
+						kummulativeDataMap.put(territoryId, m);
 								
 						// collect territory parent and world population data
 						String worldKey = "World";
-						Territory territory = territoryProps.findByKey(territoryKey);
+						Territory territory = territoryProps.findByTerritoryId(territoryId);
 						String orgTerritoryParent = m.getTerritoryParent();
 						if (territory != null) {
 							m.setTerritoryParent(territory.getTerritoryParent());
@@ -93,6 +93,7 @@ public class CoronaWorldDataCsvImport extends CoronaDataCsvImport {
 							try {
 								c = m.clone();
 								c.setGeoId(m.getTerritoryParent());
+								c.setTerritoryId(null);
 								c.setTerritory(m.getTerritoryParent());
 								c.setTerritoryCode(m.getTerritoryParent());
 								c.setTerritoryParent(territory != null ? orgTerritoryParent : worldKey);
@@ -119,6 +120,7 @@ public class CoronaWorldDataCsvImport extends CoronaDataCsvImport {
 								try {
 									c = m.clone();
 									c.setGeoId(orgTerritoryParent);
+									c.setTerritoryId(null);
 									c.setTerritory(orgTerritoryParent);
 									c.setTerritoryCode(orgTerritoryParent);
 									c.setTerritoryParent(worldKey);
@@ -146,6 +148,7 @@ public class CoronaWorldDataCsvImport extends CoronaDataCsvImport {
 							try {
 								c = m.clone();
 								c.setGeoId(worldKey);
+								c.setTerritoryId(null);
 								c.setTerritory(worldKey);
 								c.setTerritoryCode(worldKey);
 								c.setTerritoryParent("Earth");

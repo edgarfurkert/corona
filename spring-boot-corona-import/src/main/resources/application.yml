@@ -28,30 +28,34 @@ logging:
 
 corona:
   data:
-    csv:
-      import:
-        path: /home/efurkert/Downloads
-        poller: 5000
-        daysToSum: 7
-      download:
-        poller: 60000
-        connectTimeout: 5000
-        readTimeout: 5000
-        urls:
-          # connect timed out
-          #- url: https://opendata.ecdc.europa.eu/covid19/casedistribution/csv
-          #  fileName: covid19-world
-          #  header: dateRep,day,month,year,cases,deaths,countriesAndTerritories,geoId,countryterritoryCode,popData[0-9]{4},continentExp[.]*
-          #  channel: worldChannel
-          - url: https://www.ecdc.europa.eu/sites/default/files/documents/COVID-19-geographic-disbtribution-worldwide.xlsx
-            fileName: covid19-world-xlsx
-            header: dateRep,day,month,year,cases,deaths,countriesAndTerritories,geoId,countryterritoryCode,popData[0-9]{4},continentExp[.]*
-            channel: worldChannel
-          - url: https://covid19publicdata.blob.core.windows.net/rki/covid19-germany-federalstates.csv
-            fileName: covid19-germany-federalstates
-            header: id,Country/Region,federalstate,infections,deaths,date,newinfections,newdeaths
-            channel: germanyChannel
-          - url: https://covid19publicdata.blob.core.windows.net/rki/covid19-germany-counties.csv
-            fileName: covid19-germany-counties
-            header: id,Country/Region,county,countyname,type,federalstate,population,infections,deaths,shapearea,shapelength,date,newinfections,newdeaths,infectionrate,deathrate
-            channel: germanyFederalStatesChannel
+    import:
+      path: /home/efurkert/Downloads
+      poller: 5000
+      daysToSum: 7
+    download:
+      poller: 60000
+      connectTimeout: 5000
+      readTimeout: 5000
+      urls:
+        # connect timed out
+        #- url: https://opendata.ecdc.europa.eu/covid19/casedistribution/csv
+        #  fileName: covid19-world
+        #  header: dateRep,day,month,year,cases,deaths,countriesAndTerritories,geoId,countryterritoryCode,popData[0-9]{4},continentExp[.]*
+        #  channel: worldChannel
+        - url: https://www.ecdc.europa.eu/sites/default/files/documents/COVID-19-geographic-disbtribution-worldwide.xlsx
+          fileName: covid19-world-xlsx
+          header: dateRep,day,month,year,cases,deaths,countriesAndTerritories,geoId,countryterritoryCode,popData[0-9]{4},continentExp[.]*
+          channel: worldChannel
+        - url: https://covid19publicdata.blob.core.windows.net/rki/covid19-germany-federalstates.csv
+          fileName: covid19-germany-federalstates
+          header: id,Country/Region,federalstate,infections,deaths,date,newinfections,newdeaths
+          channel: germanyChannel
+        - url: https://covid19publicdata.blob.core.windows.net/rki/covid19-germany-counties.csv
+          fileName: covid19-germany-counties
+          header: id,Country/Region,county,countyname,type,federalstate,population,infections,deaths,shapearea,shapelength,date,newinfections,newdeaths,infectionrate,deathrate
+          channel: germanyFederalStatesChannel
+        - url: https://api.covid19tracking.narrativa.com/api
+          fileName: covid19-world-api
+          header: 
+          channel: worldApiChannel
+            

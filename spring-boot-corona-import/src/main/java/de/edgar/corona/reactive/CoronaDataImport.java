@@ -12,9 +12,9 @@ import de.edgar.corona.service.UpdateCheckService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class CoronaDataCsvImport {
+public class CoronaDataImport {
 	
-	@Value( "${corona.data.csv.import.daysToSum}" )
+	@Value( "${corona.data.import.daysToSum}" )
 	protected Integer daysToSum;
 
 	@Autowired
@@ -22,15 +22,15 @@ public class CoronaDataCsvImport {
 
 	protected CoronaDataJpaRepository repository;
 	
-	protected void save(CoronaDataEntity data) {
-		Optional<CoronaDataEntity> d = repository.findByGeoIdAndDateRep(data.getGeoId(), data.getDateRep());
+	protected void save(CoronaDataEntity entity) {
+		Optional<CoronaDataEntity> d = repository.findByGeoIdAndDateRep(entity.getGeoId(), entity.getDateRep());
 		if (d.isPresent()) {
-			log.info("Overwritting data: " + data);
-			data.setId(d.get().getId());
-			data.setTimestamp(LocalDateTime.now());
+			log.info("Overwritting data: " + entity);
+			entity.setId(d.get().getId());
+			entity.setTimestamp(LocalDateTime.now());
 		} else {
-			log.info("Saving data: " + data);
+			log.info("Saving data: " + entity);
 		}
-		repository.save(data);
+		repository.save(entity);
 	}
 }

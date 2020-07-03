@@ -64,3 +64,107 @@ germany:
       name: Thüringen
       code: DE-TH
       population: 2143145
+    - key: zu00FCrich
+      name: Zürich
+      code: ZH
+      population: 1538848
+    - key: bern
+      name: Bern
+      code: BE
+      population: 1039101
+    - key: vaud
+      name: Waadt
+      code: VD
+      population: 804861
+    - key: aargau
+      name: Aargau
+      code: AG
+      population: 685642
+    - key: st.gallen
+      name: St. Gallen
+      code: SG
+      population: 510670
+    - key: genu00E8ve
+      name: Genf
+      code: GE
+      population: 504031
+    - key: luzern
+      name: Luzern
+      code: LU
+      population: 413048
+    - key: ticino
+      name: Tessin
+      code: TI
+      population: 351471
+    - key: valais
+      name: Wallis
+      code: VS
+      population: 345394
+    - key: fribourg
+      name: Freiburg
+      code: FR
+      population: 321717
+    - key: baselland
+      name: Basel-Landschaft
+      code: BL
+      population: 289404
+    - key: thurgau
+      name: Thurgau
+      code: TG
+      population: 279493
+    - key: solothurn
+      name: Solothurn
+      code: SO
+      population: 275177
+    - key: graubu00FCnden
+      name: Graubünden
+      code: GR
+      population: 198988
+    - key: baselStadt
+      name: Basel-Stadt
+      code: BS
+      population: 195783
+    - key: neuchatel
+      name: Neuenburg
+      code: NE
+      population: 176467
+    - key: schwyz
+      name: Schwyz
+      code: SZ
+      population: 160457
+    - key: zug
+      name: Zug
+      code: ZG
+      population: 127612
+    - key: schaffhausen
+      name: Schaffhausen
+      code: SH
+      population: 82337
+    - key: jura
+      name: Jura
+      code: JU
+      population: 73563
+    - key: appenzellAusserrhoden
+      name: Appenzell Ausserrhoden
+      code: AR
+      population: 55432
+    - key: nidwalden
+      name: Nidwalden
+      code: NW
+      population: 43076
+    - key: glarus
+      name: Glarus
+      code: GL
+      population: 40852
+    - key: obwalden
+      name: Obwalden
+      code: OW
+      population: 37924
+    - key: uri
+      name: Uri
+      code: UR
+      population: 36694
+    - key: appenzellInnerrhoden
+      name: Appenzell Innerrhoden
+      code: AI
+      population: 16127

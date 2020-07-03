@@ -31,9 +31,16 @@ public class CoronaDataEntity {
 		this.setDeaths(data.getDeaths());
 		this.setDeathsKum(data.getDeathsKum());
 		this.setDeathsPer100000Pop(data.getDeathsPer100000Pop());
+		this.setRecovered(data.getRecovered());
+		this.setRecoveredKum(data.getRecoveredKum());
+		this.setRecoveredPer100000Pop(data.getRecoveredPer100000Pop());
+		this.setActive(data.getActive());
+		this.setActiveKum(data.getActiveKum());
+		this.setActivePer100000Pop(data.getActivePer100000Pop());
 		this.setGeoId(data.getGeoId());
 		this.setMonth(data.getMonth());
 		this.setPopulation(data.getPopulation());
+		this.setTerritoryId(data.getTerritoryId());
 		this.setTerritory(data.getTerritory());
 		this.setTerritoryCode(data.getTerritoryCode());
 		this.setTerritoryParent(data.getTerritoryParent());
@@ -52,6 +59,9 @@ public class CoronaDataEntity {
 	private Integer year;
 	private Long cases;
 	private Long deaths;
+	private Long recovered;
+	private Long active;
+	private String territoryId;
 	private String territory;
 	private String territoryCode;
 	private String geoId;
@@ -60,9 +70,43 @@ public class CoronaDataEntity {
 	private Long casesKum;
 	private Long casesDaysKum;
 	private Long deathsKum;
+	private Long recoveredKum;
+	private Long activeKum;
 	private Double casesPer100000Pop;
 	private Double deathsPer100000Pop;
+	private Double recoveredPer100000Pop;
+	private Double activePer100000Pop;
 	private Long orderId;
 	private LocalDateTime timestamp;
 	
+	public CoronaData toCoronaData() {
+		CoronaData c = new CoronaData();
+		
+		c.setActive(active);
+		c.setActiveKum(activeKum);
+		c.setActivePer100000Pop(activePer100000Pop);
+		c.setCases(cases);
+		c.setCasesDaysKum(casesDaysKum);
+		c.setCasesKum(casesKum);
+		c.setCasesPer100000Pop(casesPer100000Pop);
+		c.setDateRep(dateRep);
+		c.setDay(day);
+		c.setDeaths(deaths);
+		c.setDeathsKum(deathsKum);
+		c.setDeathsPer100000Pop(deathsPer100000Pop);
+		c.setGeoId(geoId);
+		c.setMonth(month);
+		c.setOrderId(orderId);
+		c.setPopulation(population);
+		c.setRecovered(recovered);
+		c.setRecoveredKum(recoveredKum);
+		c.setRecoveredPer100000Pop(recoveredPer100000Pop);
+		c.setTerritory(territory);
+		c.setTerritoryCode(territoryCode);
+		c.setTerritoryId(territoryId);
+		c.setTerritoryParent(territoryParent);
+		c.setYear(year);
+		
+		return c;
+	}
 }

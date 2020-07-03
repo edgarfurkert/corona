@@ -26,18 +26,22 @@ import de.edgar.corona.config.DownloadUrlProperty;
 import de.edgar.corona.reactive.CoronaGermanyDataCsvImport;
 import de.edgar.corona.reactive.CoronaGermanyFederalStatesDataCsvImport;
 import de.edgar.corona.reactive.CoronaWorldDataCsvImport;
+import de.edgar.corona.reactive.CoronaWorldDataJsonImport;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Configuration
 @EnableIntegration
-public class CoronaDataCsvImportConfig {
+public class CoronaDataImportConfig {
 	
-	@Value( "${corona.data.csv.import.path}" )
-	private String csvPath;
+	@Value( "${corona.data.import.path}" )
+	private String importPath;
 	
 	@Autowired
 	private DownloadProperties downloadProps;
+
+	@Autowired
+	private CoronaWorldDataJsonImport jsonImportWorldData;
 
 	@Autowired
 	private CoronaWorldDataCsvImport csvImportWorldData;
@@ -49,12 +53,22 @@ public class CoronaDataCsvImportConfig {
 	private CoronaGermanyFederalStatesDataCsvImport csvImportGermanyFederalStatesData;
 	
 	@Bean
-	public MessageChannel fileInputChannel() {
+	public MessageChannel cvsFileInputChannel() {
 		return new DirectChannel();
 	}
 
 	@Bean
-	public MessageChannel fileRouteChannel() {
+	public MessageChannel jsonFileInputChannel() {
+		return new DirectChannel();
+	}
+
+	@Bean
+	public MessageChannel csvFileRouteChannel() {
+		return new DirectChannel();
+	}
+
+	@Bean
+	public MessageChannel jsonFileRouteChannel() {
 		return new DirectChannel();
 	}
 
@@ -79,23 +93,39 @@ public class CoronaDataCsvImportConfig {
 	}
 
 	@Bean
-    @InboundChannelAdapter(value = "fileInputChannel", poller = @Poller(fixedDelay = "${corona.data.csv.import.poller}"))
-    public MessageSource<File> fileReadingMessageSource() {
-    	log.info("Reading csv-files in path: {}", csvPath);
+    @InboundChannelAdapter(value = "csvFileInputChannel", poller = @Poller(fixedDelay = "${corona.data.import.poller}"))
+    public MessageSource<File> csvFileReadingMessageSource() {
+    	log.info("Reading csv-files in path: {}", importPath);
         FileReadingMessageSource sourceReader = new FileReadingMessageSource();
-        sourceReader.setDirectory(new File(csvPath));
+        sourceReader.setDirectory(new File(importPath));
         sourceReader.setFilter(new SimplePatternFileListFilter("*.csv"));
         return sourceReader;
     }
 
 	@Bean
-    @ServiceActivator(inputChannel= "fileInputChannel")
-    public MessageHandler fileReadingMessageHandler() {
+    @ServiceActivator(inputChannel= "csvFileInputChannel")
+    public MessageHandler csvFileReadingMessageHandler() {
         return new CoronaDataCsvImportMessageHandler();
     }
 
-	@Router(inputChannel="fileRouteChannel")
-	public String fileRouter(File file) {
+	@Bean
+    @InboundChannelAdapter(value = "jsonFileInputChannel", poller = @Poller(fixedDelay = "${corona.data.import.poller}"))
+    public MessageSource<File> jsonFileReadingMessageSource() {
+    	log.info("Reading csv-files in path: {}", importPath);
+        FileReadingMessageSource sourceReader = new FileReadingMessageSource();
+        sourceReader.setDirectory(new File(importPath));
+        sourceReader.setFilter(new SimplePatternFileListFilter("*.json"));
+        return sourceReader;
+    }
+
+	@Bean
+    @ServiceActivator(inputChannel= "jsonFileInputChannel")
+    public MessageHandler jsonFileReadingMessageHandler() {
+        return new CoronaDataJsonImportMessageHandler();
+    }
+
+	@Router(inputChannel="csvFileRouteChannel")
+	public String csvFileRouter(File file) {
 		log.info("Router: file {}...", file.getName());
 		String channel = "unknownChannel";
 		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
@@ -116,6 +146,29 @@ public class CoronaDataCsvImportConfig {
 		log.info("Router: route to channel {}", channel);
 		return channel;
 	}
+    
+	@Router(inputChannel="jsonFileRouteChannel")
+	public String jsonFileRouter(File file) {
+		log.info("Router: file {}...", file.getName());
+		String channel = "worldApiChannel";
+		log.info("Router: route to channel {}", channel);
+		return channel;
+	}
+    
+	@Bean
+    @ServiceActivator(inputChannel="worldApiChannel")
+    public MessageHandler worldApiData() {
+    	return message -> {
+    		File file = (File)message.getPayload();
+    		log.info("world api file data: {}", file.getAbsolutePath());
+    		File inFile = new File(file.getAbsolutePath() + ".in");
+    		if (file.renameTo(inFile)) {
+        		jsonImportWorldData.importData(inFile.getAbsolutePath());
+    		} else {
+    			log.error("worldApiChannel: Cannot rename file {}", file.getAbsolutePath());
+    		}
+    	};
+    }
     
 	@Bean
     @ServiceActivator(inputChannel="worldChannel")

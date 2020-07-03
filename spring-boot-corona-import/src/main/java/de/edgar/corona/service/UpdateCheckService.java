@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UpdateCheckService {
 
 	public boolean checkUpdateFile(String path, String fileName, boolean rename) {
-		String f = fileName.replace(".csv.in", "");
+		String f = fileName.replace(".csv.in", "").replace(".json.in", "");
 		String updateFileName = path + "/update." + f;
 		
 		boolean updateFileAvailable = checkFile(path, updateFileName, rename);
@@ -24,7 +24,7 @@ public class UpdateCheckService {
 	}
 	
 	private boolean checkFile(String path, String fileName, boolean rename) {
-		String updateFileName = path + "/update." + fileName.replace(".csv.in", "");
+		String updateFileName = path + "/update." + fileName.replace(".csv.in", "").replace(".json.in", "");
 		File updateFile = new File(updateFileName);
 		boolean updateFileAvailable = false;
 		log.info("Check file {}...", updateFileName);
