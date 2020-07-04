@@ -189,7 +189,11 @@ public class CoronaWorldDataJsonImport extends CoronaDataImport {
 												data.setGeoId(fs.getCode());
 												data.setPopulation(fs.getPopulation());
 											}
-											save(data, false);
+											if (!data.getDateRep().isAfter(dataDate)) {
+												save(data, false);
+											} else {
+												log.info("Not saved data: {}", data);
+											}
 										}
 									}										
 								}
@@ -208,27 +212,9 @@ public class CoronaWorldDataJsonImport extends CoronaDataImport {
 		}
 	}
 	
-	private void save(CoronaData data, boolean overwrite) {
+	private void save(CoronaData data, boolean onlyOverwrite) {
 		log.debug("Saving node data: {} - {}", data.getTerritoryId(), data);
 		LocalDate date = data.getDateRep();
-		/*
-		Optional<LocalDate> oMinDate = repository.getMinDateRepByTerritoryId(territoryId);
-		if (oMinDate.isPresent()) {
-			LocalDate minDate = oMinDate.get();
-			if (date.isBefore(minDate)) {
-				log.info("No data available: {}, {}", data.getTerritoryId(), date);
-				return null;
-			}
-		}
-		Optional<LocalDate> oMaxDate = repository.getMaxDateRepByTerritoryId(territoryId);
-		if (oMaxDate.isPresent()) {
-			LocalDate maxDate = oMaxDate.get();
-			if (date.isAfter(maxDate)) {
-				log.info("No data available: {}, {}", data.getTerritoryId(), date);
-				return null;
-			}
-		}
-		*/
 		Optional<CoronaDataEntity> e = repository.findByTerritoryIdAndDateRep(data.getTerritoryId(), date);
 		CoronaDataEntity entity = null;
 		if (e.isPresent()) {
@@ -253,7 +239,7 @@ public class CoronaWorldDataJsonImport extends CoronaDataImport {
 				log.debug("DEATHS DIFF    : {} - {} vs {}", entity.getTerritoryId(), data.getDeathsKum(), entity.getDeathsKum());
 			}
 		} else {
-			if (overwrite) {
+			if (onlyOverwrite) {
 				log.info("No data found to overwrite: {}", data);
 				return;
 			}
