@@ -30,6 +30,8 @@ public class CoronaDataEntity {
 	private Integer year;
 	private Long cases;
 	private Long deaths;
+	private Long recovered;
+	private Long active;
 	private String territory;
 	private String territoryCode;
 	private String geoId;
@@ -38,8 +40,12 @@ public class CoronaDataEntity {
 	private Long casesKum;
 	private Long casesDaysKum;
 	private Long deathsKum;
+	private Long recoveredKum;
+	private Long activeKum;
 	private Double casesPer100000Pop;
 	private Double deathsPer100000Pop;
+	private Double recoveredPer100000Pop;
+	private Double activePer100000Pop;
 	private Long orderId;
 	
 	public CoronaData toCoronaData() {
@@ -53,6 +59,12 @@ public class CoronaDataEntity {
 		data.setDeaths(getDeaths() != null ? getDeaths() : 0L);
 		data.setDeathsKum(getDeathsKum() != null ? getDeathsKum() : 0L);
 		data.setDeathsPer100000Pop(getDeathsPer100000Pop() != null ? getDeathsPer100000Pop() : 0.0);
+		data.setRecovered(getRecovered());
+		data.setRecoveredKum(getRecoveredKum());
+		data.setRecoveredPer100000Pop(getRecoveredPer100000Pop());
+		data.setActive(getActive());
+		data.setActiveKum(getActiveKum());
+		data.setActivePer100000Pop(getActivePer100000Pop());
 		data.setGeoId(getGeoId());
 		data.setMonth(getMonth());
 		data.setPopulation(getPopulation());

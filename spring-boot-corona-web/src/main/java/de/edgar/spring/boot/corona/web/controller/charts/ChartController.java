@@ -9,7 +9,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,21 +66,65 @@ public class ChartController {
 
 	@Autowired
 	private MessageSourceService messageSourceService;
+	
+	private long getLong(Long value) {
+		return value != null ? value.longValue() : 0L;
+	}
+
+	private double getDouble(Double value) {
+		return value != null ? value.doubleValue() : 0L;
+	}
+
+	private double getDouble(Long value) {
+		return value != null ? value.doubleValue() : 0L;
+	}
 
 	@GetMapping("/ajax/lineGraph")
     public LineChartData getLineGraph(@ModelAttribute CoronaDataSession cds) {
     	LineChartData data = new LineChartData();
 
     	String title = "";
-		switch(cds.getSelectedDataType()) {
+		switch (cds.getSelectedDataType() + "-" + cds.getSelectedDataCategory()) {
 		default:
-		case "infections": title = messageSourceService.getMessage("chart.infections", cds.getLocale()); break;
-		case "infectionsPerDay": title = messageSourceService.getMessage("chart.infectionsPerDay", cds.getLocale()); break;
-		case "infectionsPer100000": title = messageSourceService.getMessage("chart.infectionsPer100000", cds.getLocale()); break;
-		case "infectionsPerDaysAnd100000": title = messageSourceService.getMessage("chart.infectionsPerDaysAnd100000", cds.getLocale(), daysToKum); break;
-		case "deaths": title = messageSourceService.getMessage("chart.deaths", cds.getLocale()); break;
-		case "deathsPerDay": title = messageSourceService.getMessage("chart.deathsPerDay", cds.getLocale()); break;
-		case "deathsPer100000": title = messageSourceService.getMessage("chart.deathsPer100000", cds.getLocale()); break;
+		case "infections-cumulated":
+			title = messageSourceService.getMessage("chart.infections", cds.getLocale());
+			break;
+		case "infections-perDay":
+			title = messageSourceService.getMessage("chart.infectionsPerDay", cds.getLocale());
+			break;
+		case "infections-per100000":
+			title = messageSourceService.getMessage("chart.infectionsPer100000", cds.getLocale());
+			break;
+		case "infections-perDaysAnd100000":
+			title = messageSourceService.getMessage("chart.infectionsPerDaysAnd100000", cds.getLocale(), daysToKum);
+			break;
+		case "deaths-cumulated":
+			title = messageSourceService.getMessage("chart.deaths", cds.getLocale());
+			break;
+		case "deaths-perDay":
+			title = messageSourceService.getMessage("chart.deathsPerDay", cds.getLocale());
+			break;
+		case "deaths-per100000":
+			title = messageSourceService.getMessage("chart.deathsPer100000", cds.getLocale());
+			break;
+		case "recovered-cumulated":
+			title = messageSourceService.getMessage("chart.recovered", cds.getLocale());
+			break;
+		case "recovered-perDay":
+			title = messageSourceService.getMessage("chart.recoveredPerDay", cds.getLocale());
+			break;
+		case "recovered-per100000":
+			title = messageSourceService.getMessage("chart.recoveredPer100000", cds.getLocale());
+			break;
+		case "active-cumulated":
+			title = messageSourceService.getMessage("chart.active", cds.getLocale());
+			break;
+		case "active-perDay":
+			title = messageSourceService.getMessage("chart.activePerDay", cds.getLocale());
+			break;
+		case "active-per100000":
+			title = messageSourceService.getMessage("chart.activePer100000", cds.getLocale());
+			break;
 		}
     	
     	data.setTitle(messageSourceService.getMessage("chart.historical", cds.getLocale()));
@@ -119,6 +162,12 @@ public class ChartController {
 				        	cd.setDeaths(0L);
 				        	cd.setDeathsKum(0L);
 				        	cd.setDeathsPer100000Pop(0.0);
+				        	cd.setRecovered(0L);
+				        	cd.setRecoveredKum(0L);
+				        	cd.setRecoveredPer100000Pop(0.0);
+				        	cd.setActive(0L);
+				        	cd.setActiveKum(0L);
+				        	cd.setActivePer100000Pop(0.0);
 				        	cd.setGeoId(d.getGeoId());
 				        	cd.setPopulation(d.getPopulation());
 				        	coronaDataList.add(cd);
@@ -143,6 +192,12 @@ public class ChartController {
 			        	cd.setDeaths(0L);
 			        	cd.setDeathsKum(d.getDeathsKum());
 			        	cd.setDeathsPer100000Pop(d.getDeathsPer100000Pop());
+			        	cd.setRecovered(0L);
+			        	cd.setRecoveredKum(d.getRecoveredKum());
+			        	cd.setRecoveredPer100000Pop(d.getRecoveredPer100000Pop());
+			        	cd.setActive(0L);
+			        	cd.setActiveKum(d.getActiveKum());
+			        	cd.setActivePer100000Pop(d.getActivePer100000Pop());
 			        	cd.setGeoId(d.getGeoId());
 			        	cd.setPopulation(d.getPopulation());
 			        	coronaDataList.add(cd);
@@ -173,19 +228,34 @@ public class ChartController {
 			String color = colorIterator.hasNext() ? colorIterator.next().getHexRGB() : "";
 	    	s.setColor(color);
 	    	s.setData(new ArrayList<>());
+	    	Map<String, Double> valueMap = new HashMap<>();
 	    	territoryMap.get(t).forEach(d -> {
 				log.debug(d.toString());
 				double value = 0.0;
-	    		switch(cds.getSelectedDataType()) {
+	    		switch(cds.getSelectedDataType() + "-" + cds.getSelectedDataCategory()) {
 	    		default:
-	    		case "infections": value = d.getCasesKum().doubleValue(); break;
-	    		case "infectionsPerDay": value = d.getCases().doubleValue(); break;
-	    		case "infectionsPer100000": value = d.getCasesPer100000Pop(); break;
-	    		case "infectionsPerDaysAnd100000": value = d.getCasesDaysKum() * (double)daysToKumPop / d.getPopulation(); break;
-	    		case "deaths": value = d.getDeathsKum().doubleValue(); break;
-	    		case "deathsPerDay": value = d.getDeaths().doubleValue(); break;
-	    		case "deathsPer100000": value = d.getDeathsPer100000Pop(); break;
+	    		case "infections-cumulated": value = getDouble(d.getCasesKum()); break;
+	    		case "infections-perDay": value = getDouble(d.getCases()); break;
+	    		case "infections-per100000": value = getDouble(d.getCasesPer100000Pop()); break;
+	    		case "infections-perDaysAnd100000": value = getDouble(d.getCasesDaysKum() != null && d.getPopulation() != null ? (d.getCasesDaysKum() * (double)daysToKumPop / d.getPopulation()) : 0); break;
+	    		case "deaths-cumulated": value = getDouble(d.getDeathsKum()); break;
+	    		case "deaths-perDay": value = getDouble(d.getDeaths()); break;
+	    		case "deaths-per100000": value = getDouble(d.getDeathsPer100000Pop()); break;
+	    		case "recovered-cumulated": value = getDouble(d.getRecoveredKum()); break;
+	    		case "recovered-perDay": value = getDouble(d.getRecovered()); break;
+	    		case "recovered-per100000": value = getDouble(d.getRecoveredPer100000Pop()); break;
+	    		case "active-cumulated": value = getDouble(d.getActiveKum()); break;
+	    		case "active-perDay": value = getDouble(d.getActive()); break;
+	    		case "active-per100000": value = getDouble(d.getActivePer100000Pop()); break;
 	    		}
+		    	if (value == 0.0) {
+		    		value = getDouble(valueMap.get("last"));
+		    	} else {
+		    		valueMap.put("last", value);
+		    	}
+		    	if (value < 0.0001 && "logarithmic".equals(yAxis.getType())) {
+		    		value = 0.0001;
+		    	}
 	    		s.getData().add(value);
 	    		
 		    	if ("linear".equals(yAxis.getType())) {
@@ -226,41 +296,69 @@ public class ChartController {
 				List<String> territory = new ArrayList<>();
 				territory.add(t);
 				repo.findByTerritoryInAndDateRepBetween(territory, date, date).forEach(d -> {
-					coronaData.add(d.toCoronaData());
+					CoronaData cd = d.toCoronaData();
+					if (getLong(cd.getPopulation()) > 0L) {
+						cd.setCasesDaysPer100000Pop((getDouble(cd.getCasesDaysKum()) * (double)daysToKumPop) / cd.getPopulation());
+					}
+					coronaData.add(cd);
 				});
 			});
 		}
 		
     	String title = "";
-		switch (cds.getSelectedDataType()) {
+		switch (cds.getSelectedDataType() + "-" + cds.getSelectedDataCategory()) {
 		default:
-		case "infections":
+		case "infections-cumulated":
 			title = messageSourceService.getMessage("chart.infections", cds.getLocale());
 			coronaData.sort(Comparator.comparing(CoronaData::getCasesKum).reversed());
 			break;
-		case "infectionsPerDay":
+		case "infections-perDay":
 			title = messageSourceService.getMessage("chart.infectionsPerDay", cds.getLocale());
 			coronaData.sort(Comparator.comparing(CoronaData::getCases).reversed());
 			break;
-		case "infectionsPer100000":
+		case "infections-per100000":
 			title = messageSourceService.getMessage("chart.infectionsPer100000", cds.getLocale());
 			coronaData.sort(Comparator.comparing(CoronaData::getCasesPer100000Pop).reversed());
 			break;
-		case "infectionsPerDaysAnd100000":
+		case "infections-perDaysAnd100000":
 			title = messageSourceService.getMessage("chart.infectionsPerDaysAnd100000", cds.getLocale(), daysToKum);
-			coronaData.sort(Comparator.comparing(CoronaData::getCasesDaysKum).reversed());
+			coronaData.sort(Comparator.comparing(CoronaData::getCasesDaysPer100000Pop).reversed());
 			break;
-		case "deaths":
+		case "deaths-cumulated":
 			title = messageSourceService.getMessage("chart.deaths", cds.getLocale());
 			coronaData.sort(Comparator.comparing(CoronaData::getDeathsKum).reversed());
 			break;
-		case "deathsPerDay":
+		case "deaths-perDay":
 			title = messageSourceService.getMessage("chart.deathsPerDay", cds.getLocale());
 			coronaData.sort(Comparator.comparing(CoronaData::getDeaths).reversed());
 			break;
-		case "deathsPer100000":
+		case "deaths-per100000":
 			title = messageSourceService.getMessage("chart.deathsPer100000", cds.getLocale());
 			coronaData.sort(Comparator.comparing(CoronaData::getDeathsPer100000Pop).reversed());
+			break;
+		case "recovered-cumulated":
+			title = messageSourceService.getMessage("chart.recovered", cds.getLocale());
+			coronaData.sort(Comparator.comparing(CoronaData::getRecoveredKum).reversed());
+			break;
+		case "recovered-perDay":
+			title = messageSourceService.getMessage("chart.recoveredPerDay", cds.getLocale());
+			coronaData.sort(Comparator.comparing(CoronaData::getRecovered).reversed());
+			break;
+		case "recovered-per100000":
+			title = messageSourceService.getMessage("chart.recoveredPer100000", cds.getLocale());
+			coronaData.sort(Comparator.comparing(CoronaData::getRecoveredPer100000Pop).reversed());
+			break;
+		case "active-cumulated":
+			title = messageSourceService.getMessage("chart.active", cds.getLocale());
+			coronaData.sort(Comparator.comparing(CoronaData::getActiveKum).reversed());
+			break;
+		case "active-perDay":
+			title = messageSourceService.getMessage("chart.activePerDay", cds.getLocale());
+			coronaData.sort(Comparator.comparing(CoronaData::getActive).reversed());
+			break;
+		case "active-per100000":
+			title = messageSourceService.getMessage("chart.activePer100000", cds.getLocale());
+			coronaData.sort(Comparator.comparing(CoronaData::getActivePer100000Pop).reversed());
 			break;
 		}
 				
@@ -289,14 +387,20 @@ public class ChartController {
         	List<Object> barData = new ArrayList<>();
         	barData.add(cache.getTerritoryName(d.getTerritory(), cds.getLocale()));
         	Double value = 0.0;
-    		switch(cds.getSelectedDataType()) {
-    		case "infections": value = d.getCasesKum().doubleValue(); break;
-    		case "infectionsPerDay": value = d.getCases().doubleValue(); break;
-    		case "infectionsPer100000": value = d.getCasesPer100000Pop(); break;
-    		case "infectionsPerDaysAnd100000": value = (d.getCasesDaysKum() * (double)daysToKumPop) / d.getPopulation(); break;
-    		case "deaths": value = d.getDeathsKum().doubleValue(); break;
-    		case "deathsPerDay": value = d.getDeaths().doubleValue(); break;
-    		case "deathsPer100000": value = d.getDeathsPer100000Pop(); break;
+    		switch(cds.getSelectedDataType() + "-" + cds.getSelectedDataCategory()) {
+    		case "infections-cumulated": value = getDouble(d.getCasesKum()); break;
+    		case "infections-perDay": value = getDouble(d.getCases()); break;
+    		case "infections-per100000": value = getDouble(d.getCasesPer100000Pop()); break;
+    		case "infections-perDaysAnd100000": value = getDouble(d.getCasesDaysPer100000Pop()); break;
+    		case "deaths-cumulated": value = getDouble(d.getDeathsKum()); break;
+    		case "deaths-perDay": value = getDouble(d.getDeaths()); break;
+    		case "deaths-per100000": value = getDouble(d.getDeathsPer100000Pop()); break;
+    		case "recovered-cumulated": value = getDouble(d.getRecoveredKum()); break;
+    		case "recovered-perDay": value = getDouble(d.getRecovered()); break;
+    		case "recovered-per100000": value = getDouble(d.getRecoveredPer100000Pop()); break;
+    		case "active-cumulated": value = getDouble(d.getActiveKum()); break;
+    		case "active-perDay": value = getDouble(d.getActive()); break;
+    		case "active-per100000": value = getDouble(d.getActivePer100000Pop()); break;
     		default: value = 0.0; break;
     		}
         	barData.add(value);
@@ -318,15 +422,17 @@ public class ChartController {
 				Optional<CoronaDataEntity> entity;
 				switch (cds.getSelectedDataType()) {
 				case "infections":
-				case "infectionsPerDay":
-				case "infectionsPer100000":
 				default:
 					entity = repo.getFirstByTerritoryAndCasesKumGreaterThanOrderByCasesKumAscDateRepAsc(t, 0L);
 					break;
 				case "deaths":
-				case "deathsPerDay":
-				case "deathsPer100000":
 					entity = repo.getFirstByTerritoryAndDeathsKumGreaterThanOrderByDeathsKumAscDateRepAsc(t, 0L);
+					break;
+				case "recovered":
+					entity = repo.getFirstByTerritoryAndRecoveredKumGreaterThanOrderByRecoveredKumAscDateRepAsc(t, 0L);
+					break;
+				case "active":
+					entity = repo.getFirstByTerritoryAndActiveKumGreaterThanOrderByActiveKumAscDateRepAsc(t, 0L);
 					break;
 				}
 				if (entity.isPresent()) {
@@ -339,24 +445,25 @@ public class ChartController {
 			});
 		}
 
-		AtomicBoolean infections = new AtomicBoolean();
     	String title = "";
     	String yAxisTitle = "";
 		switch (cds.getSelectedDataType()) {
 		case "infections":
-		case "infectionsPerDay":
-		case "infectionsPer100000":
 		default:
 			title = messageSourceService.getMessage("chart.startOfInfections", cds.getLocale());
 			yAxisTitle = messageSourceService.getMessage("chart.infections", cds.getLocale());
-			infections.set(true);
 			break;
 		case "deaths":
-		case "deathsPerDay":
-		case "deathsPer100000":
 			title = messageSourceService.getMessage("chart.startOfDeaths", cds.getLocale());
 			yAxisTitle = messageSourceService.getMessage("chart.deaths", cds.getLocale());
-			infections.set(false);
+			break;
+		case "recovered":
+			title = messageSourceService.getMessage("chart.startOfRecovered", cds.getLocale());
+			yAxisTitle = messageSourceService.getMessage("chart.recovered", cds.getLocale());
+			break;
+		case "active":
+			title = messageSourceService.getMessage("chart.startOfActive", cds.getLocale());
+			yAxisTitle = messageSourceService.getMessage("chart.active", cds.getLocale());
 			break;
 		}
     	data.setTitle(title);
@@ -390,13 +497,13 @@ public class ChartController {
         	CoronaData cd = coronaData.get(t);
             for (LocalDate date = cds.getFromDate(); date.isBefore(cds.getToDate().plusDays(1)); date=date.plusDays(1)) {
         		if (date.isEqual(cd.getDateRep())) {
-        			if (infections.get()) {
-            			series.getData().add(cd.getCases().doubleValue());
-        			} else {
-            			series.getData().add(cd.getDeaths().doubleValue());
+        			switch (cds.getSelectedDataType()) {
+        			case "infections": series.getData().add(getDouble(cd.getCases())); break;
+        			case "deaths": series.getData().add(getDouble(cd.getDeaths())); break;
+        			case "recovered": series.getData().add(getDouble(cd.getRecovered())); break;
+        			case "active": series.getData().add(getDouble(cd.getActive())); break;
+        			default: series.getData().add(0.0); break;
         			}
-        		} else {
-        			series.getData().add(0.0);
         		}
         	}
             data.getSeries().add(series);
@@ -412,22 +519,19 @@ public class ChartController {
     	String title = "";
     	String title1 = "";
     	String title2 = "";
-		switch(cds.getSelectedDataType()) {
+		switch(cds.getSelectedDataCategory()) {
 		default:
-		case "infections":
-		case "deaths":
+		case "cumulated":
 			title = messageSourceService.getMessage("chart.infectionsAndDeaths", cds.getLocale());
 			title1 = messageSourceService.getMessage("chart.infections", cds.getLocale());
 			title2 = messageSourceService.getMessage("chart.deaths", cds.getLocale());
 			break;
-		case "infectionsPerDay":
-		case "deathsPerDay":
+		case "perDay":
 			title = messageSourceService.getMessage("chart.infectionsAndDeathsPerDay", cds.getLocale());
 			title1 = messageSourceService.getMessage("chart.infectionsPerDay", cds.getLocale());
 			title2 = messageSourceService.getMessage("chart.deathsPerDay", cds.getLocale());
 			break;
-		case "infectionsPer100000":
-		case "deathsPer100000":
+		case "per100000":
 			title = messageSourceService.getMessage("chart.infectionsAndDeathsPer100000", cds.getLocale());
 			title1 = messageSourceService.getMessage("chart.infectionsPer100000", cds.getLocale());
 			title2 = messageSourceService.getMessage("chart.deathsPer100000", cds.getLocale());
@@ -469,6 +573,12 @@ public class ChartController {
 				        	cd.setDeaths(0L);
 				        	cd.setDeathsKum(0L);
 				        	cd.setDeathsPer100000Pop(0.0);
+				        	cd.setRecovered(0L);
+				        	cd.setRecoveredKum(0L);
+				        	cd.setRecoveredPer100000Pop(0.0);
+				        	cd.setActive(0L);
+				        	cd.setActiveKum(0L);
+				        	cd.setActivePer100000Pop(0.0);
 				        	cd.setGeoId(d.getGeoId());
 				        	cd.setPopulation(d.getPopulation());
 				        	coronaDataList.add(cd);
@@ -492,6 +602,12 @@ public class ChartController {
 			        	cd.setDeaths(0L);
 			        	cd.setDeathsKum(d.getDeathsKum());
 			        	cd.setDeathsPer100000Pop(d.getDeathsPer100000Pop());
+			        	cd.setRecovered(0L);
+			        	cd.setRecoveredKum(d.getRecoveredKum());
+			        	cd.setRecoveredPer100000Pop(d.getRecoveredPer100000Pop());
+			        	cd.setActive(0L);
+			        	cd.setActiveKum(d.getActiveKum());
+			        	cd.setActivePer100000Pop(d.getActivePer100000Pop());
 			        	cd.setGeoId(d.getGeoId());
 			        	cd.setPopulation(d.getPopulation());
 			        	coronaDataList.add(cd);
@@ -534,22 +650,19 @@ public class ChartController {
 				log.debug(t.toString());
 				double iValue = 0.0;
 				double dValue = 0.0;
-	    		switch(cds.getSelectedDataType()) {
-				case "infections":
-				case "deaths":
+	    		switch(cds.getSelectedDataCategory()) {
+				case "cumulated":
 				default:
-					iValue = t.getCasesKum().doubleValue();
-					dValue = t.getDeathsKum().doubleValue();
+					iValue = getDouble(t.getCasesKum());
+					dValue = getDouble(t.getDeathsKum());
 					break;
-				case "infectionsPerDay":
-				case "deathsPerDay":
-					iValue = t.getCases().doubleValue();
-					dValue = t.getDeaths().doubleValue();
+				case "perDay":
+					iValue = getDouble(t.getCases());
+					dValue = getDouble(t.getDeaths());
 					break;
-				case "infectionsPer100000":
-				case "deathsPer100000":
-					iValue = t.getCasesPer100000Pop();
-					dValue = t.getDeathsPer100000Pop();
+				case "per100000":
+					iValue = getDouble(t.getCasesPer100000Pop());
+					dValue = getDouble(t.getDeathsPer100000Pop());
 					break;
 	    		}
 				i.getData().add(iValue);
@@ -586,14 +699,20 @@ public class ChartController {
     	BubbleChartData data = new BubbleChartData();
 
     	String title = "";
-		switch(cds.getSelectedDataType()) {
+		switch(cds.getSelectedDataType() + "-" + cds.getSelectedDataCategory()) {
 		default:
-		case "infections": title = messageSourceService.getMessage("chart.infections", cds.getLocale()); break;
-		case "infectionsPerDay": title = messageSourceService.getMessage("chart.infectionsPerDay", cds.getLocale()); break;
-		case "infectionsPer100000": title = messageSourceService.getMessage("chart.infectionsPer100000", cds.getLocale()); break;
-		case "deaths": title = messageSourceService.getMessage("chart.deaths", cds.getLocale()); break;
-		case "deathsPerDay": title = messageSourceService.getMessage("chart.deathsPerDay", cds.getLocale()); break;
-		case "deathsPer100000": title = messageSourceService.getMessage("chart.deathsPer100000", cds.getLocale()); break;
+		case "infections-cumulated": title = messageSourceService.getMessage("chart.infections", cds.getLocale()); break;
+		case "infections-perDay": title = messageSourceService.getMessage("chart.infectionsPerDay", cds.getLocale()); break;
+		case "infections-per100000": title = messageSourceService.getMessage("chart.infectionsPer100000", cds.getLocale()); break;
+		case "deaths-cumulated": title = messageSourceService.getMessage("chart.deaths", cds.getLocale()); break;
+		case "deaths-perDay": title = messageSourceService.getMessage("chart.deathsPerDay", cds.getLocale()); break;
+		case "deaths-per100000": title = messageSourceService.getMessage("chart.deathsPer100000", cds.getLocale()); break;
+		case "recovered-cumulated": title = messageSourceService.getMessage("chart.recovered", cds.getLocale()); break;
+		case "recovered-perDay": title = messageSourceService.getMessage("chart.recoveredPerDay", cds.getLocale()); break;
+		case "recovered-per100000": title = messageSourceService.getMessage("chart.recoveredPer100000", cds.getLocale()); break;
+		case "active-cumulated": title = messageSourceService.getMessage("chart.active", cds.getLocale()); break;
+		case "active-perDay": title = messageSourceService.getMessage("chart.activePerDay", cds.getLocale()); break;
+		case "active-per100000": title = messageSourceService.getMessage("chart.activePer100000", cds.getLocale()); break;
 		}
     	
     	data.setTitle(messageSourceService.getMessage("chart.historicalBubbles", cds.getLocale()));
@@ -630,6 +749,12 @@ public class ChartController {
 				        	cd.setDeaths(0L);
 				        	cd.setDeathsKum(0L);
 				        	cd.setDeathsPer100000Pop(0.0);
+				        	cd.setRecovered(0L);
+				        	cd.setRecoveredKum(0L);
+				        	cd.setRecoveredPer100000Pop(0.0);
+				        	cd.setActive(0L);
+				        	cd.setActiveKum(0L);
+				        	cd.setActivePer100000Pop(0.0);
 				        	cd.setGeoId(d.getGeoId());
 				        	cd.setPopulation(d.getPopulation());
 				        	coronaDataList.add(cd);
@@ -653,6 +778,12 @@ public class ChartController {
 			        	cd.setDeaths(0L);
 			        	cd.setDeathsKum(d.getDeathsKum());
 			        	cd.setDeathsPer100000Pop(d.getDeathsPer100000Pop());
+			        	cd.setRecovered(0L);
+			        	cd.setRecoveredKum(d.getRecoveredKum());
+			        	cd.setRecoveredPer100000Pop(d.getRecoveredPer100000Pop());
+			        	cd.setActive(0L);
+			        	cd.setActiveKum(d.getActiveKum());
+			        	cd.setActivePer100000Pop(d.getActivePer100000Pop());
 			        	cd.setGeoId(d.getGeoId());
 			        	cd.setPopulation(d.getPopulation());
 			        	coronaDataList.add(cd);
@@ -687,31 +818,55 @@ public class ChartController {
 				log.debug(d.toString());
 				Double y;
 				Double z;
-				switch (cds.getSelectedDataType()) {
+				switch (cds.getSelectedDataType() + "-" + cds.getSelectedDataCategory()) {
 				default:
-				case "infections":
-					y = d.getCasesKum().doubleValue();
-					z = d.getCases().doubleValue();
+				case "infections-cumulated":
+					y = getDouble(d.getCasesKum());
+					z = getDouble(d.getCases());
 					break;
-				case "infectionsPerDay":
-					y = d.getCases().doubleValue();
-					z = d.getCases().doubleValue();
+				case "infections-perDay":
+					y = getDouble(d.getCases());
+					z = getDouble(d.getCases());
 					break;
-				case "infectionsPer100000":
-					y = d.getCasesPer100000Pop();
-					z = d.getCases().doubleValue();
+				case "infections-per100000":
+					y = getDouble(d.getCasesPer100000Pop());
+					z = getDouble(d.getCases());
 					break;
-				case "deaths":
-					y = d.getDeathsKum().doubleValue();
-					z = d.getDeaths().doubleValue();
+				case "deaths-cumulated":
+					y = getDouble(d.getDeathsKum());
+					z = getDouble(d.getDeaths());
 					break;
-				case "deathsPerDay":
-					y = d.getDeaths().doubleValue();
-					z = d.getDeaths().doubleValue();
+				case "deaths-perDay":
+					y = getDouble(d.getDeaths());
+					z = getDouble(d.getDeaths());
 					break;
-				case "deathsPer100000":
-					y = d.getDeathsPer100000Pop();
-					z = d.getDeaths().doubleValue();
+				case "deaths-per100000":
+					y = getDouble(d.getDeathsPer100000Pop());
+					z = getDouble(d.getDeaths());
+					break;
+				case "recovered-cumulated":
+					y = getDouble(d.getRecoveredKum());
+					z = getDouble(d.getRecovered());
+					break;
+				case "recovered-perDay":
+					y = getDouble(d.getRecovered());
+					z = getDouble(d.getRecovered());
+					break;
+				case "recovered-per100000":
+					y = getDouble(d.getRecoveredPer100000Pop());
+					z = getDouble(d.getRecovered());
+					break;
+				case "active-cumulated":
+					y = getDouble(d.getActiveKum());
+					z = getDouble(d.getActive());
+					break;
+				case "active-perDay":
+					y = getDouble(d.getActive());
+					z = getDouble(d.getActive());
+					break;
+				case "active-per100000":
+					y = getDouble(d.getActivePer100000Pop());
+					z = getDouble(d.getActive());
 					break;
 				}
 				Bubble bubble = new Bubble(x.get(), y, z, cache.getTerritoryName(t, cds.getLocale()), dates.get(x.get()));

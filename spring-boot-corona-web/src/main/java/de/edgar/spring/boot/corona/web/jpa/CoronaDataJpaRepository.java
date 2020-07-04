@@ -30,4 +30,8 @@ public interface CoronaDataJpaRepository extends CrudRepository<CoronaDataEntity
 
 	public Optional<CoronaDataEntity> getFirstByTerritoryAndDeathsKumGreaterThanOrderByDeathsKumAscDateRepAsc(String territory, Long isGreater);
 
+	public Optional<CoronaDataEntity> getFirstByTerritoryAndRecoveredKumGreaterThanOrderByRecoveredKumAscDateRepAsc(String territory, Long isGreater);
+
+	public Optional<CoronaDataEntity> getFirstByTerritoryAndActiveKumGreaterThanOrderByActiveKumAscDateRepAsc(String territory, Long isGreater);
+
 }

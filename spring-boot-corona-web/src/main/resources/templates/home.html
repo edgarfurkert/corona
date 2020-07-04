@@ -72,7 +72,7 @@
 									<td colspan="2" class="dateRange">
 										<b><span th:text="#{label.dateRange}">DATE_RANGE</span></b>
 									</td>
-									<td class="dataSelection">
+									<td colspan="2" class="dataSelection">
 										<b><span th:text="#{label.dataSelection}">DATA_SELECTION</span></b>
 									</td>
 									<td style="text-align:center">
@@ -96,6 +96,18 @@
 												   th:field="*{selectedDataType}"
 												   th:value="${dataType.key}" />
 											<span th:text="${dataType.name}">DATATYPE</span>&nbsp;
+										</span>
+										</span>
+										</div>
+									</td>
+									<td rowSpan="2">
+										<div class="dataTypes">
+										<span th:each="dataCategory : ${coronaDataSession.dataCategories}">
+										<span class="dataType">
+											<input name="selectedDataCategory" type="radio"
+												   th:field="*{selectedDataCategory}"
+												   th:value="${dataCategory.key}" />
+											<span th:text="${dataCategory.name}">DATACATEGORY</span>&nbsp;
 										</span>
 										</span>
 										</div>

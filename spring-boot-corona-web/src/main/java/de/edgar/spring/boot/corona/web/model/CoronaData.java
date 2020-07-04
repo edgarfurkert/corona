@@ -17,6 +17,8 @@ public class CoronaData {
 	private Integer year;
 	private Long cases;
 	private Long deaths;
+	private Long recovered;
+	private Long active;
 	private String territory;
 	private String territoryCode;
 	private String geoId;
@@ -25,8 +27,13 @@ public class CoronaData {
 	private Long casesKum;
 	private Long casesDaysKum;
 	private Long deathsKum;
+	private Long recoveredKum;
+	private Long activeKum;
 	private Double casesPer100000Pop;
+	private Double casesDaysPer100000Pop;
 	private Double deathsPer100000Pop;
+	private Double recoveredPer100000Pop;
+	private Double activePer100000Pop;
 	private Long orderId;
 	
 }

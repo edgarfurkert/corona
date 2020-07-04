@@ -31,7 +31,11 @@ public class CoronaDataSession {
 	
 	private List<DataType> dataTypes;
 	
+	private List<DataType> dataCategories;
+	
 	private String selectedDataType;
+	
+	private String selectedDataCategory;
 	
 	private List<AxisType> yAxisTypes;
 	

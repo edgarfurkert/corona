@@ -69,14 +69,18 @@ public class CoronaDataController {
 		cds.setToDate(LocalDate.now());
 		List<DataType> dataTypes = new ArrayList<>();
 		dataTypes.add(new DataType("infections", messageSourceService.getMessage("infections", cds.getLocale())));
-		dataTypes.add(new DataType("infectionsPerDay", messageSourceService.getMessage("infectionsPerDay", cds.getLocale())));
-		dataTypes.add(new DataType("infectionsPer100000", messageSourceService.getMessage("infectionsPer100000", cds.getLocale())));
-		dataTypes.add(new DataType("infectionsPerDaysAnd100000",  messageSourceService.getMessage("infectionsPerDaysAnd100000", cds.getLocale(), daysToKum)));
 		dataTypes.add(new DataType("deaths", messageSourceService.getMessage("deaths", cds.getLocale())));
-		dataTypes.add(new DataType("deathsPerDay", messageSourceService.getMessage("deathsPerDay", cds.getLocale())));
-		dataTypes.add(new DataType("deathsPer100000", messageSourceService.getMessage("deathsPer100000", cds.getLocale())));
+		dataTypes.add(new DataType("recovered", messageSourceService.getMessage("recovered", cds.getLocale())));
+		dataTypes.add(new DataType("active", messageSourceService.getMessage("active", cds.getLocale())));
 		cds.setDataTypes(dataTypes);
+		List<DataType> dataCategories = new ArrayList<>();
+		dataCategories.add(new DataType("cumulated", messageSourceService.getMessage("cumulated", cds.getLocale())));
+		dataCategories.add(new DataType("perDay", messageSourceService.getMessage("perDay", cds.getLocale())));
+		dataCategories.add(new DataType("per100000", messageSourceService.getMessage("per100000", cds.getLocale())));
+		dataCategories.add(new DataType("perDaysAnd100000",  messageSourceService.getMessage("perDaysAnd100000", cds.getLocale(), daysToKum)));
+		cds.setDataCategories(dataCategories);
 		cds.setSelectedDataType("infections");
+		cds.setSelectedDataCategory("cumulated");
 		
 		List<AxisType> axisTypes = new ArrayList<>();
 		axisTypes.add(new AxisType("linear", messageSourceService.getMessage("linear", cds.getLocale())));
