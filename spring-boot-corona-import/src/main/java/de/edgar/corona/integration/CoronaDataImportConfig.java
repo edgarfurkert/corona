@@ -21,6 +21,7 @@ import org.springframework.integration.file.filters.SimplePatternFileListFilter;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
 
+import de.edgar.corona.config.DownloadConfig;
 import de.edgar.corona.config.DownloadProperties;
 import de.edgar.corona.config.DownloadUrlProperty;
 import de.edgar.corona.reactive.CoronaGermanyDataCsvImport;
@@ -93,6 +94,11 @@ public class CoronaDataImportConfig {
 	}
 
 	@Bean
+	public MessageChannel doNothingChannel() {
+		return new DirectChannel();
+	}
+
+	@Bean
     @InboundChannelAdapter(value = "csvFileInputChannel", poller = @Poller(fixedDelay = "${corona.data.import.poller}"))
     public MessageSource<File> csvFileReadingMessageSource() {
     	log.info("Reading csv-files in path: {}", importPath);
@@ -150,7 +156,30 @@ public class CoronaDataImportConfig {
 	@Router(inputChannel="jsonFileRouteChannel")
 	public String jsonFileRouter(File file) {
 		log.info("Router: file {}...", file.getName());
+		// check if csv import is done
 		String channel = "worldApiChannel";
+		for (DownloadUrlProperty p : downloadProps.getUrls()) {
+			log.debug("Check channel: {}", p);
+			if (channel.equals(p.getChannel()) && p.getAfterChannel() != null) {
+				for (String c : p.getAfterChannel()) {
+					log.debug("afterChannel: {}", c);
+					for (DownloadUrlProperty p2 : downloadProps.getUrls()) {
+						if (c.equals(p2.getChannel())) {
+							String fn = importPath + "/" + DownloadConfig.getFileName(p2.getFileName()) + ".csv.in";
+							File csvFile = new File(fn);
+							if (!csvFile.exists()) {
+								log.info("afterChannel: File {} does not exist.", fn);
+								channel = "doNothingChannel";
+								break;
+							} else {
+								log.info("afterChannel: File {} found.", fn);
+							}
+						}
+					}
+				}
+				break;
+			}
+		}
 		log.info("Router: route to channel {}", channel);
 		return channel;
 	}
@@ -219,6 +248,15 @@ public class CoronaDataImportConfig {
     	return message -> {
     		File file = (File)message.getPayload();
     		log.error("unknownChannel: Cannot handle file {}", file.getAbsolutePath());
+    	};
+    }
+    
+	@Bean
+    @ServiceActivator(inputChannel="doNothingChannel")
+    public MessageHandler doNothing() {
+    	return message -> {
+    		File file = (File)message.getPayload();
+    		log.error("doNothingChannel: File {} ignored.", file.getAbsolutePath());
     	};
     }
     

@@ -16,12 +16,12 @@ public class CoronaWorldData extends CoronaData {
 		setCases(getLong(a[4]));
 		setDeaths(getLong(a[5]));
 		setTerritory(a[6].replaceAll("\"", ""));
-		setTerritoryId(getTerritoryId(getTerritory()));
+		setTerritoryId(getKey(getTerritory()));
 		setGeoId(a[7]);
 		setTerritoryCode(a[8].length() > 0 ? a[8] : a[7]);
 		setPopulation(getLong(a[9]));
-		setTerritoryParent(a[10]);
-		setOrderId(OrderIdEnum.TERRITORY.getOrderId());
+		setTerritoryParent(getKey(a[10]));
+		setOrderId(OrderIdEnum.COUNTRY.getOrderId());
 	}
 
 	@Override

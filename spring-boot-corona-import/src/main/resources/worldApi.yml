@@ -21,6 +21,4 @@ countries:
     territoryId: unitedStatesVirginIslands
   - nameId: channelIslands
     territoryId: britishVirginIslands
-  - nameId: coteDivoire
-    territoryId: coteDIvoire
     

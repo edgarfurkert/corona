@@ -114,7 +114,7 @@ public class DownloadConfig {
 	 * @param urlFileName
 	 * @return String extended filename
 	 */
-	private String getFileName(String urlFileName) {
+	public static String getFileName(String urlFileName) {
 		String now = dateToString(LocalDate.now());
 		return urlFileName + "-" + now;
 	}
@@ -298,7 +298,7 @@ public class DownloadConfig {
 		}
 	}
 	
-	private String dateToString(LocalDate date) {
+	private static String dateToString(LocalDate date) {
 		return date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 	}
 	

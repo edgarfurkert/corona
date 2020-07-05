@@ -58,4 +58,7 @@ corona:
           fileName: covid19-world-api
           header: 
           channel: worldApiChannel
+          afterChannel: 
+            - worldChannel
+            - germanyChannel
             

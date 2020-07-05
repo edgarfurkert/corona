@@ -53,6 +53,7 @@ public class CoronaWorldDataCsvImport extends CoronaDataImport {
 					.filter(d -> { return d.getDateRep().isBefore(now); })
 					.sort((d1, d2) -> d1.getDateRep().compareTo(d2.getDateRep()))
 					.doOnNext(m -> {
+						// e.g. germany
 						String territoryId = m.getTerritoryId();
 						CoronaWorldData c = kummulativeDataMap.get(territoryId);
 						if (c != null) {
@@ -72,13 +73,18 @@ public class CoronaWorldDataCsvImport extends CoronaDataImport {
 						kummulativeDataMap.put(territoryId, m);
 								
 						// collect territory parent and world population data
-						String worldKey = "World";
+						String worldKey = "world";
 						Territory territory = territoryProps.findByTerritoryId(territoryId);
+						// e.g. europe
 						String orgTerritoryParent = m.getTerritoryParent();
 						if (territory != null) {
+							// e.g. europeWest
 							m.setTerritoryParent(territory.getTerritoryParent());
+						} else {
+							log.debug("No parent found in territoryProps: {}, using {}", territoryId, m.getTerritoryParent());
 						}
-								
+						
+						// e.g. europeWest
 						String territoryParentKey = m.getTerritoryParent();
 						Map<String, CoronaWorldData> territoryParentPopulationMap = territoryParentMap.get(territoryParentKey);
 						if (territoryParentPopulationMap == null) {
@@ -93,10 +99,11 @@ public class CoronaWorldDataCsvImport extends CoronaDataImport {
 							try {
 								c = m.clone();
 								c.setGeoId(m.getTerritoryParent());
-								c.setTerritoryId(null);
-								c.setTerritory(m.getTerritoryParent());
+								c.setTerritoryId(m.getTerritoryParent());
+								c.setTerritory(m.getTerritoryParent()); // e.g. europeWest
 								c.setTerritoryCode(m.getTerritoryParent());
 								c.setTerritoryParent(territory != null ? orgTerritoryParent : worldKey);
+								c.setOrderId(OrderIdEnum.TERRITORY.getOrderId());
 								territoryParentPopulationMap.put(dateRepKey, c);
 							} catch (CloneNotSupportedException e) {
 								log.error("Cannot clone: {}", m);
@@ -109,6 +116,7 @@ public class CoronaWorldDataCsvImport extends CoronaDataImport {
 						log.debug(c.getTerritoryParent() + ": " + c.toString());
 								
 						// handle changed territory parent data
+						// e.g. europe != europeWest
 						if (!orgTerritoryParent.equals(m.getTerritoryParent())) {
 							territoryParentPopulationMap = territoryParentMap.get(orgTerritoryParent);
 							if (territoryParentPopulationMap == null) {
@@ -120,8 +128,8 @@ public class CoronaWorldDataCsvImport extends CoronaDataImport {
 								try {
 									c = m.clone();
 									c.setGeoId(orgTerritoryParent);
-									c.setTerritoryId(null);
-									c.setTerritory(orgTerritoryParent);
+									c.setTerritoryId(orgTerritoryParent);
+									c.setTerritory(orgTerritoryParent); // e.g. europe
 									c.setTerritoryCode(orgTerritoryParent);
 									c.setTerritoryParent(worldKey);
 									c.setOrderId(OrderIdEnum.WORLD.getOrderId());
@@ -148,10 +156,10 @@ public class CoronaWorldDataCsvImport extends CoronaDataImport {
 							try {
 								c = m.clone();
 								c.setGeoId(worldKey);
-								c.setTerritoryId(null);
+								c.setTerritoryId(worldKey);
 								c.setTerritory(worldKey);
 								c.setTerritoryCode(worldKey);
-								c.setTerritoryParent("Earth");
+								c.setTerritoryParent("earth");
 								c.setOrderId(OrderIdEnum.EARTH.getOrderId());
 								territoryParentPopulationMap.put(dateRepKey, c);
 							} catch (CloneNotSupportedException e) {

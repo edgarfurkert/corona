@@ -8,6 +8,7 @@ public enum OrderIdEnum {
 	TERRITORY(10L),
 	COUNTRY(100L),
 	FEDERALSTATE(1000L),
+	COUNTY(10000L),
 	UNKNOWN(1000000L);
 
 	@Getter

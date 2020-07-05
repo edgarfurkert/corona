@@ -91,10 +91,10 @@ public class CoronaWorldDataJsonImport extends CoronaDataImport {
 								Iterator<Entry<String, JsonNode>> itCountryFields = countriesEntry.getValue().fields();
 								Entry<String, JsonNode> countryEntry;
 								while (itCountryFields.hasNext()) {
-									// get country data
+									// get country data, e.g. Germany
 									countryEntry = itCountryFields.next();
 									log.debug("Saving country...");
-									data = nodeToCoronaData(countryEntry.getValue(), OrderIdEnum.TERRITORY, null);
+									data = nodeToCoronaData(countryEntry.getValue(), OrderIdEnum.COUNTRY, null);
 									if (!data.getDateRep().equals(dataDate)) {
 										log.warn("DIFFERENT DATE: data {} vs file {}", data.getDateRep(), dataDate);
 									}
@@ -102,7 +102,9 @@ public class CoronaWorldDataJsonImport extends CoronaDataImport {
 									if (countryId != null) {
 										data.setTerritoryId(countryId.getTerritoryId());
 									}
+									// e.g. germany
 									Territory t = territoryProps.findByTerritoryId(data.getTerritoryId());
+									// e.g. europeWest
 									String territoryParent = (t != null ? t.getTerritoryParent() : null);
 									if (territoryParent == null) {
 										log.error("No parent found: territoryId = {}", data.getTerritoryId());
@@ -110,25 +112,34 @@ public class CoronaWorldDataJsonImport extends CoronaDataImport {
 									data.setTerritoryParent(territoryParent);
 									save(data, true);
 									
+									// e.g. germany
 									String countryTerritory = data.getTerritory();
 									
 									// collect territory parent and world data
-									String worldKey = "World";
+									String worldKey = "world";
+									// e.g. europeWest
 									String territoryParentKey = data.getTerritoryParent();
 									if (territoryParentKey == null) {
 										log.error("territoryParent is null: {}", data.getTerritoryId());
 									}
 									CoronaData c = territoryParentMap.get(territoryParentKey);
 									
+									t = territoryProps.findByTerritoryId(territoryParentKey);
+									// e.g. europe
+									territoryParent = (t != null ? t.getTerritoryParent() : null);
+									if (territoryParent == null) {
+										log.error("No parent found: territoryId = {}", data.getTerritoryId());
+									}
+									
 									if (c == null) {
 										try {
 											c = data.clone();
 											c.setGeoId(data.getTerritoryParent());
-											c.setTerritoryId(null);
-											c.setTerritory(data.getTerritoryParent());
+											c.setTerritoryId(data.getTerritoryParent());
+											c.setTerritory(data.getTerritoryParent()); // e.g. europeWest
 											c.setTerritoryCode(data.getTerritoryParent());
-											c.setOrderId(OrderIdEnum.WORLD.getOrderId());
-											c.setTerritoryParent(worldKey);
+											c.setOrderId(OrderIdEnum.TERRITORY.getOrderId());
+											c.setTerritoryParent(territoryParent); // e.g. europe
 											territoryParentMap.put(territoryParentKey, c);
 										} catch (CloneNotSupportedException e) {
 											log.error("Cannot clone: {}", data);
@@ -145,17 +156,46 @@ public class CoronaWorldDataJsonImport extends CoronaDataImport {
 									}
 									log.debug(c.getTerritoryParent() + ": " + c.toString());
 
+									// e.g. europe
+									c = territoryParentMap.get(territoryParent);
+									
+									if (c == null) {
+										try {
+											c = data.clone();
+											c.setGeoId(territoryParent);
+											c.setTerritoryId(territoryParent);
+											c.setTerritory(territoryParent); // e.g. europe
+											c.setTerritoryCode(territoryParent);
+											c.setOrderId(OrderIdEnum.WORLD.getOrderId());
+											c.setTerritoryParent(worldKey); // world
+											territoryParentMap.put(territoryParent, c);
+										} catch (CloneNotSupportedException e) {
+											log.error("Cannot clone: {}", data);
+										}
+									} else {
+										c.setCases(c.getCases() + data.getCases());
+										c.setCasesKum(c.getCasesKum() + data.getCasesKum());
+										c.setDeaths(c.getDeaths() + data.getDeaths());
+										c.setDeathsKum(c.getDeathsKum() + data.getDeathsKum());
+										c.setRecovered(c.getRecovered() + data.getRecovered());
+										c.setRecoveredKum(c.getRecoveredKum() + data.getRecoveredKum());
+										c.setActive(c.getActive() + data.getActive());
+										c.setActiveKum(c.getActiveKum() + data.getActiveKum());
+									}
+									log.debug(c.getTerritoryParent() + ": " + c.toString());
+
+									// handle world data
 									c = territoryParentMap.get(worldKey);
 									
 									if (c == null) {
 										try {
 											c = data.clone();
 											c.setGeoId(worldKey);
-											c.setTerritoryId(null);
-											c.setTerritory(worldKey);
+											c.setTerritoryId(worldKey);
+											c.setTerritory(worldKey); // world
 											c.setTerritoryCode(worldKey);
 											c.setOrderId(OrderIdEnum.EARTH.getOrderId());
-											c.setTerritoryParent("Earth");
+											c.setTerritoryParent("earth"); // earth
 											territoryParentMap.put(worldKey, c);
 										} catch (CloneNotSupportedException e) {
 											log.error("Cannot clone: {}", data);
@@ -182,7 +222,11 @@ public class CoronaWorldDataJsonImport extends CoronaDataImport {
 										JsonNode regionNode;
 										while (itRegionsElements.hasNext()) {
 											regionNode = itRegionsElements.next();
-											data = nodeToCoronaData(regionNode, OrderIdEnum.COUNTRY, countryTerritory);
+											data = nodeToCoronaData(regionNode, OrderIdEnum.FEDERALSTATE, data.getKey(countryTerritory));
+											countryId = worldApiProps.findByNameId(data.getTerritoryParent());
+											if (countryId != null) {
+												data.setTerritoryParent(countryId.getTerritoryId());
+											}
 											FederalState fs = federalStatesProps.findByKey(data.getTerritoryId());
 											if (fs != null) {
 												data.setTerritoryCode(fs.getCode());

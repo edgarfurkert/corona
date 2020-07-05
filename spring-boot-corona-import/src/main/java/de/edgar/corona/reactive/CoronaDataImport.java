@@ -23,6 +23,7 @@ public class CoronaDataImport {
 	protected CoronaDataJpaRepository repository;
 	
 	protected void save(CoronaDataEntity entity) {
+		log.debug("{}", entity);
 		Optional<CoronaDataEntity> d = repository.findByGeoIdAndDateRep(entity.getGeoId(), entity.getDateRep());
 		if (d.isPresent()) {
 			log.info("Overwritting data: " + entity);

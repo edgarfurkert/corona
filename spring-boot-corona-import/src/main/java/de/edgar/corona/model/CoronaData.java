@@ -68,11 +68,11 @@ public class CoronaData implements Cloneable {
 		return i;
 	}
 	
-	protected String getTerritoryId(String territory) {
-		if (territory == null) {
+	public String getKey(String value) {
+		if (value == null) {
 			return null;
 		}
-		String[] tArray = territory.split(",|\\(|\\)| |_|-|'|\\*");
+		String[] tArray = value.split(",|\\(|\\)| |_|-|'|\\*");
 		
 		String code = "";
 		boolean escape = true;
@@ -89,7 +89,7 @@ public class CoronaData implements Cloneable {
 	
 	public String getTerritoryId() {
 		if (this.territoryId == null) {
-			this.territoryId = getTerritoryId(this.territory);
+			this.territoryId = getKey(this.territory);
 		}
 		
 		return this.territoryId;

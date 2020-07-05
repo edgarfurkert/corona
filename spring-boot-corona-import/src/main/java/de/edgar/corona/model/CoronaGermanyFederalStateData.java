@@ -4,9 +4,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import de.edgar.corona.config.GermanyFederalStatesProperties;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
+//@Slf4j
 public class CoronaGermanyFederalStateData extends CoronaData {
 	
 	/**
@@ -34,14 +33,6 @@ public class CoronaGermanyFederalStateData extends CoronaData {
 	public CoronaGermanyFederalStateData(String line, GermanyFederalStatesProperties props) {
 		String[] a = line.split(",(?=([^\\\"]*\\\"[^\\\"]*\\\")*[^\\\"]*$)");
 		
-		FederalState fs = props.findByKey(a[5]);
-		String tp = a[5];
-		if (fs != null) {
-			tp = fs.getName();
-		} else {
-			log.error("CoronaGermanyFederalStateData: federal state {} not found.", tp);
-		}
-		
 		Long p = getLong(a[6]);
 		
 		setCases(getLong(a[12]));
@@ -57,12 +48,12 @@ public class CoronaGermanyFederalStateData extends CoronaData {
 		setGeoId(a[2]);
 		setMonth(getDateRep().getMonthValue());
 		setPopulation(p);
-		setTerritoryId(getTerritoryId(a[2]));
+		setTerritoryId(getKey(a[2]));
 		setTerritory(a[2]);
-		setTerritoryCode(a[2]);
-		setTerritoryParent(tp);
+		setTerritoryCode(getKey(a[2]));
+		setTerritoryParent(getKey(a[5]));
 		setYear(getDateRep().getYear());
-		setOrderId(OrderIdEnum.FEDERALSTATE.getOrderId());
+		setOrderId(OrderIdEnum.COUNTY.getOrderId());
 	}
 	
 }
