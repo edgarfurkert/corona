@@ -223,6 +223,10 @@ public class CoronaWorldDataJsonImport extends CoronaDataImport {
 										while (itRegionsElements.hasNext()) {
 											regionNode = itRegionsElements.next();
 											data = nodeToCoronaData(regionNode, OrderIdEnum.FEDERALSTATE, data.getKey(countryTerritory));
+											countryId = worldApiProps.findByNameId(data.getTerritoryId());
+											if (countryId != null) {
+												data.setTerritoryId(countryId.getTerritoryId());
+											}
 											countryId = worldApiProps.findByNameId(data.getTerritoryParent());
 											if (countryId != null) {
 												data.setTerritoryParent(countryId.getTerritoryId());
