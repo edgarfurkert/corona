@@ -68,15 +68,27 @@ public class ChartController {
 	private MessageSourceService messageSourceService;
 	
 	private long getLong(Long value) {
-		return value != null ? value.longValue() : 0L;
+		return getLong(value, 0L);
 	}
 
 	private double getDouble(Double value) {
-		return value != null ? value.doubleValue() : 0L;
+		return getDouble(value, 0.0);
 	}
 
 	private double getDouble(Long value) {
-		return value != null ? value.doubleValue() : 0L;
+		return getDouble(value, 0.0);
+	}
+
+	private long getLong(Long value, Long defaultValue) {
+		return value != null ? value.longValue() : defaultValue;
+	}
+
+	private double getDouble(Double value, Double defaultValue) {
+		return value != null ? value.doubleValue() : defaultValue;
+	}
+
+	private double getDouble(Long value, Double defaultValue) {
+		return value != null ? value.doubleValue() : defaultValue;
 	}
 
 	@GetMapping("/ajax/lineGraph")
@@ -698,6 +710,8 @@ public class ChartController {
 	    	d.setColor(color);
 	    	d.setData(new ArrayList<>());
 	    	
+	    	Map<String, Double> lastMap = new HashMap<>();
+	    	lastMap.put("dValue", 0.0);
 	    	territoryMap.get(tk).forEach(t -> {
 				log.debug(t.toString());
 				double iValue = 0.0;
@@ -753,6 +767,11 @@ public class ChartController {
 					dValue = getDouble(t.getActivePer100000Pop());
 					break;
 	    		}
+				if (dValue > 0.0) {
+					lastMap.put("dValue", dValue);
+				} else {
+					dValue = lastMap.get("dValue");
+				}
 				i.getData().add(iValue);
 				d.getData().add(dValue);
 	    		
