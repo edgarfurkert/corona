@@ -19,6 +19,7 @@ public class CoronaData {
 	private Long deaths;
 	private Long recovered;
 	private Long active;
+	private String territoryId;
 	private String territory;
 	private String territoryCode;
 	private String geoId;

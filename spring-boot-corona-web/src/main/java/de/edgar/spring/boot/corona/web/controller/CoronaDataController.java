@@ -58,11 +58,13 @@ public class CoronaDataController {
 					orderId = entity.get().getOrderId();
 				}
 			}
+			/*
 			String code = messageSourceService.getCode(k);
 			if (log.isDebugEnabled()) {
 				messageSourceService.getMessage(code, cds.getLocale());
 			}
-			cds.getTerritoryParents().add(new Territory(k, code, orderId));
+			*/
+			cds.getTerritoryParents().add(new Territory(k, k, orderId));
 		});
 		cds.getTerritoryParents().sort(Comparator.comparing(Territory::getOrderId).thenComparing(Territory::getName));
 		cds.setFromDate(repo.findTopByCasesGreaterThanOrderByDateRep(0L).get().getDateRep());
@@ -91,7 +93,7 @@ public class CoronaDataController {
 		List<GraphType> graphTypes = new ArrayList<>();
 		graphTypes.add(new GraphType("line", messageSourceService.getMessage("historical", cds.getLocale())));
 		graphTypes.add(new GraphType("bubble", messageSourceService.getMessage("historicalBubbles", cds.getLocale())));
-		graphTypes.add(new GraphType("infectionsDeaths", messageSourceService.getMessage("infectionsAndDeaths", cds.getLocale())));
+		graphTypes.add(new GraphType("infectionsAnd", messageSourceService.getMessage("infectionsAnd", cds.getLocale())));
 		graphTypes.add(new GraphType("bar", messageSourceService.getMessage("top25Of", cds.getLocale())));
 		graphTypes.add(new GraphType("stackedBar", messageSourceService.getMessage("startOf", cds.getLocale())));
 		cds.setGraphTypes(graphTypes);
@@ -108,20 +110,20 @@ public class CoronaDataController {
 	@PostMapping
 	public String getTerritories(@ModelAttribute CoronaDataSession cds) {
 		
-		List<String> territoryKeys = repo.findDistinctTerritoryByTerritoryParent(cds.getSelectedTerritoryParents());
+		List<String> territoryIds = repo.findDistinctTerritoryIdByTerritoryParent(cds.getSelectedTerritoryParents());
 		List<Territory> territories = new ArrayList<>();
 		Territory allTerritories = new Territory("all", messageSourceService.getMessage("allRegions", cds.getLocale()), 0L);
 		territories.add(allTerritories);
-		territoryKeys.forEach(k -> {
-			Optional<CoronaDataEntity> entity = repo.findFirstByTerritory(k);
+		territoryIds.forEach(id -> {
+			Optional<CoronaDataEntity> entity = repo.findFirstByTerritoryId(id);
 			Long orderId = OrderIdEnum.UNKNOWN.getOrderId();
 			if (entity.isPresent()) {
 				if (entity.get().getOrderId() != null) {
 					orderId = entity.get().getOrderId();
 				}
 			}
-			String name = cache.getTerritoryName(k, cds.getLocale());
-			territories.add(new Territory(k, name, orderId));
+			String name = cache.getTerritoryName(id, cds.getLocale());
+			territories.add(new Territory(id, name, orderId));
 		});
 		cds.setTerritories(territories);
 		cds.getTerritories().sort(Comparator.comparing(Territory::getOrderId).thenComparing(Territory::getName));

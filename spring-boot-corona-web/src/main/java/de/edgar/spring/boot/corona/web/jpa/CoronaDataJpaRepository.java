@@ -12,26 +12,26 @@ public interface CoronaDataJpaRepository extends CrudRepository<CoronaDataEntity
 	@Query("SELECT DISTINCT c.territoryParent FROM CoronaDataEntity c ORDER BY c.territoryParent")
 	public List<String> findDistinctTerritoryParent();
 	
-	@Query("SELECT DISTINCT c.territory FROM CoronaDataEntity c WHERE c.territoryParent IN ?1 ORDER BY c.territory")
-	public List<String> findDistinctTerritoryByTerritoryParent(List<String> parents);
+	@Query("SELECT DISTINCT c.territoryId FROM CoronaDataEntity c WHERE c.territoryParent IN ?1 ORDER BY c.territoryId")
+	public List<String> findDistinctTerritoryIdByTerritoryParent(List<String> parents);
 	
-	public List<CoronaDataEntity> findByTerritoryInAndDateRepBetween(List<String> territories, LocalDate from, LocalDate to);
+	public List<CoronaDataEntity> findByTerritoryIdInAndDateRepBetween(List<String> territories, LocalDate from, LocalDate to);
 	
 	public Optional<CoronaDataEntity> findFirstByTerritoryParent(String parent);
 	
-	public Optional<CoronaDataEntity> findFirstByTerritory(String territory);
+	public Optional<CoronaDataEntity> findFirstByTerritoryId(String territoryId);
 	
 	public Optional<CoronaDataEntity> findTopByCasesGreaterThanOrderByDateRep(Long isGreater);
 	
-	@Query("SELECT MAX(c.dateRep) FROM CoronaDataEntity c WHERE c.territory = ?1")
-	public Optional<LocalDate> getMaxDateRepByTerritory(String territory);
+	@Query("SELECT MAX(c.dateRep) FROM CoronaDataEntity c WHERE c.territoryId = ?1")
+	public Optional<LocalDate> getMaxDateRepByTerritoryId(String territory);
 	
-	public Optional<CoronaDataEntity> getFirstByTerritoryAndCasesKumGreaterThanOrderByCasesKumAscDateRepAsc(String territory, Long isGreater);
+	public Optional<CoronaDataEntity> getFirstByTerritoryIdAndCasesKumGreaterThanOrderByCasesKumAscDateRepAsc(String territoryId, Long isGreater);
 
-	public Optional<CoronaDataEntity> getFirstByTerritoryAndDeathsKumGreaterThanOrderByDeathsKumAscDateRepAsc(String territory, Long isGreater);
+	public Optional<CoronaDataEntity> getFirstByTerritoryIdAndDeathsKumGreaterThanOrderByDeathsKumAscDateRepAsc(String territoryId, Long isGreater);
 
-	public Optional<CoronaDataEntity> getFirstByTerritoryAndRecoveredKumGreaterThanOrderByRecoveredKumAscDateRepAsc(String territory, Long isGreater);
+	public Optional<CoronaDataEntity> getFirstByTerritoryIdAndRecoveredKumGreaterThanOrderByRecoveredKumAscDateRepAsc(String territoryId, Long isGreater);
 
-	public Optional<CoronaDataEntity> getFirstByTerritoryAndActiveKumGreaterThanOrderByActiveKumAscDateRepAsc(String territory, Long isGreater);
+	public Optional<CoronaDataEntity> getFirstByTerritoryIdAndActiveKumGreaterThanOrderByActiveKumAscDateRepAsc(String territoryId, Long isGreater);
 
 }

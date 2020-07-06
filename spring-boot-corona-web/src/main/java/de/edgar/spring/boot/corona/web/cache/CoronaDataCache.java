@@ -24,18 +24,13 @@ public class CoronaDataCache {
 		
     @Cacheable("territoryNames")
 	public String getTerritoryName(String t, Locale l) {
-		String name = t.replaceAll("_", " ");
-		Optional<CoronaDataEntity> entity = repo.findFirstByTerritory(t);
+		String name = t;
+		Optional<CoronaDataEntity> entity = repo.findFirstByTerritoryId(t);
 		if (entity.isPresent()) {
 			String parent = entity.get().getTerritoryParent();
-			entity = repo.findFirstByTerritory(parent);
-			if (entity.isPresent()) {
-				String code = messageSourceService.getCode(t);
-				name = messageSourceService.getMessage(code, l);
-				String parentCode = messageSourceService.getCode(parent);
-				String parentName = messageSourceService.getMessage(parentCode, l);
-				name = name + " (" + parentName + ")";
-			}
+			name = messageSourceService.getMessage(t, l);
+			String parentName = messageSourceService.getMessage(parent, l);
+			name = name + " (" + parentName + ")";
 			log.debug(name);
 		} else {
 			log.error("Territory {} not found.", t);

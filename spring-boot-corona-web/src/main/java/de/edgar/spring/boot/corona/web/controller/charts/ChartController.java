@@ -138,12 +138,12 @@ public class ChartController {
     	Map<String,List<CoronaData>> territoryMap = new HashMap<>();
 		if (!CollectionUtils.isEmpty(cds.getSelectedTerritories())) {
 			List<CoronaData> coronaData = new ArrayList<>();
-			repo.findByTerritoryInAndDateRepBetween(cds.getSelectedTerritories(), cds.getFromDate(), cds.getToDate()).forEach(d -> {
+			repo.findByTerritoryIdInAndDateRepBetween(cds.getSelectedTerritories(), cds.getFromDate(), cds.getToDate()).forEach(d -> {
 				coronaData.add(d.toCoronaData());
 			});
 			coronaData.sort(Comparator.comparing(CoronaData::getDateRep));
 			coronaData.forEach(d -> { 
-				List<CoronaData> coronaDataList = territoryMap.get(d.getTerritory());
+				List<CoronaData> coronaDataList = territoryMap.get(d.getTerritoryId());
 				LocalDate lastDate;
 				if (coronaDataList == null) {
 					coronaDataList = new ArrayList<>();
@@ -152,6 +152,7 @@ public class ChartController {
 				        for (LocalDate date = cds.getFromDate(); date.isBefore(d.getDateRep()); date=date.plusDays(1)) {
 				        	cd = new CoronaData();
 				        	cd.setDateRep(date);
+				        	cd.setTerritoryId(d.getTerritoryId());
 				        	cd.setTerritory(d.getTerritory());
 				        	cd.setTerritoryCode(d.getTerritoryCode());
 				        	cd.setTerritoryParent(d.getTerritoryParent());
@@ -174,7 +175,7 @@ public class ChartController {
 				        	lastDate = date;
 				        }
 					}
-					territoryMap.put(d.getTerritory(), coronaDataList);
+					territoryMap.put(d.getTerritoryId(), coronaDataList);
 				}
 				if (coronaDataList.size() > 0) {
 					lastDate = coronaDataList.get(coronaDataList.size()-1).getDateRep();
@@ -182,6 +183,7 @@ public class ChartController {
 					for (LocalDate day = lastDate.plusDays(1L); day.isBefore(d.getDateRep()); day = day.plusDays(1)) {
 			        	cd = new CoronaData();
 			        	cd.setDateRep(day);
+			        	cd.setTerritoryId(d.getTerritoryId());
 			        	cd.setTerritory(d.getTerritory());
 			        	cd.setTerritoryCode(d.getTerritoryCode());
 			        	cd.setTerritoryParent(d.getTerritoryParent());
@@ -288,14 +290,14 @@ public class ChartController {
 		if (!CollectionUtils.isEmpty(cds.getSelectedTerritories())) {
 			cds.getSelectedTerritories().forEach(t -> {
 				LocalDate date = selectedDate;
-				Optional<LocalDate> maxDate = repo.getMaxDateRepByTerritory(t);
+				Optional<LocalDate> maxDate = repo.getMaxDateRepByTerritoryId(t);
 				if (maxDate.isPresent() && selectedDate.isAfter(maxDate.get())) {
 					// get last data if no data available at selected date
 					date = maxDate.get();
 				}
 				List<String> territory = new ArrayList<>();
 				territory.add(t);
-				repo.findByTerritoryInAndDateRepBetween(territory, date, date).forEach(d -> {
+				repo.findByTerritoryIdInAndDateRepBetween(territory, date, date).forEach(d -> {
 					CoronaData cd = d.toCoronaData();
 					if (getLong(cd.getPopulation()) > 0L) {
 						cd.setCasesDaysPer100000Pop((getDouble(cd.getCasesDaysKum()) * (double)daysToKumPop) / cd.getPopulation());
@@ -385,7 +387,7 @@ public class ChartController {
     		}
     		counter.incrementAndGet();
         	List<Object> barData = new ArrayList<>();
-        	barData.add(cache.getTerritoryName(d.getTerritory(), cds.getLocale()));
+        	barData.add(cache.getTerritoryName(d.getTerritoryId(), cds.getLocale()));
         	Double value = 0.0;
     		switch(cds.getSelectedDataType() + "-" + cds.getSelectedDataCategory()) {
     		case "infections-cumulated": value = getDouble(d.getCasesKum()); break;
@@ -423,23 +425,23 @@ public class ChartController {
 				switch (cds.getSelectedDataType()) {
 				case "infections":
 				default:
-					entity = repo.getFirstByTerritoryAndCasesKumGreaterThanOrderByCasesKumAscDateRepAsc(t, 0L);
+					entity = repo.getFirstByTerritoryIdAndCasesKumGreaterThanOrderByCasesKumAscDateRepAsc(t, 0L);
 					break;
 				case "deaths":
-					entity = repo.getFirstByTerritoryAndDeathsKumGreaterThanOrderByDeathsKumAscDateRepAsc(t, 0L);
+					entity = repo.getFirstByTerritoryIdAndDeathsKumGreaterThanOrderByDeathsKumAscDateRepAsc(t, 0L);
 					break;
 				case "recovered":
-					entity = repo.getFirstByTerritoryAndRecoveredKumGreaterThanOrderByRecoveredKumAscDateRepAsc(t, 0L);
+					entity = repo.getFirstByTerritoryIdAndRecoveredKumGreaterThanOrderByRecoveredKumAscDateRepAsc(t, 0L);
 					break;
 				case "active":
-					entity = repo.getFirstByTerritoryAndActiveKumGreaterThanOrderByActiveKumAscDateRepAsc(t, 0L);
+					entity = repo.getFirstByTerritoryIdAndActiveKumGreaterThanOrderByActiveKumAscDateRepAsc(t, 0L);
 					break;
 				}
 				if (entity.isPresent()) {
 					CoronaDataEntity e = entity.get();
 					if (e.getDateRep().isAfter(cds.getFromDate().minusDays(1)) && e.getDateRep().isBefore(cds.getToDate().plusDays(1))) {
 						log.debug("{}", e.toString());
-						coronaData.put(e.getTerritory(), e.toCoronaData());
+						coronaData.put(e.getTerritoryId(), e.toCoronaData());
 					}
 				}
 			});
@@ -504,6 +506,8 @@ public class ChartController {
         			case "active": series.getData().add(getDouble(cd.getActive())); break;
         			default: series.getData().add(0.0); break;
         			}
+        		} else {
+        			series.getData().add(0.0);
         		}
         	}
             data.getSeries().add(series);
@@ -512,29 +516,74 @@ public class ChartController {
     	return data;
     }
     
-    @GetMapping("/ajax/infectionsDeathsGraph")
-    public LineChartData getInfectionsDeathsGraph(@ModelAttribute CoronaDataSession cds) {
+    @GetMapping("/ajax/infectionsAndGraph")
+    public LineChartData getInfectionsAndGraph(@ModelAttribute CoronaDataSession cds) {
     	LineChartData data = new LineChartData();
 
     	String title = "";
     	String title1 = "";
     	String title2 = "";
-		switch(cds.getSelectedDataCategory()) {
+		switch(cds.getSelectedDataType() + "-" + cds.getSelectedDataCategory()) {
 		default:
-		case "cumulated":
+		case "infections-cumulated":
+			title = messageSourceService.getMessage("chart.infections", cds.getLocale());
+			title1 = messageSourceService.getMessage("chart.infections", cds.getLocale());
+			title2 = messageSourceService.getMessage("chart.deaths", cds.getLocale());
+			break;
+		case "infections-perDay":
+			title = messageSourceService.getMessage("chart.infectionsPerDay", cds.getLocale());
+			title1 = messageSourceService.getMessage("chart.infectionsPerDay", cds.getLocale());
+			title2 = messageSourceService.getMessage("chart.deathsPerDay", cds.getLocale());
+			break;
+		case "infections-per100000":
+			title = messageSourceService.getMessage("chart.infectionsPer100000", cds.getLocale());
+			title1 = messageSourceService.getMessage("chart.infectionsPer100000", cds.getLocale());
+			title2 = messageSourceService.getMessage("chart.deathsPer100000", cds.getLocale());
+			break;
+		case "deaths-cumulated":
 			title = messageSourceService.getMessage("chart.infectionsAndDeaths", cds.getLocale());
 			title1 = messageSourceService.getMessage("chart.infections", cds.getLocale());
 			title2 = messageSourceService.getMessage("chart.deaths", cds.getLocale());
 			break;
-		case "perDay":
+		case "deaths-perDay":
 			title = messageSourceService.getMessage("chart.infectionsAndDeathsPerDay", cds.getLocale());
 			title1 = messageSourceService.getMessage("chart.infectionsPerDay", cds.getLocale());
 			title2 = messageSourceService.getMessage("chart.deathsPerDay", cds.getLocale());
 			break;
-		case "per100000":
+		case "deaths-per100000":
 			title = messageSourceService.getMessage("chart.infectionsAndDeathsPer100000", cds.getLocale());
 			title1 = messageSourceService.getMessage("chart.infectionsPer100000", cds.getLocale());
 			title2 = messageSourceService.getMessage("chart.deathsPer100000", cds.getLocale());
+			break;
+		case "recovered-cumulated":
+			title = messageSourceService.getMessage("chart.infectionsAndRecovered", cds.getLocale());
+			title1 = messageSourceService.getMessage("chart.infections", cds.getLocale());
+			title2 = messageSourceService.getMessage("chart.recovered", cds.getLocale());
+			break;
+		case "recovered-perDay":
+			title = messageSourceService.getMessage("chart.infectionsAndRecoveredPerDay", cds.getLocale());
+			title1 = messageSourceService.getMessage("chart.infectionsPerDay", cds.getLocale());
+			title2 = messageSourceService.getMessage("chart.recoveredPerDay", cds.getLocale());
+			break;
+		case "recovered-per100000":
+			title = messageSourceService.getMessage("chart.infectionsAndRecoveredPer100000", cds.getLocale());
+			title1 = messageSourceService.getMessage("chart.infectionsPer100000", cds.getLocale());
+			title2 = messageSourceService.getMessage("chart.recoveredPer100000", cds.getLocale());
+			break;
+		case "active-cumulated":
+			title = messageSourceService.getMessage("chart.infectionsAndActive", cds.getLocale());
+			title1 = messageSourceService.getMessage("chart.infections", cds.getLocale());
+			title2 = messageSourceService.getMessage("chart.active", cds.getLocale());
+			break;
+		case "active-perDay":
+			title = messageSourceService.getMessage("chart.infectionsAndActivePerDay", cds.getLocale());
+			title1 = messageSourceService.getMessage("chart.infectionsPerDay", cds.getLocale());
+			title2 = messageSourceService.getMessage("chart.activePerDay", cds.getLocale());
+			break;
+		case "active-per100000":
+			title = messageSourceService.getMessage("chart.infectionsAndActivePer100000", cds.getLocale());
+			title1 = messageSourceService.getMessage("chart.infectionsPer100000", cds.getLocale());
+			title2 = messageSourceService.getMessage("chart.activePer100000", cds.getLocale());
 			break;
 		}
     	
@@ -550,12 +599,12 @@ public class ChartController {
     	Map<String,List<CoronaData>> territoryMap = new HashMap<>();
 		if (!CollectionUtils.isEmpty(cds.getSelectedTerritories())) {
 			List<CoronaData> coronaData = new ArrayList<>();
-			repo.findByTerritoryInAndDateRepBetween(cds.getSelectedTerritories(), cds.getFromDate(), cds.getToDate()).forEach(d -> {
+			repo.findByTerritoryIdInAndDateRepBetween(cds.getSelectedTerritories(), cds.getFromDate(), cds.getToDate()).forEach(d -> {
 				coronaData.add(d.toCoronaData());
 			});
 			coronaData.sort(Comparator.comparing(CoronaData::getDateRep));
 			coronaData.forEach(d -> { 
-				List<CoronaData> coronaDataList = territoryMap.get(d.getTerritory());
+				List<CoronaData> coronaDataList = territoryMap.get(d.getTerritoryId());
 				LocalDate lastDate;
 				if (coronaDataList == null) {
 					coronaDataList = new ArrayList<>();
@@ -564,6 +613,7 @@ public class ChartController {
 				        for (LocalDate date = cds.getFromDate(); date.isBefore(d.getDateRep()); date=date.plusDays(1)) {
 				        	cd = new CoronaData();
 				        	cd.setDateRep(date);
+				        	cd.setTerritoryId(d.getTerritoryId());
 				        	cd.setTerritory(d.getTerritory());
 				        	cd.setTerritoryCode(d.getTerritoryCode());
 				        	cd.setTerritoryParent(d.getTerritoryParent());
@@ -585,7 +635,7 @@ public class ChartController {
 				        	lastDate = date;
 				        }
 					}
-					territoryMap.put(d.getTerritory(), coronaDataList);
+					territoryMap.put(d.getTerritoryId(), coronaDataList);
 				}
 				if (coronaDataList.size() > 0) {
 					lastDate = coronaDataList.get(coronaDataList.size()-1).getDateRep();
@@ -593,6 +643,7 @@ public class ChartController {
 					for (LocalDate day = lastDate.plusDays(1L); day.isBefore(d.getDateRep()); day = day.plusDays(1)) {
 			        	cd = new CoronaData();
 			        	cd.setDateRep(day);
+			        	cd.setTerritoryId(d.getTerritoryId());
 			        	cd.setTerritory(d.getTerritory());
 			        	cd.setTerritoryCode(d.getTerritoryCode());
 			        	cd.setTerritoryParent(d.getTerritoryParent());
@@ -640,7 +691,8 @@ public class ChartController {
 	    	i.setData(new ArrayList<>());
 	    	
 	    	Series d = new Series();
-	    	d.setName(cache.getTerritoryName(tk, cds.getLocale()) + " - " + messageSourceService.getMessage("chart.deaths", cds.getLocale()));
+	    	String namePostfix = messageSourceService.getMessage("chart." + cds.getSelectedDataType(), cds.getLocale());
+	    	d.setName(cache.getTerritoryName(tk, cds.getLocale()) + " - " + namePostfix);
 	    	d.setYAxis(1);
 	    	d.setDashStyle("ShortDash");
 	    	d.setColor(color);
@@ -650,19 +702,55 @@ public class ChartController {
 				log.debug(t.toString());
 				double iValue = 0.0;
 				double dValue = 0.0;
-	    		switch(cds.getSelectedDataCategory()) {
-				case "cumulated":
+	    		switch(cds.getSelectedDataType() + "-" + cds.getSelectedDataCategory()) {
 				default:
+				case "infections-cumulated":
+					iValue = getDouble(t.getCasesKum());
+					dValue = 0.0;
+					break;
+				case "infections-perDay":
+					iValue = getDouble(t.getCases());
+					dValue = 0.0;
+					break;
+				case "infections-per100000":
+					iValue = getDouble(t.getCasesPer100000Pop());
+					dValue = 0.0;
+					break;
+				case "deaths-cumulated":
 					iValue = getDouble(t.getCasesKum());
 					dValue = getDouble(t.getDeathsKum());
 					break;
-				case "perDay":
+				case "deaths-perDay":
 					iValue = getDouble(t.getCases());
 					dValue = getDouble(t.getDeaths());
 					break;
-				case "per100000":
+				case "deaths-per100000":
 					iValue = getDouble(t.getCasesPer100000Pop());
 					dValue = getDouble(t.getDeathsPer100000Pop());
+					break;
+				case "recovered-cumulated":
+					iValue = getDouble(t.getCasesKum());
+					dValue = getDouble(t.getRecoveredKum());
+					break;
+				case "recovered-perDay":
+					iValue = getDouble(t.getCases());
+					dValue = getDouble(t.getRecovered());
+					break;
+				case "recovered-per100000":
+					iValue = getDouble(t.getCasesPer100000Pop());
+					dValue = getDouble(t.getRecoveredPer100000Pop());
+					break;
+				case "active-cumulated":
+					iValue = getDouble(t.getCasesKum());
+					dValue = getDouble(t.getActiveKum());
+					break;
+				case "active-perDay":
+					iValue = getDouble(t.getCases());
+					dValue = getDouble(t.getActive());
+					break;
+				case "active-per100000":
+					iValue = getDouble(t.getCasesPer100000Pop());
+					dValue = getDouble(t.getActivePer100000Pop());
 					break;
 	    		}
 				i.getData().add(iValue);
@@ -726,12 +814,12 @@ public class ChartController {
     	Map<String,List<CoronaData>> territoryMap = new HashMap<>();
 		if (!CollectionUtils.isEmpty(cds.getSelectedTerritories())) {
 			List<CoronaData> coronaData = new ArrayList<>();
-			repo.findByTerritoryInAndDateRepBetween(cds.getSelectedTerritories(), cds.getFromDate(), cds.getToDate()).forEach(d -> {
+			repo.findByTerritoryIdInAndDateRepBetween(cds.getSelectedTerritories(), cds.getFromDate(), cds.getToDate()).forEach(d -> {
 				coronaData.add(d.toCoronaData());
 			});
 			coronaData.sort(Comparator.comparing(CoronaData::getDateRep));
 			coronaData.forEach(d -> { 
-				List<CoronaData> coronaDataList = territoryMap.get(d.getTerritory());
+				List<CoronaData> coronaDataList = territoryMap.get(d.getTerritoryId());
 				LocalDate lastDate;
 				if (coronaDataList == null) {
 					coronaDataList = new ArrayList<>();
@@ -740,6 +828,7 @@ public class ChartController {
 				        for (LocalDate date = cds.getFromDate(); date.isBefore(d.getDateRep()); date=date.plusDays(1)) {
 				        	cd = new CoronaData();
 				        	cd.setDateRep(date);
+				        	cd.setTerritoryId(d.getTerritoryId());
 				        	cd.setTerritory(d.getTerritory());
 				        	cd.setTerritoryCode(d.getTerritoryCode());
 				        	cd.setTerritoryParent(d.getTerritoryParent());
@@ -761,7 +850,7 @@ public class ChartController {
 				        	lastDate = date;
 				        }
 					}
-					territoryMap.put(d.getTerritory(), coronaDataList);
+					territoryMap.put(d.getTerritoryId(), coronaDataList);
 				}
 				if (coronaDataList.size() > 0) {
 					lastDate = coronaDataList.get(coronaDataList.size()-1).getDateRep();
@@ -769,6 +858,7 @@ public class ChartController {
 					for (LocalDate day = lastDate.plusDays(1L); day.isBefore(d.getDateRep()); day = day.plusDays(1)) {
 			        	cd = new CoronaData();
 			        	cd.setDateRep(day);
+			        	cd.setTerritoryId(d.getTerritoryId());
 			        	cd.setTerritory(d.getTerritory());
 			        	cd.setTerritoryCode(d.getTerritoryCode());
 			        	cd.setTerritoryParent(d.getTerritoryParent());

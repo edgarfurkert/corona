@@ -18,7 +18,7 @@
         });
 
         function loadLineChartData(params) {
-            $.get("/ajax/infectionsDeathsGraph", params, function (data, textStatus, jqXHR) {
+            $.get("/ajax/infectionsAndGraph", params, function (data, textStatus, jqXHR) {
                 console.log('textStatus : ' + textStatus);
                 console.log('result : ' + JSON.stringify(data));
 
