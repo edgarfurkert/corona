@@ -12,9 +12,8 @@ public class UpdateCheckService {
 
 	public boolean checkUpdateFile(String path, String fileName, boolean rename) {
 		String f = fileName.replace(".csv.in", "").replace(".json.in", "");
-		String updateFileName = path + "/update." + f;
 		
-		boolean updateFileAvailable = checkFile(path, updateFileName, rename);
+		boolean updateFileAvailable = checkFile(path, f, rename);
 		if (!updateFileAvailable) {
 			f = f.substring(0, f.length()-11); // delete -JJJJ-MM-DD
 			updateFileAvailable = checkFile(path, f, rename);

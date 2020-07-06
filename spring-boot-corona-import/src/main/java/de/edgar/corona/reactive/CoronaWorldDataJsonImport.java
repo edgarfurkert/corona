@@ -58,7 +58,8 @@ public class CoronaWorldDataJsonImport extends CoronaDataImport {
 		
 		// check update file
 		fileName = path.getFileName().toString();
-		AtomicBoolean filterDisabled = new AtomicBoolean(updateCheckService.checkUpdateFile(path.getParent().toString(), fileName, true));
+		AtomicBoolean filterDisabled = new AtomicBoolean(
+				updateCheckService.checkUpdateFile(path.getParent().toString(), path.getFileName().toString(), true));
 		log.debug("filterDisabled: {}", filterDisabled);
 		
 		//create ObjectMapper instance

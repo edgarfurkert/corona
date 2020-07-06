@@ -21,11 +21,11 @@ class RepositoryTest {
 	void testRepo() {
 		assertNotNull(repo);
 		
-		String territory = "Germany";
-		String territoryParent = "Europe_West";
-		Optional<LocalDate> date = repo.getMaxDateRepByTerritoryAndTerritoryParent(territory, territoryParent);
+		String territoryId = "germany";
+		String territoryParent = "europeWest";
+		Optional<LocalDate> date = repo.getMaxDateRepByTerritoryIdAndTerritoryParent(territoryId, territoryParent);
 		assertNotNull(date.get());
-		System.out.println(territory + ": " + date.get());
+		System.out.println(territoryId + ": " + date.get());
 	}
 
 }

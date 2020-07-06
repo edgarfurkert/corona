@@ -219,18 +219,16 @@ public class DownloadConfig {
 				// check date by channel
 				log.info("Update only new data.");
 				CoronaData cd;
-				String territory = null;
 				String territoryParent = null;
 				switch (channel) {
 				case "worldChannel":
 					cd = new CoronaWorldData(firstDataLine);
-					territory = cd.getTerritory();
 					Territory t = territoryProps.findByTerritoryId(cd.getTerritoryId());
 					if (t != null) {
 						cd.setTerritoryParent(t.getTerritoryParent());
 					}
 					territoryParent = cd.getTerritoryParent();
-					Optional<LocalDate> lastDate = repository.getMaxDateRepByTerritoryAndTerritoryParent(territory, territoryParent);
+					Optional<LocalDate> lastDate = repository.getMaxDateRepByTerritoryIdAndTerritoryParent(cd.getTerritoryId(), territoryParent);
 					if (lastDate.isPresent() && !lastDate.get().isBefore(cd.getDateRep())) {
 						// there are no new data -> delete file
 						handleDownloadFile(downloadFile, new Exception("No new data in file " + fileName));
@@ -239,9 +237,8 @@ public class DownloadConfig {
 					break;
 				case "germanyChannel":
 					cd = new CoronaGermanyData(lastDataLine, germanyProps);
-					territory = cd.getTerritory();
 					territoryParent = cd.getTerritoryParent();
-					lastDate = repository.getMaxDateRepByTerritoryAndTerritoryParent(territory, territoryParent);
+					lastDate = repository.getMaxDateRepByTerritoryIdAndTerritoryParent(cd.getTerritoryId(), territoryParent);
 					if (lastDate.isPresent() && !lastDate.get().isBefore(cd.getDateRep())) {
 						// there are no new data -> delete file
 						handleDownloadFile(downloadFile, new Exception("No new data in file " + fileName));
@@ -250,9 +247,8 @@ public class DownloadConfig {
 					break;
 				case "germanyFederalStatesChannel":
 					cd = new CoronaGermanyFederalStateData(lastDataLine, germanyProps);
-					territory = cd.getTerritory();
 					territoryParent = cd.getTerritoryParent();
-					lastDate = repository.getMaxDateRepByTerritoryAndTerritoryParent(territory, territoryParent);
+					lastDate = repository.getMaxDateRepByTerritoryIdAndTerritoryParent(cd.getTerritoryId(), territoryParent);
 					if (lastDate.isPresent() && !lastDate.get().isBefore(cd.getDateRep())) {
 						// there are no new data -> delete file
 						handleDownloadFile(downloadFile, new Exception("No new data in file " + fileName));
@@ -312,7 +308,7 @@ public class DownloadConfig {
 		boolean filterDisabled = updateCheckService.checkUpdateFile(importPath, getFileName(downloadUrlProperty.getFileName()), true);
 		if (filterDisabled) {
 			log.debug("{}: filter disabled", downloadUrlProperty.getFileName());
-	    	Optional<LocalDate> minDate = repository.getMinDateRepByTerritoryAndTerritoryParent("World", "Earth");
+	    	Optional<LocalDate> minDate = repository.getMinDateRepByTerritoryIdAndTerritoryParent("world", "earth");
 	    	if (minDate.isPresent()) {
 	    		fromDate = minDate.get();
 	    	}

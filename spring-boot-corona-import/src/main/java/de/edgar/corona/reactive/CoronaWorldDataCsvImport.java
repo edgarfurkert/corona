@@ -43,7 +43,8 @@ public class CoronaWorldDataCsvImport extends CoronaDataImport {
 		
 		// check update file
 		fileName = path.getFileName().toString();
-		AtomicBoolean filterDisabled = new AtomicBoolean(updateCheckService.checkUpdateFile(path.getParent().toString(), fileName, true));
+		AtomicBoolean filterDisabled = new AtomicBoolean(
+				updateCheckService.checkUpdateFile(path.getParent().toString(), fileName, true));
 		LocalDate now = LocalDate.now();
 		
 		Flux<CoronaDataEntity> file = 
@@ -176,12 +177,12 @@ public class CoronaWorldDataCsvImport extends CoronaDataImport {
 					  if (filterDisabled.get()) {
 						  return true; // do not filter
 					  }
-					  LocalDate latestDate = territoryLatestDateRepMap.get(d.getTerritory());
+					  LocalDate latestDate = territoryLatestDateRepMap.get(d.getTerritoryId());
 					  if (latestDate == null) {
-						  Optional<LocalDate> date = repository.getMaxDateRepByTerritoryAndTerritoryParent(d.getTerritory(), d.getTerritoryParent());
+						  Optional<LocalDate> date = repository.getMaxDateRepByTerritoryIdAndTerritoryParent(d.getTerritoryId(), d.getTerritoryParent());
 						  if (date.isPresent()) {
 							  latestDate = date.get();
-							  territoryLatestDateRepMap.put(d.getTerritory(), latestDate);
+							  territoryLatestDateRepMap.put(d.getTerritoryId(), latestDate);
 						  } else {
 							  return true; // do not filter
 						  }
@@ -218,7 +219,7 @@ public class CoronaWorldDataCsvImport extends CoronaDataImport {
 					.filter(d -> { return d.getDateRep().isBefore(now); })
 					.sort((d1, d2) -> d1.getDateRep().compareTo(d2.getDateRep()))
 					.doOnNext(m -> {
-						String territoryKey = m.getTerritory();
+						String territoryKey = m.getTerritoryId();
 						CoronaWorldData c = kummulativeDataMap.get(territoryKey);
 						AtomicLong p = territoryParentPopulationMap.get(territoryKey);
 						m.setPopulation(p.get());
@@ -242,12 +243,12 @@ public class CoronaWorldDataCsvImport extends CoronaDataImport {
 						if (filterDisabled.get()) {
 							return true; // do not filter
 						}
-						LocalDate latestDate = territoryLatestDateRepMap.get(d.getTerritory());
+						LocalDate latestDate = territoryLatestDateRepMap.get(d.getTerritoryId());
 						if (latestDate == null) {
-							Optional<LocalDate> date = repository.getMaxDateRepByTerritoryAndTerritoryParent(d.getTerritory(), d.getTerritoryParent());
+							Optional<LocalDate> date = repository.getMaxDateRepByTerritoryIdAndTerritoryParent(d.getTerritoryId(), d.getTerritoryParent());
 							if (date.isPresent()) {
 								latestDate = date.get();
-								territoryLatestDateRepMap.put(d.getTerritory(), latestDate);
+								territoryLatestDateRepMap.put(d.getTerritoryId(), latestDate);
 							} else {
 								return true; // do not filter
 							}

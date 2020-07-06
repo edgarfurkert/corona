@@ -40,7 +40,8 @@ public class CoronaGermanyFederalStatesDataCsvImport extends CoronaDataImport {
 		
 		// check update file
 		fileName = path.getFileName().toString();
-		AtomicBoolean filterDisabled = new AtomicBoolean(updateCheckService.checkUpdateFile(path.getParent().toString(), fileName, true));
+		AtomicBoolean filterDisabled = new AtomicBoolean(
+				updateCheckService.checkUpdateFile(path.getParent().toString(), fileName, true));
 		LocalDate now = LocalDate.now();
 
 		Flux<CoronaDataEntity> coronaData = 
@@ -54,7 +55,7 @@ public class CoronaGermanyFederalStatesDataCsvImport extends CoronaDataImport {
 							  Long daysSum;
 							  String key;
 							  for (int i = 0; i < (daysToSum == null ? 0 : daysToSum); i++) {
-								  key = d.getTerritory() + date;
+								  key = d.getTerritoryId() + date;
 								  daysSum = territoryDateRepDaysMap.get(key);
 								  territoryDateRepDaysMap.put(key, (daysSum == null ? d.getCases() : daysSum + d.getCases()));
 								  date = date.plusDays(1);
@@ -64,12 +65,12 @@ public class CoronaGermanyFederalStatesDataCsvImport extends CoronaDataImport {
 							  if (filterDisabled.get()) {
 								  return true; // do not filter
 							  }
-							  LocalDate latestDate = territoryLatestDateRepMap.get(d.getTerritory());
+							  LocalDate latestDate = territoryLatestDateRepMap.get(d.getTerritoryId());
 							  if (latestDate == null) {
-								  Optional<LocalDate> date = repository.getMaxDateRepByTerritoryAndTerritoryParent(d.getTerritory(), d.getTerritoryParent());
+								  Optional<LocalDate> date = repository.getMaxDateRepByTerritoryIdAndTerritoryParent(d.getTerritoryId(), d.getTerritoryParent());
 								  if (date.isPresent()) {
 									  latestDate = date.get();
-									  territoryLatestDateRepMap.put(d.getTerritory(), latestDate);
+									  territoryLatestDateRepMap.put(d.getTerritoryId(), latestDate);
 								  } else {
 									  return true; // do not filter
 								  }
@@ -80,7 +81,7 @@ public class CoronaGermanyFederalStatesDataCsvImport extends CoronaDataImport {
 						  ;//.log();
 
 		coronaData.subscribe(data -> {
-			data.setCasesDaysKum(territoryDateRepDaysMap.get(data.getTerritory() + data.getDateRep()));
+			data.setCasesDaysKum(territoryDateRepDaysMap.get(data.getTerritoryId() + data.getDateRep()));
 			save(data);
 		});
 		
