@@ -1,6 +1,7 @@
 package de.edgar.spring.boot.corona.web.service;
 
 import java.util.Locale;
+import java.util.Optional;
 
 import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,8 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.stereotype.Service;
 
+import de.edgar.spring.boot.corona.web.jpa.CoronaDataEntity;
+import de.edgar.spring.boot.corona.web.jpa.CoronaDataJpaRepository;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -17,19 +20,22 @@ public class MessageSourceService {
 	@Autowired
 	private MessageSource messageSource;
 	
+	@Autowired
+	private CoronaDataJpaRepository repo;
+	
 	public String getMessage(String code, Locale locale) {
 		return getMessage(code, locale, "");
 	}
 	
 	public String getMessage(String code, Locale locale, Object... params) {
 		try {
-			if (code.startsWith("LK ") || code.startsWith("SK ") || code.startsWith("Region ") || code.startsWith("StadtRegion ")) {
-				return code;
-			}
-			String m = messageSource.getMessage(code, params, locale);
-			return m;
+			return messageSource.getMessage(code, params, locale);
 		} catch (NoSuchMessageException e) {
 			log.warn("Message code {} has no value for locale {}!", code, locale.toString());
+			Optional<CoronaDataEntity> data = repo.findFirstByTerritoryId(code);
+			if (data.isPresent()) {
+				return data.get().getTerritory();
+			}
 		}
 		
 		return "<" + code + ">";
