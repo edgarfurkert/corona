@@ -20,10 +20,9 @@ spring:
 
 corona:
   data:
-    csv:
-      import:
-        path: ./downloads
-      download:
-        # 1 hour
-        poller: 3600000
+    import:
+      path: ./downloads
+    download:
+      # 1 hour
+      poller: 3600000
         

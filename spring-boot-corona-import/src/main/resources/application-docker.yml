@@ -23,6 +23,5 @@ logging:
 
 corona:
   data:
-    csv:
-      import:
-        path: ./downloads
+    import:
+      path: ./downloads
