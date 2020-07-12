@@ -73,6 +73,17 @@
                                 text: data.yaxis.title
                             }
                         },
+                        plotOptions: {
+                            series: {
+                                // general options for all series
+                            },
+                            bubble: {
+                                // shared options for all bubble series
+                                marker: {
+                                	lineColor: '#a0a0a0'
+                                }
+                            }
+                        },
                         series: data.series
                     });
                 } else {
