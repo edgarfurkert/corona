@@ -247,7 +247,7 @@ public class CoronaDataImportConfig {
     public MessageHandler unknownData() {
     	return message -> {
     		File file = (File)message.getPayload();
-    		log.error("unknownChannel: Cannot handle file {}", file.getAbsolutePath());
+    		log.info("unknownChannel: Cannot handle file {}", file.getAbsolutePath());
     	};
     }
     
@@ -256,7 +256,7 @@ public class CoronaDataImportConfig {
     public MessageHandler doNothing() {
     	return message -> {
     		File file = (File)message.getPayload();
-    		log.error("doNothingChannel: File {} ignored.", file.getAbsolutePath());
+    		log.info("doNothingChannel: File {} ignored.", file.getAbsolutePath());
     	};
     }
     

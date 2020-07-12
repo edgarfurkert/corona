@@ -37,15 +37,15 @@ corona:
       connectTimeout: 5000
       readTimeout: 5000
       urls:
-        # connect timed out
-        #- url: https://opendata.ecdc.europa.eu/covid19/casedistribution/csv
-        #  fileName: covid19-world
+        - url: https://opendata.ecdc.europa.eu/covid19/casedistribution/csv
+          fileName: covid19-world
+          header: dateRep,day,month,year,cases,deaths,countriesAndTerritories,geoId,countryterritoryCode,popData[0-9]{4},continentExp,Cumulative_number_for_14_days_of_COVID-19_cases_per_100000
+          channel: worldChannel
+        # org.apache.poi.ooxml.POIXMLException: Strict OOXML isn't currently supported, please see bug #57699
+        #- url: https://www.ecdc.europa.eu/sites/default/files/documents/COVID-19-geographic-disbtribution-worldwide.xlsx
+        #  fileName: covid19-world-xlsx
         #  header: dateRep,day,month,year,cases,deaths,countriesAndTerritories,geoId,countryterritoryCode,popData[0-9]{4},continentExp[.]*
         #  channel: worldChannel
-        - url: https://www.ecdc.europa.eu/sites/default/files/documents/COVID-19-geographic-disbtribution-worldwide.xlsx
-          fileName: covid19-world-xlsx
-          header: dateRep,day,month,year,cases,deaths,countriesAndTerritories,geoId,countryterritoryCode,popData[0-9]{4},continentExp[.]*
-          channel: worldChannel
         - url: https://covid19publicdata.blob.core.windows.net/rki/covid19-germany-federalstates.csv
           fileName: covid19-germany-federalstates
           header: id,Country/Region,federalstate,infections,deaths,date,newinfections,newdeaths
