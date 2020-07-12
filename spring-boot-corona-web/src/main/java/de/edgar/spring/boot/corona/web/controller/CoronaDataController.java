@@ -93,6 +93,7 @@ public class CoronaDataController {
 		List<GraphType> graphTypes = new ArrayList<>();
 		graphTypes.add(new GraphType("line", messageSourceService.getMessage("historical", cds.getLocale())));
 		graphTypes.add(new GraphType("bubble", messageSourceService.getMessage("historicalBubbles", cds.getLocale())));
+		graphTypes.add(new GraphType("stackedArea", messageSourceService.getMessage("historicalStackedAreas", cds.getLocale())));
 		graphTypes.add(new GraphType("infectionsAnd", messageSourceService.getMessage("infectionsAnd", cds.getLocale())));
 		graphTypes.add(new GraphType("bar", messageSourceService.getMessage("top25Of", cds.getLocale())));
 		graphTypes.add(new GraphType("stackedBar", messageSourceService.getMessage("startOf", cds.getLocale())));

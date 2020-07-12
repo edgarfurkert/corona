@@ -14,11 +14,11 @@
 
     <script type="text/javascript">
         $(function () {
-            loadLineChartData();
+            loadBarChartData();
         });
 
-        function loadLineChartData(params) {
-            $.get("/ajax/infectionsAndGraph", params, function (data, textStatus, jqXHR) {
+        function loadBarChartData(params) {
+            $.get("/ajax/stackedAreaGraph", params, function (data, textStatus, jqXHR) {
                 console.log('textStatus : ' + textStatus);
                 console.log('result : ' + JSON.stringify(data));
 
@@ -26,7 +26,7 @@
 
                     $('#chartContainer').highcharts({
                         chart: {
-                            type: 'spline',
+                            type: 'area',
                             zoomType: 'xy'
                         },
                         title: {
@@ -36,42 +36,39 @@
                             text: data.subTitle
                         },
                         xAxis: {
+                            categories: data.xaxis.dates,
                             title: {
                                 text: data.xaxis.title
-                            },
-                            categories: data.xaxis.dates
-                        },
-                        yAxis: [
-                        	{
-	                        	type: data.yaxis.type,
-	                        	min: data.yaxis.min1,
-	                        	tickAmount: 16,
-	                            title: {
-	                                text: data.yaxis.title1
-	                            }
-                        	},{
-                            	type: data.yaxis.type,
-	                        	min: data.yaxis.min2,
-                            	tickAmount: 16,
-                                title: {
-                                    text: data.yaxis.title2
-                                },
-                                opposite: true
                             }
-                        ],
+                        },
+                        yAxis: {
+                        	type: data.yaxis.type,
+                        	min: data.yaxis.min,
+                        	tickAmount: 16,
+                            title: {
+                                text: data.yaxis.title
+                            }
+                        },
                         legend: {
 							maxHeight: 95
 						},
+                        tooltip: {
+                            pointFormat: '<span>{series.name}</span>: <b>{point.y}</b>',
+                            shared: false
+                        },
                         plotOptions: {
-                            line: {
-                                dataLabels: {
-                                    enabled: false
-                                },
-                                enableMouseTracking: true
+                            area: {
+                                stacking: 'normal',
+                                lineColor: '#666666',
+                                lineWidth: 1,
+                                marker: {
+                                    lineWidth: 1,
+                                    lineColor: '#666666'
+                                }
                             }
                         },
                         series: data.series
-	                });
+					});
                 } else {
                     console.log('Unable to retrive data');
                 }
