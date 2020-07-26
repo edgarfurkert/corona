@@ -1,9 +1,6 @@
 package de.edgar.corona.integration;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +23,8 @@ import de.edgar.corona.config.DownloadProperties;
 import de.edgar.corona.config.DownloadUrlProperty;
 import de.edgar.corona.reactive.CoronaGermanyDataCsvImport;
 import de.edgar.corona.reactive.CoronaGermanyFederalStatesDataCsvImport;
+import de.edgar.corona.reactive.CoronaSwitzerlandCantonCasesDataCsvImport;
+import de.edgar.corona.reactive.CoronaSwitzerlandCantonDeathsDataCsvImport;
 import de.edgar.corona.reactive.CoronaWorldDataCsvImport;
 import de.edgar.corona.reactive.CoronaWorldDataJsonImport;
 import lombok.extern.slf4j.Slf4j;
@@ -52,6 +51,12 @@ public class CoronaDataImportConfig {
 	
 	@Autowired
 	private CoronaGermanyFederalStatesDataCsvImport csvImportGermanyFederalStatesData;
+	
+	@Autowired
+	private CoronaSwitzerlandCantonCasesDataCsvImport csvImportSwitzerlandCantonCasesData;
+	
+	@Autowired
+	private CoronaSwitzerlandCantonDeathsDataCsvImport csvImportSwitzerlandCantonDeathsData;
 	
 	@Bean
 	public MessageChannel cvsFileInputChannel() {
@@ -134,21 +139,13 @@ public class CoronaDataImportConfig {
 	public String csvFileRouter(File file) {
 		log.info("Router: file {}...", file.getName());
 		String channel = "unknownChannel";
-		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-			String header = reader.readLine();
-			header = header.replaceAll("[\\p{Cf}]", ""); // remove category of unicode characters.
-			log.debug("Header      : {}", header);
-			for (DownloadUrlProperty p : downloadProps.getUrls()) {
-				log.debug("Header match: {}", p.getHeader());
-				if (header.matches(p.getHeader())) {
-					channel = p.getChannel();
-					break;
-				}
-			};
-		} catch (IOException e) {
-			log.error("Router: {}", e.getMessage());
-			return "errorChannel";
-		}
+		for (DownloadUrlProperty p : downloadProps.getUrls()) {
+			log.debug("File name match: {}", p.getFileName());
+			if (file.getName().startsWith(p.getFileName())) {
+				channel = p.getChannel();
+				break;
+			}
+		};
 		log.info("Router: route to channel {}", channel);
 		return channel;
 	}
@@ -238,6 +235,34 @@ public class CoronaDataImportConfig {
         		csvImportGermanyFederalStatesData.importData(inFile.getAbsolutePath());
     		} else {
     			log.error("germanyFederalStatesChannel: Cannot rename file {}", file.getAbsolutePath());
+    		}
+    	};
+    }
+    
+	@Bean
+    @ServiceActivator(inputChannel="switzerlandCasesChannel")
+    public MessageHandler switzerlandCasesData() {
+    	return message -> {
+    		File file = (File)message.getPayload();
+    		File inFile = new File(file.getAbsolutePath() + ".in");
+    		if (file.renameTo(inFile)) {
+    			csvImportSwitzerlandCantonCasesData.importData(inFile.getAbsolutePath());
+    		} else {
+    			log.error("switzerlandCasesChannel: Cannot rename file {}", file.getAbsolutePath());
+    		}
+    	};
+    }
+    
+	@Bean
+    @ServiceActivator(inputChannel="switzerlandDeathsChannel")
+    public MessageHandler switzerlandDeathsData() {
+    	return message -> {
+    		File file = (File)message.getPayload();
+    		File inFile = new File(file.getAbsolutePath() + ".in");
+    		if (file.renameTo(inFile)) {
+    			csvImportSwitzerlandCantonDeathsData.importData(inFile.getAbsolutePath());
+    		} else {
+    			log.error("switzerlandDeathsChannel: Cannot rename file {}", file.getAbsolutePath());
     		}
     	};
     }

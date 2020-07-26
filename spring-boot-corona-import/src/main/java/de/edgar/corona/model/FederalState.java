@@ -9,5 +9,6 @@ public class FederalState {
 	private String name;
 	private String code;
 	private Long population;
+	private String parent;
 	
 }

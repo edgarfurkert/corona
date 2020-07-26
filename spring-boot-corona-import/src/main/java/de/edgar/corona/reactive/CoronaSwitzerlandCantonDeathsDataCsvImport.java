@@ -15,18 +15,19 @@ import org.springframework.stereotype.Component;
 import de.edgar.corona.config.FederalStatesProperties;
 import de.edgar.corona.jpa.CoronaDataEntity;
 import de.edgar.corona.jpa.CoronaDataJpaRepository;
-import de.edgar.corona.model.CoronaGermanyFederalStateData;
+import de.edgar.corona.model.CoronaData;
+import de.edgar.corona.model.CoronaSwitzerlandDeathsData;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 
 @Slf4j
 @Component
-public class CoronaGermanyFederalStatesDataCsvImport extends CoronaDataImport {
+public class CoronaSwitzerlandCantonDeathsDataCsvImport extends CoronaDataImport {
 
 	@Autowired
 	private FederalStatesProperties props;
 	
-	public CoronaGermanyFederalStatesDataCsvImport(CoronaDataJpaRepository repository) {
+	public CoronaSwitzerlandCantonDeathsDataCsvImport(CoronaDataJpaRepository repository) {
 		this.repository = repository;
 	}
 
@@ -34,7 +35,7 @@ public class CoronaGermanyFederalStatesDataCsvImport extends CoronaDataImport {
 		log.info("Importing file " + fileName);
 		
 		Map<String, LocalDate> territoryLatestDateRepMap = Collections.synchronizedMap(new HashMap<>());
-		Map<String, Long> territoryDateRepDaysMap = Collections.synchronizedMap(new HashMap<>());
+		Map<String, CoronaData> territoryLastDeathsMap= Collections.synchronizedMap(new HashMap<>());
 
 		Path path = Paths.get(fileName);
 		
@@ -43,23 +44,26 @@ public class CoronaGermanyFederalStatesDataCsvImport extends CoronaDataImport {
 		AtomicBoolean filterDisabled = new AtomicBoolean(
 				updateCheckService.checkUpdateFile(path.getParent().toString(), fileName, true));
 		LocalDate now = LocalDate.now();
-
+		
 		Flux<CoronaDataEntity> coronaData = 
 				FluxFileReader.fromPath(path)
 						  .skip(1)
-						  .map(l -> { return new CoronaGermanyFederalStateData(l, props); })
+						  .map(l -> { return new CoronaSwitzerlandDeathsData(l, props); })
 						  .filter(d -> { return d.getDateRep().isBefore(now); })
 						  .sort((c1, c2) -> c1.getDateRep().compareTo(c2.getDateRep()))
+						  .flatMapIterable(s -> s.getCantonData() )
 						  .doOnNext(d -> {
-							  LocalDate date = d.getDateRep();
-							  Long daysSum;
-							  String key;
-							  for (int i = 0; i < (daysToSum == null ? 0 : daysToSum); i++) {
-								  key = d.getTerritoryId() + date;
-								  daysSum = territoryDateRepDaysMap.get(key);
-								  territoryDateRepDaysMap.put(key, (daysSum == null ? d.getCases() : daysSum + d.getCases()));
-								  date = date.plusDays(1);
+							  CoronaData cd = territoryLastDeathsMap.get(d.getTerritoryId());
+							  if (cd != null) {
+								  if (d.getDeathsKum() > 0L) {
+									  d.setDeaths(d.getDeathsKum() - cd.getDeathsKum());
+								  } else {
+									  d.setDeaths(0L);
+									  d.setDeathsKum(cd.getDeathsKum());
+									  d.setDeathsPer100000Pop(cd.getDeathsPer100000Pop());
+								  }
 							  }
+							  territoryLastDeathsMap.put(d.getTerritoryId(), d);
 						  })
 						  .filter(d -> {
 							  if (filterDisabled.get()) {
@@ -70,6 +74,9 @@ public class CoronaGermanyFederalStatesDataCsvImport extends CoronaDataImport {
 								  Optional<LocalDate> date = repository.getMaxDateRepByTerritoryIdAndTerritoryParent(d.getTerritoryId(), d.getTerritoryParent());
 								  if (date.isPresent()) {
 									  latestDate = date.get();
+									  if (latestDate.isAfter(now.minusDays(2))) {
+										  latestDate = now.minusDays(2);
+									  }
 									  territoryLatestDateRepMap.put(d.getTerritoryId(), latestDate);
 								  } else {
 									  return true; // do not filter
@@ -81,8 +88,8 @@ public class CoronaGermanyFederalStatesDataCsvImport extends CoronaDataImport {
 						  ;//.log();
 
 		coronaData.subscribe(data -> {
-			data.setCasesDaysKum(territoryDateRepDaysMap.get(data.getTerritoryId() + data.getDateRep()));
-			save(data);
+			String[] columns = { "deaths", "deathsKum", "deathsPer100000Pop" };
+			save(data, columns);
 		});
 		
 	}

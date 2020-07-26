@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import de.edgar.corona.config.GermanyFederalStatesProperties;
+import de.edgar.corona.config.FederalStatesProperties;
 import de.edgar.corona.jpa.CoronaDataEntity;
 import de.edgar.corona.jpa.CoronaDataJpaRepository;
 import de.edgar.corona.model.CoronaGermanyData;
@@ -24,7 +24,7 @@ import reactor.core.publisher.Flux;
 public class CoronaGermanyDataCsvImport extends CoronaDataImport {
 
 	@Autowired
-	private GermanyFederalStatesProperties props;
+	private FederalStatesProperties props;
 	
 	public CoronaGermanyDataCsvImport(CoronaDataJpaRepository repository) {
 		this.repository = repository;

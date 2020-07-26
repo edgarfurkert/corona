@@ -32,6 +32,9 @@ import de.edgar.corona.jpa.CoronaDataJpaRepository;
 import de.edgar.corona.model.CoronaData;
 import de.edgar.corona.model.CoronaGermanyData;
 import de.edgar.corona.model.CoronaGermanyFederalStateData;
+import de.edgar.corona.model.CoronaSwitzerlandCantonData;
+import de.edgar.corona.model.CoronaSwitzerlandCasesData;
+import de.edgar.corona.model.CoronaSwitzerlandDeathsData;
 import de.edgar.corona.model.CoronaWorldData;
 import de.edgar.corona.model.Territory;
 import de.edgar.corona.service.ExcelService;
@@ -48,7 +51,7 @@ public class DownloadConfig {
 	private DownloadProperties props;
 	
 	@Autowired
-	private GermanyFederalStatesProperties germanyProps;
+	private FederalStatesProperties federalStateProps;
 	
 	@Autowired
 	private TerritoryProperties territoryProps;
@@ -236,7 +239,7 @@ public class DownloadConfig {
 					}
 					break;
 				case "germanyChannel":
-					cd = new CoronaGermanyData(lastDataLine, germanyProps);
+					cd = new CoronaGermanyData(lastDataLine, federalStateProps);
 					territoryParent = cd.getTerritoryParent();
 					lastDate = repository.getMaxDateRepByTerritoryIdAndTerritoryParent(cd.getTerritoryId(), territoryParent);
 					if (lastDate.isPresent() && !lastDate.get().isBefore(cd.getDateRep())) {
@@ -246,11 +249,45 @@ public class DownloadConfig {
 					}
 					break;
 				case "germanyFederalStatesChannel":
-					cd = new CoronaGermanyFederalStateData(lastDataLine, germanyProps);
+					cd = new CoronaGermanyFederalStateData(lastDataLine, federalStateProps);
 					territoryParent = cd.getTerritoryParent();
 					lastDate = repository.getMaxDateRepByTerritoryIdAndTerritoryParent(cd.getTerritoryId(), territoryParent);
 					if (lastDate.isPresent() && !lastDate.get().isBefore(cd.getDateRep())) {
 						// there are no new data -> delete file
+						handleDownloadFile(downloadFile, new Exception("No new data in file " + fileName));
+						return;
+					}
+					break;
+				case "switzerlandCasesChannel":
+					cd = new CoronaSwitzerlandCasesData(lastDataLine, federalStateProps);
+					boolean noNewData = false;
+					for (CoronaSwitzerlandCantonData cantonData : ((CoronaSwitzerlandCasesData)cd).getCantonData()) {
+						territoryParent = cantonData.getTerritoryParent();
+						lastDate = repository.getMaxDateRepByTerritoryIdAndTerritoryParent(cantonData.getTerritoryId(), territoryParent);
+						if (lastDate.isPresent() && !lastDate.get().isBefore(cantonData.getDateRep())) {
+							// there are no new data -> delete file
+							noNewData = true;
+							break;
+						}
+					}
+					if (noNewData) {
+						handleDownloadFile(downloadFile, new Exception("No new data in file " + fileName));
+						return;
+					}
+					break;
+				case "switzerlandDeathsChannel":
+					cd = new CoronaSwitzerlandDeathsData(lastDataLine, federalStateProps);
+					noNewData = false;
+					for (CoronaSwitzerlandCantonData cantonData : ((CoronaSwitzerlandDeathsData)cd).getCantonData()) {
+						territoryParent = cantonData.getTerritoryParent();
+						lastDate = repository.getMaxDateRepByTerritoryIdAndTerritoryParent(cantonData.getTerritoryId(), territoryParent);
+						if (lastDate.isPresent() && !lastDate.get().isBefore(cantonData.getDateRep())) {
+							// there are no new data -> delete file
+							noNewData = true;
+							break;
+						}
+					}
+					if (noNewData) {
 						handleDownloadFile(downloadFile, new Exception("No new data in file " + fileName));
 						return;
 					}

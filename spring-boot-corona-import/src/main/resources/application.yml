@@ -61,4 +61,11 @@ corona:
           afterChannel: 
             - worldChannel
             - germanyChannel
-            
+        - url: https://raw.githubusercontent.com/daenuprobst/covid19-cases-switzerland/master/covid19_cases_switzerland_openzh.csv
+          fileName: covid19-switzerland-cases
+          header: Date,AG,AI,AR,BE,BL,BS,FR,GE,GL,GR,JU,LU,NE,NW,OW,SG,SH,SO,SZ,TG,TI,UR,VD,VS,ZG,ZH,CH
+          channel: switzerlandCasesChannel
+        - url: https://raw.githubusercontent.com/daenuprobst/covid19-cases-switzerland/master/covid19_fatalities_switzerland_openzh.csv
+          fileName: covid19-switzerland-deaths
+          header: Date,AG,AI,AR,BE,BL,BS,FR,GE,GL,GR,JU,LU,NE,NW,OW,SG,SH,SO,SZ,TG,TI,UR,VD,VS,ZG,ZH,CH
+          channel: switzerlandDeathsChannel

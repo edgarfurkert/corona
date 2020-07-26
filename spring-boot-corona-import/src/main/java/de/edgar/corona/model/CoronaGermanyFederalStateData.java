@@ -3,7 +3,7 @@ package de.edgar.corona.model;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-import de.edgar.corona.config.GermanyFederalStatesProperties;
+import de.edgar.corona.config.FederalStatesProperties;
 
 //@Slf4j
 public class CoronaGermanyFederalStateData extends CoronaData {
@@ -30,7 +30,7 @@ public class CoronaGermanyFederalStateData extends CoronaData {
 	 * 
 	 * @param line
 	 */
-	public CoronaGermanyFederalStateData(String line, GermanyFederalStatesProperties props) {
+	public CoronaGermanyFederalStateData(String line, FederalStatesProperties props) {
 		String[] a = line.split(",(?=([^\\\"]*\\\"[^\\\"]*\\\")*[^\\\"]*$)");
 		
 		Long p = getLong(a[6]);

@@ -47,7 +47,8 @@ public class CoronaData implements Cloneable {
 		Long l = 0L;
 		try {
 			v = v.trim();
-			l = Long.parseLong(v.length() > 0 ? v : "0");
+			Double d = Double.parseDouble(v.length() > 0 ? v : "0");
+			l = d.longValue();
 		} catch (NumberFormatException e) {
 			log.warn("Value '{}' is not a Long.", v);
 		}
@@ -61,7 +62,8 @@ public class CoronaData implements Cloneable {
 		Integer i = 0;
 		try {
 			v = v.trim();
-			i = Integer.parseInt(v.length() > 0 ? v : "0");
+			Double d = Double.parseDouble(v.length() > 0 ? v : "0");
+			i = d.intValue();
 		} catch (NumberFormatException e) {
 			log.warn("Value '{}' is not a Integer.", v);
 		}
