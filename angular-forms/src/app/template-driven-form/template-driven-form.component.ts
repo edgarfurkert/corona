@@ -23,4 +23,14 @@ export class TemplateDrivenFormComponent implements OnInit {
     this.task = value;
     console.log(this.task);
   }
+
+  addTag() {
+    this.task.tags.push({label: ''});
+    return false;
+  }
+
+  removeTag(i: number) {
+    this.task.tags.splice(i, 1);
+    return false;
+  }
 }

@@ -20,8 +20,11 @@ export class ShowErrorComponent implements OnInit {
     const messages = [];
     const form: FormGroup = this.ngForm.form;
     const control = form.get(this.controlPath);
-    if (!control || !(control.touched) || !control.errors) {
+    if (!control) {
       console.log('Control ' + this.controlPath + ' nicht gefunden.');
+      return null;
+    }
+    if (!(control.touched) || !control.errors) {
       return null;
     }
 
@@ -34,13 +37,16 @@ export class ShowErrorComponent implements OnInit {
             message = `${this.displayName} ist ein Pflichtfeld`;
             break;
           case 'minlength':
-            message = `Der Wert von ${this.displayName} muss mindestens ${error.requiredLength} Zeichen enthalten`;
+            message = `${this.displayName} muss mindestens ${error.requiredLength} Zeichen enthalten`;
             break;
           case 'maxlength':
-            message = `Der Wert von ${this.displayName} darf höchstens ${error.requiredLength} Zeichen enthalten`;
+            message = `${this.displayName} darf höchstens ${error.requiredLength} Zeichen enthalten`;
             break;
           case 'invalidEMail':
             message = `Bitte geben Sie eine gültige Email-Adresse an`;
+            break;
+          case 'userNotFound':
+            message = `Der eingetragene Benutzer existiert nicht.`;
             break;
           default:
             message = `${name} ist nicht valide`;

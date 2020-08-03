@@ -13,3 +13,8 @@ input[type=text].ng-pristine {
 input[type=text].ng-valid {
     border-color: green
 }
+
+input[type=text].ng-pending {
+    border-color: grey;
+    border-style: dashed;
+}
