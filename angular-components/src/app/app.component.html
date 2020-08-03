@@ -1,0 +1,37 @@
+<span>Hallo {{name}}!</span><br/><br/>
+<div efImportant></div>
+<div class="classSelector"></div>
+<div class="spanClassSelector">spanClassSelector in div doesn't work!</div>
+<span class="spanClassSelector">spanClassSelector</span>
+<h1 class="notClassSelector">notClassSelector</h1>
+<h1 class="goodbye">class goodbye!</h1>
+
+<panel title="Das ist der <i>Titel</i> ">
+    <panel-header>
+        <span style="text-decoration: underline">Dies ist ein <i>gestylter Titel</i></span>
+    </panel-header>
+    Dies ist ein <i>Beispieltext</i>, der demonstrieren soll, wie Sie
+    mithilfe von <code>ng-content</code> dynamischen Inhalt innerhalb
+    Ihrer Komponente platzieren können.
+</panel>
+
+<tabs>
+    <tab title="Tab 1">
+        Inhalt von Tab 1
+    </tab>
+    <tab title="Tab 2">
+        Inhalt von Tab 2
+    </tab>
+    <tab title="Tab 3">
+        Inhalt von Tab 3
+    </tab>
+</tabs>
+
+<lifecycle-main>
+    <content-child></content-child>
+</lifecycle-main>
+
+<time-picker #timepicker>time-picker</time-picker>
+<button (click)="timepicker.reset()">Zeit zurücksetzen</button>
+
+<calendar>calendar</calendar>
