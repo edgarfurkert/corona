@@ -1,0 +1,118 @@
+<!-- Directive form -->
+<form novalidate (ngSubmit)="saveTask(form.value)" #form="ngForm"> <!-- create a FormGroup/AbstractControl -->
+    <div class="form-group">
+        <label>Titel*</label>
+        <!-- register input field to ngForm with attribute ngModel and name "title", create a FormControl/AbstractControl -->
+        <input type="text" class="form-control" name="title" [(ngModel)]="task.title" #title="ngModel" required minlength="5" maxlength="100"/>
+        <div *ngIf="!title.valid && title.touched" class="alert alert-danger">
+            <div *ngIf="title.hasError('required')">
+                Bitte geben Sie einen Titel ein!
+            </div>
+            <div *ngIf="title.hasError('minlength')">
+                Der Titel muss mindestens {{ title.getError('minlength').requiredLength}} Zeichen haben.
+            </div>
+            <div *ngIf="title.hasError('maxlength')">
+                Der Titel darf höchstens {{ title.getError('maxlength').requiredLength}} Zeichen haben.
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Beschreibung</label>
+        <!-- register textarea field to ngForm with attribute ngModel and name "description", create a FormControl/AbstractControl -->
+        <textarea class="form-control" name="description" [(ngModel)]="task.description">
+        </textarea>
+    </div>
+    <div class="form-group">
+        <label>Status</label>
+        <select name="state" [(ngModel)]="task.state" class="form-control">
+            <option value="">--- Bitte auswählen ---</option>
+            <option *ngFor="let state of model.states" [value]="state">{{model.stateTexts[state]}}</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>Status Groups</label>
+        <select name="state" [(ngModel)]="task.state" class="form-control">
+            <optgroup *ngFor="let group of model.stateGroups" [label]="group.label">
+                <option *ngFor="let state of group.states" [value]="state">
+                    {{model.stateTexts[state]}}
+                </option>
+            </optgroup>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>Status as Objects</label>
+        <select name="state" [(ngModel)]="task.state" class="form-control">
+            <option value="">--- Bitte auswählen ---</option>
+            <option *ngFor="let state of model.statesAsObjects" [ngValue]="state">{{state.text}}</option>
+        </select>
+    </div>
+    <div class="checkbox">
+        <label>
+            <input type="checkbox" name="favorite" [(ngModel)]="task.favorite">
+            Zu Favoriten hinzufügen
+        </label>
+    </div>
+    <table>
+        <tr>
+            <td>
+                <label>Status:</label>
+            </td>
+            <td style="padding-left: 5px;">
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="state" [(ngModel)]="task.state" value="BACKLOG">
+                        Backlog
+                    </label>
+                </div>
+            </td>
+            <td style="padding-left: 5px;">
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="state" [(ngModel)]="task.state" value="IN_PROGRESS">
+                        In Bearbeitung
+                    </label>
+                </div>            
+            </td>
+            <td style="padding-left: 5px;">
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="state" [(ngModel)]="task.state" value="TEST">
+                        Im Test
+                    </label>
+                </div>            
+            </td>
+            <td style="padding-left: 5px;">
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="state" [(ngModel)]="task.state" value="COMPLETED">
+                        Abgeschlossen
+                    </label>
+                </div>            
+            </td>
+        </tr>
+    </table>
+    <label>Status</label>
+    <div class="radio" *ngFor="let state of model.states">
+        <label>
+            <input type="radio" name="state" [(ngModel)]="task.state" [value]="state">
+            {{model.stateTexts[state]}}
+        </label>
+    </div>
+    <h5>Zuständiger</h5>
+    <div ngModelGroup="assignee">
+        <div class="form-group">
+            <label>Name</label>
+            <input type="text" class="form-control" name="name" [(ngModel)]="task.assignee.name" minlength="3"/>
+            <ef-show-error path="assignee.name" text="Name"></ef-show-error>
+        </div>
+        <div class="form-group">
+            <label>E-Mail</label>
+            <input type="text" class="form-control" name="email" [(ngModel)]="task.assignee.email" efEmailValidator/>
+            <ef-show-error path="assignee.email"></ef-show-error>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-default" [disabled]="!form.valid">
+        Aufgabe speichern
+    </button>
+</form>
+<pre>{{ task | json }}</pre>
