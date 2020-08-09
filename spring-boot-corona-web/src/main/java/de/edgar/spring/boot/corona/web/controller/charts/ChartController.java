@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -160,6 +161,35 @@ public class ChartController {
     	
         return data;
     }
+	
+	private void calcDaysPer100000(CoronaDataSession cds, Map<String,List<CoronaData>> territoryMap) {
+		AtomicInteger days = new AtomicInteger();
+		switch (cds.getSelectedDataCategory()) {
+		case "perDaysAnd100000":
+			days.set(7);
+			break;
+		default:
+			return;
+		}
+		List<Long> valueList = new ArrayList<Long>();
+		AtomicLong sum = new AtomicLong();
+		territoryMap.keySet().forEach(t -> {
+			List<CoronaData> cdList = territoryMap.get(t);
+			cdList.forEach(cd -> {
+				Long value = cd.getCases();
+				if (valueList.size() == days.get()) {
+					cd.setCasesDaysKum(sum.get());
+					cd.setCasesDaysPer100000Pop(getCasesPerDaysAnd100000(cd));
+					sum.addAndGet(valueList.remove(0) * -1l);
+				}
+				sum.addAndGet(value);
+				valueList.add(value);
+			});
+			for (int i = 0; i < days.get(); i++) {
+				cdList.remove(0);
+			}
+		});
+	}
 
 	private double getValueBySelectedData(CoronaDataSession cds, CoronaData d) {
 		double value = 0.0;
@@ -235,13 +265,24 @@ public class ChartController {
 	private Map<String,List<CoronaData>> getHistoricalData(CoronaDataSession cds) {
 		Map<String,List<CoronaData>> territoryMap = new HashMap<>();
 		
+		LocalDate fromDate = cds.getFromDate();
+		int days = 0;
+		switch (cds.getSelectedDataCategory()) {
+		case "perDaysAnd100000":
+			// 7 days/100.000
+			days = 7;
+			fromDate = fromDate.minusDays(days);
+			break;
+		}
 		List<CoronaData> coronaData = new ArrayList<>();
-		repo.findByTerritoryIdInAndDateRepBetween(cds.getSelectedTerritories(), cds.getFromDate(), cds.getToDate()).forEach(d -> {
+		repo.findByTerritoryIdInAndDateRepBetween(cds.getSelectedTerritories(), fromDate, cds.getToDate()).forEach(d -> {
 			coronaData.add(d.toCoronaData());
 		});
 		coronaData.sort(Comparator.comparing(CoronaData::getDateRep));
 		coronaData.forEach(d -> { 
 			List<CoronaData> coronaDataList = territoryMap.get(d.getTerritoryId());
+			d.setCasesDaysPer100000Pop(getCasesPerDaysAnd100000(d));
+
 			LocalDate lastDate;
 			if (coronaDataList == null) {
 				coronaDataList = new ArrayList<>();
@@ -306,6 +347,8 @@ public class ChartController {
 			coronaDataList.add(d);
 		});
 		
+		calcDaysPer100000(cds, territoryMap);
+
 		return territoryMap;
 	}
 
@@ -321,21 +364,38 @@ public class ChartController {
 		
 		List<CoronaData> coronaData = new ArrayList<>();
 		if (!CollectionUtils.isEmpty(cds.getSelectedTerritories())) {
-			cds.getSelectedTerritories().forEach(t -> {
-				LocalDate date = selectedDate;
-				Optional<LocalDate> maxDate = repo.getMaxDateRepByTerritoryId(t);
-				if (maxDate.isPresent() && selectedDate.isAfter(maxDate.get())) {
-					// get last data if no data available at selected date
-					date = maxDate.get();
-				}
-				List<String> territory = new ArrayList<>();
-				territory.add(t);
-				repo.findByTerritoryIdInAndDateRepBetween(territory, date, date).forEach(d -> {
-					CoronaData cd = d.toCoronaData();
-					cd.setCasesDaysPer100000Pop(getCasesPerDaysAnd100000(cd));
-					coronaData.add(cd);
+			switch (cds.getSelectedDataCategory()) {
+			case "perDaysAnd100000":
+				LocalDate today = LocalDate.now();
+				LocalDate toDate = selectedDate.isBefore(today) ? selectedDate : today.minusDays(1);
+				CoronaDataSession cdsBar = new CoronaDataSession();
+				cdsBar.setSelectedDataCategory(cds.getSelectedDataCategory());
+				cdsBar.setSelectedTerritories(cds.getSelectedTerritories());
+				cdsBar.setFromDate(toDate);
+				cdsBar.setToDate(toDate);
+				Map<String,List<CoronaData>> map = getHistoricalData(cdsBar);
+				map.keySet().forEach(t -> {
+					coronaData.addAll(map.get(t));
 				});
-			});
+				break;
+			default:
+				cds.getSelectedTerritories().forEach(t -> {
+					LocalDate date = selectedDate;
+					Optional<LocalDate> maxDate = repo.getMaxDateRepByTerritoryId(t);
+					if (maxDate.isPresent() && selectedDate.isAfter(maxDate.get())) {
+						// get last data if no data available at selected date
+						date = maxDate.get();
+					}
+					List<String> territory = new ArrayList<>();
+					territory.add(t);
+					repo.findByTerritoryIdInAndDateRepBetween(territory, date, date).forEach(d -> {
+						CoronaData cd = d.toCoronaData();
+						cd.setCasesDaysPer100000Pop(getCasesPerDaysAnd100000(cd));
+						coronaData.add(cd);
+					});
+				});
+				break;
+			}
 		}
 		
     	String title = "";
@@ -705,78 +765,7 @@ public class ChartController {
     	
     	Map<String,List<CoronaData>> territoryMap = new HashMap<>();
 		if (!CollectionUtils.isEmpty(cds.getSelectedTerritories())) {
-			List<CoronaData> coronaData = new ArrayList<>();
-			repo.findByTerritoryIdInAndDateRepBetween(cds.getSelectedTerritories(), cds.getFromDate(), cds.getToDate()).forEach(d -> {
-				coronaData.add(d.toCoronaData());
-			});
-			coronaData.sort(Comparator.comparing(CoronaData::getDateRep));
-			coronaData.forEach(d -> { 
-				List<CoronaData> coronaDataList = territoryMap.get(d.getTerritoryId());
-				d.setCasesDaysPer100000Pop(getCasesPerDaysAnd100000(d));
-
-				LocalDate lastDate;
-				if (coronaDataList == null) {
-					coronaDataList = new ArrayList<>();
-					if (d.getDateRep().isAfter(cds.getFromDate())) {
-						CoronaData cd;
-				        for (LocalDate date = cds.getFromDate(); date.isBefore(d.getDateRep()); date=date.plusDays(1)) {
-				        	cd = new CoronaData();
-				        	cd.setDateRep(date);
-				        	cd.setTerritoryId(d.getTerritoryId());
-				        	cd.setTerritory(d.getTerritory());
-				        	cd.setTerritoryCode(d.getTerritoryCode());
-				        	cd.setTerritoryParent(d.getTerritoryParent());
-				        	cd.setCases(0L);
-				        	cd.setCasesKum(0L);
-				        	cd.setCasesPer100000Pop(0.0);
-				        	cd.setCasesDaysPer100000Pop(0.0);
-				        	cd.setDeaths(0L);
-				        	cd.setDeathsKum(0L);
-				        	cd.setDeathsPer100000Pop(0.0);
-				        	cd.setRecovered(0L);
-				        	cd.setRecoveredKum(0L);
-				        	cd.setRecoveredPer100000Pop(0.0);
-				        	cd.setActive(0L);
-				        	cd.setActiveKum(0L);
-				        	cd.setActivePer100000Pop(0.0);
-				        	cd.setGeoId(d.getGeoId());
-				        	cd.setPopulation(d.getPopulation());
-				        	coronaDataList.add(cd);
-				        	lastDate = date;
-				        }
-					}
-					territoryMap.put(d.getTerritoryId(), coronaDataList);
-				}
-				if (coronaDataList.size() > 0) {
-					lastDate = coronaDataList.get(coronaDataList.size()-1).getDateRep();
-					CoronaData cd;
-					for (LocalDate day = lastDate.plusDays(1L); day.isBefore(d.getDateRep()); day = day.plusDays(1)) {
-			        	cd = new CoronaData();
-			        	cd.setDateRep(day);
-			        	cd.setTerritoryId(d.getTerritoryId());
-			        	cd.setTerritory(d.getTerritory());
-			        	cd.setTerritoryCode(d.getTerritoryCode());
-			        	cd.setTerritoryParent(d.getTerritoryParent());
-			        	cd.setCases(0L);
-			        	cd.setCasesKum(d.getCasesKum());
-			        	cd.setCasesPer100000Pop(d.getCasesPer100000Pop());
-			        	cd.setCasesDaysPer100000Pop(d.getCasesDaysPer100000Pop());
-			        	cd.setDeaths(0L);
-			        	cd.setDeathsKum(d.getDeathsKum());
-			        	cd.setDeathsPer100000Pop(d.getDeathsPer100000Pop());
-			        	cd.setRecovered(0L);
-			        	cd.setRecoveredKum(d.getRecoveredKum());
-			        	cd.setRecoveredPer100000Pop(d.getRecoveredPer100000Pop());
-			        	cd.setActive(0L);
-			        	cd.setActiveKum(d.getActiveKum());
-			        	cd.setActivePer100000Pop(d.getActivePer100000Pop());
-			        	cd.setGeoId(d.getGeoId());
-			        	cd.setPopulation(d.getPopulation());
-			        	coronaDataList.add(cd);
-					}
-				}
-				coronaDataList.add(d);
-			});
+			territoryMap.putAll(getHistoricalData(cds));
 		}
 
     	XAxis xAxis = getXAxisWithDates(cds);
@@ -917,78 +906,7 @@ public class ChartController {
     	
     	Map<String,List<CoronaData>> territoryMap = new HashMap<>();
 		if (!CollectionUtils.isEmpty(cds.getSelectedTerritories())) {
-			List<CoronaData> coronaData = new ArrayList<>();
-			repo.findByTerritoryIdInAndDateRepBetween(cds.getSelectedTerritories(), cds.getFromDate(), cds.getToDate()).forEach(d -> {
-				coronaData.add(d.toCoronaData());
-			});
-			coronaData.sort(Comparator.comparing(CoronaData::getDateRep));
-			coronaData.forEach(d -> { 
-				List<CoronaData> coronaDataList = territoryMap.get(d.getTerritoryId());
-				d.setCasesDaysPer100000Pop(getCasesPerDaysAnd100000(d));
-				
-				LocalDate lastDate;
-				if (coronaDataList == null) {
-					coronaDataList = new ArrayList<>();
-					if (d.getDateRep().isAfter(cds.getFromDate())) {
-						CoronaData cd;
-				        for (LocalDate date = cds.getFromDate(); date.isBefore(d.getDateRep()); date=date.plusDays(1)) {
-				        	cd = new CoronaData();
-				        	cd.setDateRep(date);
-				        	cd.setTerritoryId(d.getTerritoryId());
-				        	cd.setTerritory(d.getTerritory());
-				        	cd.setTerritoryCode(d.getTerritoryCode());
-				        	cd.setTerritoryParent(d.getTerritoryParent());
-				        	cd.setCases(0L);
-				        	cd.setCasesKum(0L);
-				        	cd.setCasesPer100000Pop(0.0);
-				        	cd.setCasesDaysPer100000Pop(0.0);
-				        	cd.setDeaths(0L);
-				        	cd.setDeathsKum(0L);
-				        	cd.setDeathsPer100000Pop(0.0);
-				        	cd.setRecovered(0L);
-				        	cd.setRecoveredKum(0L);
-				        	cd.setRecoveredPer100000Pop(0.0);
-				        	cd.setActive(0L);
-				        	cd.setActiveKum(0L);
-				        	cd.setActivePer100000Pop(0.0);
-				        	cd.setGeoId(d.getGeoId());
-				        	cd.setPopulation(d.getPopulation());
-				        	coronaDataList.add(cd);
-				        	lastDate = date;
-				        }
-					}
-					territoryMap.put(d.getTerritoryId(), coronaDataList);
-				}
-				if (coronaDataList.size() > 0) {
-					lastDate = coronaDataList.get(coronaDataList.size()-1).getDateRep();
-					CoronaData cd;
-					for (LocalDate day = lastDate.plusDays(1L); day.isBefore(d.getDateRep()); day = day.plusDays(1)) {
-			        	cd = new CoronaData();
-			        	cd.setDateRep(day);
-			        	cd.setTerritoryId(d.getTerritoryId());
-			        	cd.setTerritory(d.getTerritory());
-			        	cd.setTerritoryCode(d.getTerritoryCode());
-			        	cd.setTerritoryParent(d.getTerritoryParent());
-			        	cd.setCases(0L);
-			        	cd.setCasesKum(d.getCasesKum());
-			        	cd.setCasesPer100000Pop(d.getCasesPer100000Pop());
-			        	cd.setCasesDaysPer100000Pop(d.getCasesDaysPer100000Pop());
-			        	cd.setDeaths(0L);
-			        	cd.setDeathsKum(d.getDeathsKum());
-			        	cd.setDeathsPer100000Pop(d.getDeathsPer100000Pop());
-			        	cd.setRecovered(0L);
-			        	cd.setRecoveredKum(d.getRecoveredKum());
-			        	cd.setRecoveredPer100000Pop(d.getRecoveredPer100000Pop());
-			        	cd.setActive(0L);
-			        	cd.setActiveKum(d.getActiveKum());
-			        	cd.setActivePer100000Pop(d.getActivePer100000Pop());
-			        	cd.setGeoId(d.getGeoId());
-			        	cd.setPopulation(d.getPopulation());
-			        	coronaDataList.add(cd);
-					}
-				}
-				coronaDataList.add(d);
-			});
+			territoryMap.putAll(getHistoricalData(cds));
 		}
 
     	XAxis xAxis = new XAxis();
