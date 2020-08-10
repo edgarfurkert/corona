@@ -10,7 +10,11 @@
     </div>
 
     <div>
+        <p>Synchrones Ergebnis</p>
         <ef-task-item *ngFor="let task of tasks" [task]="task" [selected]="task.id == selectedTaskId" (taskDelete)="deleteTask(task)" (taskSelected)="selectTask($event)">
+        </ef-task-item>
+        <p><br/>Asynchrones Ergebnis</p>
+        <ef-task-item *ngFor="let task of asyncTasks$ | async" [task]="task" [selected]="task.id == selectedTaskId" (taskDelete)="deleteTask(task)" (taskSelected)="selectTask($event)">
         </ef-task-item>
     </div>
     <br>

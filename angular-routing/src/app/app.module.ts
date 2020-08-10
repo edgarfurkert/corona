@@ -2,6 +2,7 @@ import { BrowserModule, Title } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { APP_BASE_HREF } from '@angular/common';
+import { HttpClientModule, HttpClientJsonpModule } from '@angular/common/http';
 
 import { AppRoutingModule, routingComponents, routingProviders } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -15,6 +16,7 @@ import { AUTH_ENABLED } from './app.tokens';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { TaskOverviewComponent } from './task-overview/task-overview.component';
 import { ChatComponent } from './chat/chat.component';
+import { JsonpExampleComponent } from './jsonp-example/jsonp-example.component';
 
 @NgModule({
   declarations: [
@@ -28,12 +30,15 @@ import { ChatComponent } from './chat/chat.component';
     LoginComponent,
     NotFoundComponent,
     TaskOverviewComponent,
-    ChatComponent
+    ChatComponent,
+    JsonpExampleComponent
   ],
   imports: [
     BrowserModule,
     FormsModule,
     ReactiveFormsModule,
+    HttpClientModule,
+    HttpClientJsonpModule,
     AppRoutingModule
   ],
   providers: [

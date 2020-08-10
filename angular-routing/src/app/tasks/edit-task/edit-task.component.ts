@@ -3,11 +3,12 @@ import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { Location } from '@angular/common';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
 
 import { Task, createInitialTask } from '../../models/model-interfaces';
 import * as model from '../../models/model-interfaces';
 import { TaskService } from '../../services/task.service';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 
 @Component({
   selector: 'ef-edit-task',
@@ -30,7 +31,8 @@ export class EditTaskComponent implements OnInit {
               private taskService: TaskService,
               private router: Router,
               private titleService: Title,
-              private location: Location) { }
+              private location: Location,
+              private http: HttpClient) { }
 
   ngOnInit(): void {
     // statisch auf Parameterwerte zugreifen
@@ -42,7 +44,15 @@ export class EditTaskComponent implements OnInit {
     this.subscription = this.route.params.subscribe(params => {
         console.log('params: ', params)
         const id = (params['id'] || '');
-        this.task = id ? this.taskService.getTask(id) : createInitialTask();
+        //this.task = id ? this.taskService.getTask(id) : createInitialTask();
+        if (!id) {
+          this.task = createInitialTask();
+        } else {
+          this.taskService.getTaskByHttp(id).subscribe(task => {
+            console.log('Task gelesen', task);
+            this.task = task;
+          })
+        }
       });
     
     console.log(this.form);
@@ -64,6 +74,37 @@ export class EditTaskComponent implements OnInit {
   }
 
   saveTask() {
+    /* 
+    // Version 1
+    if (!this.task.id) {
+      // create task
+      this.taskService.createTaskLong(this.task).subscribe(task => {
+        console.log('saveTask: Aufgabe erfolgreich gespeichert', task)
+        this.task = task;
+      });
+    } else {
+      // update task
+      this.taskService.updateTask(this.task).subscribe(task => {
+        console.log('saveTask: Aufgabe erfolgreich aktualisiert', task)
+        this.task = task;
+      });
+    }
+    */
+
+    // Version 2
+    const result = this.task.id ? this.taskService.updateTaskByHttp(this.task)
+                                : this.taskService.createTaskByHttp(this.task);
+    result.subscribe(task => {
+      console.log('saveTask: Aufgabe erfolgreich gespeichert', task)
+      this.task = task;
+    });
+
+    // Version 3
+    this.taskService.saveTaskByHttp(this.task).subscribe(task => {
+      console.log('saveTask: Aufgabe erfolgreich per HTTP gespeichert', task)
+      this.task = task;
+    });
+
     this.task = this.taskService.saveTask(this.task);
     // navigate by absolute path
     //this.router.navigate(['/tasks']);

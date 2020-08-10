@@ -12,6 +12,7 @@ import { ChatComponent } from './chat/chat.component';
 import { LoginGuard } from './guards/login.guard';
 import { UserResolver } from './login/user-resolver';
 import { TaskOverviewComponent } from './task-overview/task-overview.component';
+import { JsonpExampleComponent } from './jsonp-example/jsonp-example.component';
 
 const RESOLVED_TOKEN = new InjectionToken<string>('RESOLVED_TOKEN');
 
@@ -29,6 +30,7 @@ export const appRoutes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'overview/:id', component: TaskOverviewComponent, outlet: 'right' },
   { path: 'chat', component: ChatComponent, outlet: 'bottom' },
+  { path: 'jsonp', component: JsonpExampleComponent },
   { path: '**', component: NotFoundComponent } // letzte Konfiguration!
 ];
 

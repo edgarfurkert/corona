@@ -5,6 +5,8 @@ import { FormControl } from '@angular/forms';
 
 import { Task } from '../../models/model-interfaces';
 import { TaskService } from '../../services/task.service';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'ef-task-list',
@@ -16,11 +18,15 @@ export class TaskListComponent implements OnInit {
   tasks: Task[];
   searchTerm = new FormControl(); 
   selectedTaskId: number;
-  
+
+  // mark member variable with $ as an Observable
+  asyncTasks$: Observable<Task[]>;
+
   constructor(private taskService: TaskService,
               private route: ActivatedRoute,
               private router: Router,
-              private location: Location) { }
+              private location: Location,
+              private http: HttpClient) { }
 
   ngOnInit(): void {
     // Statisches Auslesen von Parametern über Snapshots per Query-Parameter
@@ -30,6 +36,7 @@ export class TaskListComponent implements OnInit {
       console.log('TaskList - snapshot query: ', query);
       this.searchTerm.setValue(query);
       this.tasks = this.taskService.findTasks(query);
+      this.asyncTasks$ = this.taskService.findTasksByHttp(query);
       return;
     }
 
@@ -40,6 +47,18 @@ export class TaskListComponent implements OnInit {
       console.log('TaskList - subscribe params: ', query);
       this.searchTerm.setValue(query);
       this.tasks = this.taskService.findTasks(query);
+      this.asyncTasks$ = this.taskService.findTasksByHttp(query);
+      /*
+      this.http.get<Task[]>(`http://localhost:3000/api/tasks`).subscribe(tasks => {
+        this.tasks = tasks;
+      }, (error: HttpErrorResponse) => {
+        switch (error.status) {
+          case 404: console.log('Der Endpunkt wurde nicht gefunden', error); break;
+          case 500: console.log('Server-Fehler beim Laden der Aufgaben', error); break;
+          default: console.log('Irgend etwas anderes ist schiefgelaufen', error);
+        }
+      });
+      */
     });
 
     // reaktives Auslesen von Parametern per Query-Parameter
@@ -49,6 +68,7 @@ export class TaskListComponent implements OnInit {
       console.log('TaskList - subscribe queryParams: ', query);
       this.searchTerm.setValue(query);
       this.tasks = this.taskService.findTasks(query);
+      this.asyncTasks$ = this.taskService.findTasksByHttp(query);
     });
 
     // reaktives Auslesen von Fragmenten
@@ -62,6 +82,26 @@ export class TaskListComponent implements OnInit {
         this.selectTask(Number(value));
       }
     });
+
+    // load all tasks with httpClient
+    console.log('TaskList - load all tasks with httpClient');
+    this.taskService.loadAllTasks().subscribe(tasks => {
+      this.tasks = tasks;
+    });
+
+    console.log('TaskList - load all tasks asynchron with httpClient');
+    this.asyncTasks$ = this.taskService.loadAllTasks();
+
+    this.taskService.loadTasksWithFullResponse().subscribe(response => {
+      const totalCount = response.headers.get('X-Total-Count');
+      console.log('TaskList - response: ', response);
+      console.log(`TaskList - load all tasks with full response data: totalCount = ${totalCount}`);
+      this.tasks = response.body;
+    });
+
+    this.taskService.checkTasksByHttp().subscribe(headers => {
+      console.log('Die Größe des Inhalts beträgt', headers.get('Content-Length'));
+    });
   }
 
   selectTask(taskId: number) {
@@ -74,12 +114,16 @@ export class TaskListComponent implements OnInit {
   deleteTask(task) {
     console.log('TaskList - deleteTask: ', task);
     this.taskService.deleteTask(task);
+    this.taskService.deleteTaskByHttp(task).subscribe(_ => {
+      console.log('Task gelöscht: ', _);
+    });
     this.findTasks(this.searchTerm.value);
   }
 
   findTasks(queryString: string) {
     this.tasks = this.taskService.findTasks(queryString);
-    console.log('TaskList - findTasks: ', this.tasks);
+    this.asyncTasks$ = this.taskService.findTasksByHttp(queryString);
+    console.log('TaskList - findTasks: ', this.tasks.length);
     this.adjustBrowserUrl(queryString);
   }
 
