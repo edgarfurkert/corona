@@ -1,0 +1,24 @@
+<div class="overview">
+    <h2>Task-Übersicht
+        <span *ngIf="showSuccessLabel" class="label label-success pull-right label-small">
+            Erfolgreich gespeichert
+        </span>
+    </h2>
+    <div *ngIf="task">
+        <div class="form-group">
+            <label for="title">Titel</label>
+            <input type="text" id="title" class="form-control" [(ngModel)]="task.title" (keyup.enter)="saveTask()" />
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <h3>Beschreibung</h3>
+                <span>{{task.description}}</span>
+                <h3>Status</h3>
+                <span>{{model.stateTexts[task.state]}}</span>
+                <h3>Zuständiger</h3>
+                <div>{{task.assignee.name}}</div>
+                <div>{{task.assignee.email}}</div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,18 +1,17 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectorRef} from '@angular/core';
 import {Location} from '@angular/common';
 
 import {FormControl} from '@angular/forms';
 import {Task} from '../../models/model-interfaces';
 import {TaskService} from '../../services/task.service';
 import {Router, ActivatedRoute} from '@angular/router';
-import { Observable, merge } from 'rxjs';
+import { Observable, merge, Subscription } from 'rxjs';
 import { debounceTime, map, tap, mergeMap, startWith, switchMap, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'ef-task-list',
   templateUrl: './task-list.component.html',
-  styleUrls: ['./task-list.component.css'],
-  providers: [TaskService],
+  styleUrls: ['./task-list.component.css']
 })
 export class TaskListComponent implements OnInit {
 
@@ -21,6 +20,8 @@ export class TaskListComponent implements OnInit {
   tasks$: Observable<Task[]>;
 
   searchTerm = new FormControl();
+
+  taskChangedSubscription: Subscription;
 
   constructor(private taskService: TaskService,
               private route: ActivatedRoute,
@@ -79,6 +80,19 @@ export class TaskListComponent implements OnInit {
 
     this.tasks$ = merge(paramsStream, searchTermStream).pipe(distinctUntilChanged(),
                                                              switchMap(query => this.taskService.findTasksAsync(query)));
+
+    console.log('TaskList: taskChangedSubscription');
+    this.taskChangedSubscription = this.taskService.taskChanged$.subscribe(changedTask => {
+      console.log('TaskList: taskChangedSubscription with changed task', changedTask);
+      this.tasks$ = this.taskService.findTasksAsync(this.searchTerm.value);
+    },
+    error => {
+      console.log('TaskList: taskChangedSubscription error', error);
+    });
+  }
+
+  ngOnDestroy() {
+    this.taskChangedSubscription.unsubscribe();
   }
 
   deleteTask(task) {
@@ -89,7 +103,7 @@ export class TaskListComponent implements OnInit {
   selectTask(taskId: string) {
     this.selectedTaskId = taskId;
 
-    this.router.navigate([ {outlets: {'right': [ 'overview' , taskId]}}], {
+    this.router.navigate([ {outlets: {'right': [ 'overview' , taskId ]}} ], {
       relativeTo: this.route
     });
   }
