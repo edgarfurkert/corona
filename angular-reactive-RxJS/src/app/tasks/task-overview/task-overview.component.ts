@@ -25,6 +25,8 @@ export class TaskOverviewComponent implements OnInit {
   }
 
   saveTask() {
+    // Version 1  
+    /*  
     this.taskService.saveTaskAsync(this.task).subscribe(task => {
       this.task = task;
       this.showSuccessLabel = true;
@@ -34,5 +36,15 @@ export class TaskOverviewComponent implements OnInit {
         console.log('showSuccessLabel: ', this.showSuccessLabel)
       }, 3000);
     });
+    */
+    // Version 2
+    this.taskService.saveTaskAsync2(this.task);
+
+    this.showSuccessLabel = true;
+    console.log('showSuccessLabel: ', this.showSuccessLabel)
+    setTimeout(() => {
+      this.showSuccessLabel = false;
+      console.log('showSuccessLabel: ', this.showSuccessLabel)
+    }, 3000);
   }
 }

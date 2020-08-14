@@ -16,6 +16,13 @@
                         <a routerLink='/tasks' class="link">Aufgaben</a>
                     </li>
                 </ul>
+                <ul class="nav navbar-nav" style="float: right">
+                    <li style="padding-top: 15px;">
+                        <span class="badge">
+                            In Bearbeitung: {{numberInProgress$ | async}}
+                        </span>
+                    </li>
+                </ul>
             </div>
         </div>
     </nav>

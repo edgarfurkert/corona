@@ -14,7 +14,13 @@
                 <h3>Beschreibung</h3>
                 <span>{{task.description}}</span>
                 <h3>Status</h3>
-                <span>{{model.stateTexts[task.state]}}</span>
+                <select class="form-control" name="state" [ngModel]="task.state" (ngModelChange)="task.state = $event; saveTask()">
+                    <optgroup *ngFor="let group of model.stateGroups" [label]="group.label">
+                        <option *ngFor="let state of group.states" [value]="state">
+                            {{model.stateTexts[state]}}
+                        </option>
+                    </optgroup>
+                </select>
                 <h3>Zuständiger</h3>
                 <div>{{task.assignee.name}}</div>
                 <div>{{task.assignee.email}}</div>

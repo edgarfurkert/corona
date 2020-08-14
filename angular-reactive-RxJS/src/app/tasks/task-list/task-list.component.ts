@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectorRef} from '@angular/core';
+import {Component, OnInit, ChangeDetectorRef, ChangeDetectionStrategy} from '@angular/core';
 import {Location} from '@angular/common';
 
 import {FormControl} from '@angular/forms';
@@ -7,11 +7,13 @@ import {TaskService} from '../../services/task.service';
 import {Router, ActivatedRoute} from '@angular/router';
 import { Observable, merge, Subscription } from 'rxjs';
 import { debounceTime, map, tap, mergeMap, startWith, switchMap, distinctUntilChanged } from 'rxjs/operators';
+import { TaskStore } from 'src/app/stores/task.store';
 
 @Component({
   selector: 'ef-task-list',
   templateUrl: './task-list.component.html',
-  styleUrls: ['./task-list.component.css']
+  styleUrls: ['./task-list.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TaskListComponent implements OnInit {
 
@@ -26,7 +28,8 @@ export class TaskListComponent implements OnInit {
   constructor(private taskService: TaskService,
               private route: ActivatedRoute,
               private router: Router,
-              private location: Location) {
+              private location: Location,
+              private taskStore: TaskStore) {
   }
 
   ngOnInit() {
@@ -68,7 +71,6 @@ export class TaskListComponent implements OnInit {
                                                     switchMap(query => this.taskService.findTasksAsync(query)),
                                                     tap(tasks => console.log('Tasks:', tasks)));
     */
-
     // Version 3
     const paramsStream = this.route.queryParams.pipe(map(params => decodeURI(params['query'] || '')),
                                                      tap(query => console.log('paramsStream: query = ', query)),
@@ -78,6 +80,7 @@ export class TaskListComponent implements OnInit {
                                                                tap(query => console.log('searchTermStream: query = ', query)),
                                                                tap(query => this.adjustBrowserUrl(query)));
 
+    /*
     this.tasks$ = merge(paramsStream, searchTermStream).pipe(distinctUntilChanged(),
                                                              switchMap(query => this.taskService.findTasksAsync(query)));
 
@@ -89,6 +92,13 @@ export class TaskListComponent implements OnInit {
     error => {
       console.log('TaskList: taskChangedSubscription error', error);
     });
+    */
+
+    // Version 4
+    this.tasks$ = this.taskStore.items$;
+
+    merge(paramsStream, searchTermStream).pipe(distinctUntilChanged(),
+                                               tap(query => this.taskService.findTasksAsync2(query))).subscribe();
   }
 
   ngOnDestroy() {
@@ -109,7 +119,10 @@ export class TaskListComponent implements OnInit {
   }
 
   findTasks(queryString: string) {
-    this.tasks$ = this.taskService.findTasksAsync(queryString);
+    // Version 1
+    //this.tasks$ = this.taskService.findTasksAsync(queryString);
+    // Version 2
+    this.taskService.findTasksAsync2(queryString);
     this.adjustBrowserUrl(queryString);
   }
 

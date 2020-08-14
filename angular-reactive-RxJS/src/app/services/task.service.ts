@@ -1,7 +1,10 @@
-import {Task} from '../models/model-interfaces';
 import {Observable, of, Subject, Subscription, BehaviorSubject} from 'rxjs';
 import {Injectable} from '@angular/core';
+
+import {Task} from '../models/model-interfaces';
 const STORAGE_KEY = 'TASKS';
+
+import { LOAD, ADD, EDIT, REMOVE, TaskStore } from '../stores/task.store';
 
 @Injectable({
   providedIn: 'root'
@@ -9,21 +12,28 @@ const STORAGE_KEY = 'TASKS';
 export class TaskService {
 
   tasks: Task[] = [];
+  tasks$: BehaviorSubject<Task[]>;
 
   taskChanged$ = new Subject<Task>();
   taskChangedSubscription: Subscription;
 
-  constructor() {
+  constructor(private taskStore: TaskStore) {
     this.loadFromLocalStorage();
 
     this.taskChangedSubscription = this.taskChanged$.subscribe(changedTask => {
       console.log('TaskService: changed task');
     });
+
+    this.tasks$ = this.taskStore.items$;
   }
 
   findTasksAsync(query = ''): Observable<Task[]> {
     console.log('TaskService: findTasksAsync');
     return of(this.findTasks(query));
+  }
+
+  findTasksAsync2(query = '', sort = 'id', order = 'ASC') {
+    this.taskStore.dispatch({type: LOAD, data: this.findTasks(query)});
   }
 
   getTaskAsync(id: number | string): Observable<Task> {
@@ -40,6 +50,17 @@ export class TaskService {
     console.log('TaskService: taskChanged$.next');
     this.taskChanged$.next(task);
     return of(task);
+  }
+
+  saveTaskAsync2(task: Task) {
+    console.log('TaskService: saveTaskAsync2', task)
+    this.tasks = this.tasks.map(_task => {
+      return _task.id === task.id ? task : _task;
+    });
+    this._saveToLocalStorage();
+
+    const actionType = task.id ? EDIT : ADD;
+    this.taskStore.dispatch({type: actionType, data: task});
   }
 
   findTasks(query = ''): Task[] {
@@ -78,6 +99,8 @@ export class TaskService {
   deleteTask(task: Task) {
     this.tasks = this.tasks.filter(_task => _task.id !== task.id);
     this._saveToLocalStorage();
+
+    this.taskStore.dispatch({type: REMOVE, data: task});
   }
 
   _saveToLocalStorage() {
