@@ -25,7 +25,8 @@ public class CoronaGermanyData extends CoronaData {
 		String[] a = line.split(",(?=([^\\\"]*\\\"[^\\\"]*\\\")*[^\\\"]*$)");
 		
 		String territoryId = getKey(a[2]);
-		FederalState fs = props.findByKey(territoryId);
+		String parent = getKey(a[1]);
+		FederalState fs = props.findByKeyAndParent(territoryId, parent);
 		Long p = 0L;
 		String t = a[2];
 		String c = a[2];
@@ -52,7 +53,7 @@ public class CoronaGermanyData extends CoronaData {
 		setTerritoryId(territoryId);
 		setTerritory(t);
 		setTerritoryCode(c);
-		setTerritoryParent(getKey(a[1]));
+		setTerritoryParent(parent);
 		setYear(getDateRep().getYear());
 		setOrderId(OrderIdEnum.FEDERALSTATE.getOrderId());
 	}

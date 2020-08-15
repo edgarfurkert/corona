@@ -232,7 +232,7 @@ public class CoronaWorldDataJsonImport extends CoronaDataImport {
 											if (countryId != null) {
 												data.setTerritoryParent(countryId.getTerritoryId());
 											}
-											FederalState fs = federalStatesProps.findByKey(data.getTerritoryId());
+											FederalState fs = federalStatesProps.findByKeyAndParent(data.getTerritoryId(), data.getTerritoryParent());
 											if (fs != null) {
 												data.setTerritoryCode(fs.getCode());
 												data.setGeoId(fs.getCode());

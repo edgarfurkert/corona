@@ -209,4 +209,215 @@ federalstates:
     code: AI
     population: 16127
     parent: switzerland
+  - key: andalucu00EDa
+    name: Andalusien
+    code: AN
+    population: 8410002
+    parent: spain
+  - key: aragu00F3n
+    name: Aragonien
+    code: AR
+    population: 1318453
+    parent: spain
+  - key: asturias
+    name: Asturien
+    code: AS
+    population: 1022670
+    parent: spain
+  - key: baleares
+    name: Balearische Inseln
+    code: IB
+    population: 1148947
+    parent: spain
+  - key: canarias
+    name: Kanarische Inseln
+    code: CN
+    population: 2152590
+    parent: spain
+  - key: cantabria
+    name: Kantabrien
+    code: CB
+    population: 580964
+    parent: spain
+  - key: castillaLaMancha
+    name: Kastilien-La Mancha
+    code: CM
+    population: 2032004
+    parent: spain
+  - key: castillaYLeu00F3n
+    name: Kastilien und León
+    code: CL
+    population: 2398214
+    parent: spain
+  - key: cataluu00F1a
+    name: Katalonien
+    code: CT
+    population: 7672699
+    parent: spain
+  - key: ceuta
+    name: Ceuta
+    code: CE
+    population: 84777
+    parent: spain
+  - key: c.Valenciana
+    name: Valencia
+    code: VC
+    population: 5000868
+    parent: spain
+  - key: extremadura
+    name: Extremadura
+    code: EX
+    population: 1066998
+    parent: spain
+  - key: galicia
+    name: Galicien
+    code: GA
+    population: 2698875
+    parent: spain
+  - key: laRioja
+    name: La Rioja
+    code: RI
+    population: 316551
+    parent: spain
+  - key: madrid
+    name: Madrid
+    code: MD
+    population: 6661949
+    parent: spain
+  - key: melilla
+    name: Melilla
+    code: ML
+    population: 86465
+    parent: spain
+  - key: murcia
+    name: Region Murcia
+    code: MC
+    population: 1493530
+    parent: spain
+  - key: navarra
+    name: Navarra
+    code: NC
+    population: 653846
+    parent: spain
+  - key: pau00EDsVasco
+    name: Baskenland
+    code: PV
+    population: 2206965
+    parent: spain
+  - key: auvergneRhu00F4neAlpes
+    name: Auvergne-Rhône-Alpes
+    code: IDF
+    population: 12005077
+    parent: france
+  - key: bourgogneFrancheComtu00E9
+    name: Bourgogne-Franche-Comté
+    code: BFC
+    population: 2816000
+    parent: france
+  - key: bretagne
+    name: Bretagne
+    code: BRE
+    population: 3237097
+    parent: france
+  - key: centreValDeLoire
+    name: Centre-Val de Loire
+    code: CVL
+    population: 2556835
+    parent: france
+  - key: corse
+    name: Korsika
+    code: COR
+    population: 322000
+    parent: france
+  - key: frenchGuiana
+    name: Französisch-Guayana
+    code: GF
+    population: 268700
+    parent: france
+  - key: frenchPolynesia
+    name: Französisch-Polynesien
+    code: PF
+    population: 283007
+    parent: france
+  - key: grandEst
+    name: Grand Est
+    code: GES
+    population: 5545000
+    parent: france
+  - key: guadeloupe
+    name: Guadeloupe
+    code: GP
+    population: 390253
+    parent: france
+  - key: guyane
+    name: Guyane (Französisch-Guayana)
+    code: GF
+    population: 268700
+    parent: france
+  - key: hautsDeFrance
+    name: Hauts-de-France
+    code: HDF
+    population: 5960000
+    parent: france
+  - key: ileDeFrance
+    name: Île-de-France
+    code: IDF
+    population: 12005077
+    parent: france
+  - key: martinique
+    name: Martinique
+    code: MQ
+    population: 372594
+    parent: france
+  - key: mayotte
+    name: Mayotte
+    code: YT
+    population: 256518
+    parent: france
+  - key: newCaledonia
+    name: Neukaledonien
+    code: NC
+    population: 280460
+    parent: france
+  - key: normandie
+    name: Normandie
+    code: NOR
+    population: 3315000
+    parent: france
+  - key: nouvelleAquitaine
+    name: Nouvelle-Aquitaine
+    code: NAQ
+    population: 5773000
+    parent: france
+  - key: occitanie
+    name: Okzitanien
+    code: OCC
+    population: 5573000
+    parent: france
+  - key: paysDeLaLoire
+    name: Pays de la Loire
+    code: PDL
+    population: 3601113
+    parent: france
+  - key: provenceAlpesCu00F4teDu2019azur
+    name: Provence-Alpes-Côte d’Azur
+    code: PAC
+    population: 4916000
+    parent: france
+  - key: reunion
+    name: Réunion
+    code: RE
+    population: 853659
+    parent: france
+  - key: saintBarthelemy
+    name: Saint-Barthélemy (Insel)
+    code: BL
+    population: 9961
+    parent: france
+  - key: stMartin
+    name: St. Martin (Insel)
+    code: MA
+    population: 72239
+    parent: france
+    
       

@@ -22,15 +22,15 @@ public class FederalStatesProperties {
 	private Map<String, FederalState> federalStateKeyMap;
 	private Map<String, FederalState> federalStateCodeMap;
 	
-	public FederalState findByKey(String key) {
+	public FederalState findByKeyAndParent(String key, String parent) {
 		if (federalStateKeyMap == null) {
 			federalStateKeyMap = new HashMap<>();
 			federalStates.forEach(fs -> {
-				federalStateKeyMap.put(fs.getKey(), fs);
+				federalStateKeyMap.put(fs.getKey() + "-" + fs.getParent(), fs);
 			});
 		}
 		
-		return federalStateKeyMap.get(key);
+		return federalStateKeyMap.get(key + "-" + parent);
 	}
 	
 	public FederalState findByCode(String code) {
