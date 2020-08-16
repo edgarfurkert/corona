@@ -1,0 +1,33 @@
+input {
+    font-size: 20px;
+    border-width: 0px;
+    width: 100%;
+    text-align: center;
+    margin: 10px 0px;
+}
+
+.col {
+    width: 50px;
+    float: left;
+    margin: 0px 10px;
+}
+
+button {
+    width: 100%;
+    cursor: pointer;
+    padding: 11px 22px 9px 22px;
+    border: 1px solid #ccc;
+    margin: auto;
+    background: Transparent;
+    border-radius: 5px;
+}
+
+.timepicker {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    float: left;
+    width: 220px;
+    top: 27px;
+    left: 0px;
+}
