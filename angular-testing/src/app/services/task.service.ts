@@ -1,19 +1,35 @@
 import {Observable, of, BehaviorSubject} from 'rxjs';
-import {Injectable} from '@angular/core';
+import {Injectable, Inject} from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
 
 import {Task} from '../models/model-interfaces';
+import { SOCKET_IO } from '../app.tokens';
+import { tap } from 'rxjs/operators';
+import { EDIT, ADD, TaskStore } from './task.store';
+
 const STORAGE_KEY = 'TASKS';
+const BASE_URL = `http://localhost:3000/api/tasks/`;
+const WEB_SOCKET_URL = 'http://localhost:3001';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TaskService {
+
+  socket: any;
+
   tasks: Task[] = [];
   tasks$: Observable<Task[]>;
 
-  constructor() {
+  tasksChanged = new BehaviorSubject({});
+
+  constructor(private taskStore: TaskStore, private http: HttpClient, @Inject(SOCKET_IO) socketIO) {
     this.loadFromLocalStorage();
     this.tasks$ = this.findTasks();
+    this.socket = socketIO(WEB_SOCKET_URL);
+    console.log('TaskService: socketIO', socketIO);
+    console.log('TaskService: HttpClient', http);
+    console.log('TaskService: TaskStore', taskStore);
   }
 
   findTasks(query = ''): Observable<Task[]> {
@@ -33,7 +49,20 @@ export class TaskService {
       return _task.id === task.id ? task : _task;
     });
     this._saveToLocalStorage();
-    return of(task);
+
+    const method = task.id ? 'PUT' : 'POST';
+    return this.http.request(method, BASE_URL + (task.id || ''), {
+      body: task
+    }).pipe(
+      tap(savedTask => {
+        this.tasksChanged.next(savedTask);
+        const actionType = task.id ? EDIT : ADD;
+        const action = { type: actionType, data: savedTask };
+        this.taskStore.dispatch(action);
+        this.socket.emit('broadcast_task', action);
+      }));
+
+    //return of(task);
   }
 
   private findTasksIntern(query = ''): Task[] {
@@ -54,6 +83,8 @@ export class TaskService {
   deleteTask(task: Task) {
     this.tasks = this.tasks.filter(_task => _task.id !== task.id);
     this._saveToLocalStorage();
+    this.tasks$ = of(this.tasks);
+    return this.tasks$;
   }
 
   private _saveToLocalStorage() {
