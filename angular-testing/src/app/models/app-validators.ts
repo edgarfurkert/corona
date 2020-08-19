@@ -1,9 +1,13 @@
-import {Directive} from '@angular/core';
+import {Directive, forwardRef} from '@angular/core';
 import {
   FormGroup,
   AbstractControl,
   NG_VALIDATORS,
+  NG_ASYNC_VALIDATORS,
 } from '@angular/forms';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { UserService } from '../services/user.service';
 
 export function ifNotBacklogThenAssignee(controlGroup: FormGroup): {[key: string]: boolean} {
   const assigneeName = controlGroup.get('assignee.name');
@@ -62,6 +66,7 @@ export class EmailValidatorDirective {
     if (!control.value || control.value === '' || re.test(control.value)) {
       return null;
     } else {
+      console.log('EmailValidatorDirective: invalidEMail');
       return {'invalidEMail': true};
     }
   }
@@ -73,6 +78,26 @@ export function emailValidator(control): {[key: string]: any} {
     return null;
   } else {
     return {'invalidEMail': true};
+  }
+}
+
+@Directive({
+  selector: '[userExistsValidator]',
+  providers: [
+    {
+      provide: NG_ASYNC_VALIDATORS,
+      useExisting: forwardRef(() => UserExistsValidatorDirective), multi: true
+    }
+  ]
+})
+export class UserExistsValidatorDirective {
+  constructor(private userService: UserService) {
+  }
+
+  validate(control: AbstractControl): Observable<any> {
+    console.log('Validating User');
+    return this.userService.checkUserExists(control.value).pipe(
+      map(userExists => !userExists ? {userNotFound: true} : null));
   }
 }
 

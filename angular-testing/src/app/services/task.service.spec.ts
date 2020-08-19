@@ -6,7 +6,7 @@ import { SOCKET_IO } from '../app.tokens';
 import { mockIO } from '../mocks/mock-socket';
 import { TaskStore } from './task.store';
 
-fdescribe('TaskService', () => {
+describe('TaskService', () => {
   let service: TaskService;
   let taskStore: TaskStore;
   let httpTestingController: HttpTestingController;

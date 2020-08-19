@@ -1,8 +1,8 @@
-import {Observable, of, BehaviorSubject} from 'rxjs';
-import {Injectable, Inject} from '@angular/core';
+import { Observable, of, BehaviorSubject } from 'rxjs';
+import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 
-import {Task} from '../models/model-interfaces';
+import { Task } from '../models/model-interfaces';
 import { SOCKET_IO } from '../app.tokens';
 import { tap } from 'rxjs/operators';
 import { EDIT, ADD, TaskStore } from './task.store';
@@ -24,6 +24,7 @@ export class TaskService {
   tasksChanged = new BehaviorSubject({});
 
   constructor(private taskStore: TaskStore, private http: HttpClient, @Inject(SOCKET_IO) socketIO) {
+    console.log('TaskService.constructor');
     this.loadFromLocalStorage();
     this.tasks$ = this.findTasks();
     this.socket = socketIO(WEB_SOCKET_URL);
@@ -38,9 +39,9 @@ export class TaskService {
     return this.tasks$;
   }
 
-  getTask(id: number | string): Observable<Task> {
+  getTask(id: number | string): Task {
     const task = this.tasks.filter(t => t.id.toString() === id.toString())[0];
-    return of((task));
+    return task;
   }
 
   saveTask(task: Task): Observable<Task> {
@@ -63,6 +64,16 @@ export class TaskService {
       }));
 
     //return of(task);
+  }
+
+  saveTask2(task: Task): Task {
+    console.log('TaskService: saveTask', task)
+    this.tasks = this.tasks.map(_task => {
+      return _task.id === task.id ? task : _task;
+    });
+    this._saveToLocalStorage();
+
+    return task;
   }
 
   private findTasksIntern(query = ''): Task[] {
