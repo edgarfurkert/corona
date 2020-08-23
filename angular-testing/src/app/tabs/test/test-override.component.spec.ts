@@ -3,7 +3,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { TestComponent } from './test.component';
 import { TabsModule } from '../tabs.module';
 
-fdescribe('TestComponent-override', () => {
+describe('TabsTestComponent-override', () => {
   let component: TestComponent;
   let fixture: ComponentFixture<TestComponent>;
 

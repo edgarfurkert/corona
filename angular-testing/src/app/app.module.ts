@@ -18,6 +18,7 @@ import { TemplateDrivenFormComponent } from './template-driven-form/template-dri
 import { ShowErrorComponent } from './show-error/show-error.component';
 import { APPLICATION_VALIDATORS } from './models/app-validators';
 import { TabsModule } from './tabs/tabs.module';
+import { EditTaskComponent } from './tasks/edit-task/edit-task.component';
 
 export function socketIoFactory() {
   if (environment.e2eMode) {
@@ -36,7 +37,8 @@ export function socketIoFactory() {
     ReactiveFormComponent,
     TemplateDrivenFormComponent,
     ShowErrorComponent,
-    APPLICATION_VALIDATORS
+    APPLICATION_VALIDATORS,
+    EditTaskComponent
   ],
   imports: [
     BrowserModule,

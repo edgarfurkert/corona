@@ -3,7 +3,7 @@ import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core
 import { TestComponent } from './test.component';
 import { TabsModule } from '../tabs.module';
 
-fdescribe('TestComponent-fakeAsync', () => {
+describe('TabsTestComponent-fakeAsync', () => {
   let component: TestComponent;
   let fixture: ComponentFixture<TestComponent>;
 

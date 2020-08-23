@@ -44,6 +44,11 @@ export class TaskService {
     return task;
   }
 
+  getTaskAsync(id: number | string): Observable<Task> {
+    const task = this.tasks.filter(t => t.id.toString() === id.toString())[0];
+    return of(task);
+  }
+
   saveTask(task: Task): Observable<Task> {
     console.log('TaskService: saveTask', task)
     this.tasks = this.tasks.map(_task => {
