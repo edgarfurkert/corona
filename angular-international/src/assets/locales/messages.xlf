@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en-US" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="41224bc572165d5fd290541bc8dd0d7e7223596e" datatype="html">
+        <source>Übersetzungstechniken</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.html</context>
+          <context context-type="linenumber">22</context>
+        </context-group>
+        <note priority="1" from="description">the title of the first tab</note>
+        <note priority="1" from="meaning">navigation header</note>
+      </trans-unit>
+      <trans-unit id="ba466cbbca559b7385e2eac26031590d99fbdcaa" datatype="html">
+        <source>
+            <x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/>Ich bin ein Text, der über<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/>
+            <x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/>mehrere Paragraphen verteilt ist<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/>
+        </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.html</context>
+          <context context-type="linenumber">26</context>
+        </context-group>
+        <note priority="1" from="description">example for parallel nodes</note>
+      </trans-unit>
+      <trans-unit id="14e2ac5ca39d632a5826a9df9bfae62409640f3e" datatype="html">
+        <source>Übersetzung von Bereichen</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.html</context>
+          <context context-type="linenumber">25</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="324b785ba1d7207200179d7657b5111da8407af9" datatype="html">
+        <source>Pluralisierung und geschlechterspezifische Texte</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.html</context>
+          <context context-type="linenumber">31</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="c7b922066dbcbb975e2b0b0e2f01705e682adeda" datatype="html">
+        <source>Hallo Welt!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/translation-techniques/translation-techniques.component.html</context>
+          <context context-type="linenumber">1</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="54964f8d75edf0d588a266357b3afbdd9711df16" datatype="html">
+        <source>Hallo <x id="INTERPOLATION" equiv-text="{{user}}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/translation-techniques/translation-techniques.component.html</context>
+          <context context-type="linenumber">2</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="d79775baa45673024fd1b0ed473454b0a6daf26a" datatype="html">
+        <source>Hallöle <x id="INTERPOLATION" equiv-text="{{user}}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/translation-techniques/translation-techniques.component.html</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
+        <note priority="1" from="description">The Greeting the user sees on the main page</note>
+        <note priority="1" from="meaning">User greeting</note>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

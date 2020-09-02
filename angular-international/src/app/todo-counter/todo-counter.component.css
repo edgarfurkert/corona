@@ -1,0 +1,12 @@
+p {
+    padding: 15px;
+}
+
+ul {
+    list-style-type: none;
+}
+
+li {
+    padding: 3px;
+    font-size: larger;
+}
