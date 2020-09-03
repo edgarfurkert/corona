@@ -1,0 +1,15 @@
+<div class="todo-list">
+  <div class="input-group">
+    <input type="text" class="form-control" (keyup.enter)="addTodo(todoInput.value); todoInput.value = ''" #todoInput>
+    <span class="input-group-btn">
+        <button class="btn btn-default" type="button" (click)="addTodo(todoInput.value); todoInput.value = ''">Todo hinzufügen</button>
+      </span>
+  </div>
+
+  <app-todo-item  *ngFor="let todo of todos"
+                  [todo]="todo"
+                  (completed)="completeTodo($event)"
+                  [@todoAnimation]="'true'">
+  </app-todo-item>
+
+</div>

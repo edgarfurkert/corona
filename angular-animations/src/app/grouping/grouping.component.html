@@ -1,0 +1,25 @@
+<h2>Group</h2>
+<div class="row">
+    <button class="btn btn-default" (click)="showBox1 = !showBox1">Animation starten</button>
+
+    <div *ngIf="showBox1">
+        <div class="box" [@box1Animation]="'in'"></div>
+    </div>
+</div>
+
+<h2>Sequence</h2>
+<div class="row">
+    <button class="btn btn-default" (click)="showBox2 = !showBox2">Animation starten</button>
+
+    <div *ngIf="showBox2">
+        <div class="box" [@box2Animation]="'in'"></div>
+    </div>
+</div>
+<h2>Group + Sequence</h2>
+
+<div class="row">
+    <button class="btn btn-default" (click)="showBox3 = !showBox3">Animation starten</button>
+    <div *ngIf="showBox3">
+        <div class="box" [@box3Animation]="'in'"></div>
+    </div>
+</div>

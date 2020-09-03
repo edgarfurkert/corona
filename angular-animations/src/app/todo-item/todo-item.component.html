@@ -1,0 +1,12 @@
+<div class="todo-item">
+  <div class="row">
+    <div class="col-xs-11">
+      <span>
+        {{todo.text}}
+      </span>
+    </div>
+    <div class="col-xs-1">
+      <span (click)="complete(); $event.stopPropagation()" class="glyphicon glyphicon-ok ok"></span>
+    </div>
+  </div>
+</div>
