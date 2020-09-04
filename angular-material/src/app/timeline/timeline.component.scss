@@ -1,0 +1,15 @@
+.card {
+    margin: 0 auto;
+    max-width: 400px;
+}
+
+// Lobotomized Owl Selectgor * + *
+.card+.card {
+    margin-top: 18px;
+}
+
+.fab {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+}

@@ -1,0 +1,30 @@
+<mat-accordion>
+    <mat-expansion-panel>
+        <mat-expansion-panel-header>
+            <mat-panel-title>Baby</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <p>Hier können Sie den Namen des Babys ändern.</p>
+        <form class="form" #form="ngForm" (submit)="saveBabyName(babyNameModel.value); form.reset()">
+            <mat-form-field>
+                <input matInput name="babyName" [ngModel]="getBabyName()" placeholder="Babyname" #babyNameModel="ngModel" required/>
+                <mat-error *ngIf="babyNameModel.invalid">
+                    Geben Sie dem Kind doch bitte einen Namen :)
+                </mat-error>
+            </mat-form-field>
+            <mat-action-row>
+                <button type="submit" mat-raised-button color="primary" [disabled]="babyNameModel.invalid || babyNameModel.pristine">Speichern</button>
+            </mat-action-row>
+        </form>
+    </mat-expansion-panel>
+    <mat-expansion-panel>
+        <mat-expansion-panel-header>
+            <mat-panel-title>Timeline</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <p>Um die Daten der Timeline zu löschen, klicken Sie bitte auf den Button "Timeline löschen".</p>
+        <mat-action-row>
+            <button mat-raised-button color="warn" (click)="clearTimeline()">Timeline löschen</button>
+        </mat-action-row>
+    </mat-expansion-panel>
+</mat-accordion>
