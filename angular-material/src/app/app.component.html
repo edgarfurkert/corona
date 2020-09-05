@@ -1,13 +1,17 @@
 <mat-sidenav-container>
     <mat-sidenav #sidenav class="sidenav">
         <mat-nav-list role="navigation">
-            <a mat-list-item routerLink="timeline" routerLinkActive="active">
+            <a mat-list-item routerLink="timeline" routerLinkActive="active" (click)="sidenav.close()">
                 <mat-icon matListIcon>timeline</mat-icon>
                 Timeline
             </a>
-            <a mat-list-item routerLink="settings" routerLinkActive="active">
+            <a mat-list-item routerLink="settings" routerLinkActive="active" (click)="sidenav.close()">
                 <mat-icon matListIcon>settings</mat-icon>
                 Settings
+            </a>
+            <a mat-list-item routerLink="dataTable" routerLinkActive="active" (click)="sidenav.close()">
+                <mat-icon matListIcon>list</mat-icon>
+                Data Table
             </a>
         </mat-nav-list>
     </mat-sidenav>

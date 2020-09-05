@@ -19,6 +19,9 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatTableModule } from '@angular/material/table';
+import { MatSortModule } from '@angular/material/sort';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -26,6 +29,7 @@ import { TimelineComponent } from './timeline/timeline.component';
 import { SettingsComponent } from './settings/settings.component';
 import { AddEventComponent } from './add-event/add-event.component';
 import { DeleteTimelineDialogComponent } from './delete-timeline-dialog/delete-timeline-dialog.component';
+import { DataTableComponent } from './data-table/data-table.component';
 
 // zur korrekten Formatierung des Datums in der Timeline
 registerLocaleData(de);
@@ -36,7 +40,8 @@ registerLocaleData(de);
     TimelineComponent,
     SettingsComponent,
     AddEventComponent,
-    DeleteTimelineDialogComponent
+    DeleteTimelineDialogComponent,
+    DataTableComponent
   ],
   entryComponents: [
     AddEventComponent,
@@ -47,6 +52,7 @@ registerLocaleData(de);
     AppRoutingModule,
     BrowserAnimationsModule,
     FormsModule,
+    HttpClientModule,
     MatToolbarModule,
     MatButtonModule,
     MatIconModule,
@@ -60,7 +66,9 @@ registerLocaleData(de);
     MatExpansionModule,
     MatSnackBarModule,
     MatDialogModule,
-    HttpClientModule
+    MatTableModule,
+    MatSortModule,
+    MatCheckboxModule
   ],
   providers: [
     { provide: LOCALE_ID, useValue: 'de-de' }
