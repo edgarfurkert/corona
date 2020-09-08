@@ -1,8 +1,9 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewEncapsulation } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
   selector: 'ef-button-chooser',
+  encapsulation: ViewEncapsulation.None,
   templateUrl: './button-chooser.component.html',
   styleUrls: ['./button-chooser.component.css'],
   providers: [
