@@ -1,0 +1,6 @@
+<h1>Button Chooser Demo</h1>
+<form>
+    <label>Würden Sie Angular weiterempfehle?</label>
+    <ef-button-chooser [choices]="choices" name="answer" [(ngModel)]="answer"></ef-button-chooser>
+</form>
+<div>Antwort: {{answer}}</div>
