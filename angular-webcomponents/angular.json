@@ -230,6 +230,126 @@
                     }
                 }
             }
+        },
+        "button-chooser-demo": {
+            "projectType": "application",
+            "schematics": {},
+            "root": "projects/button-chooser-demo",
+            "sourceRoot": "projects/button-chooser-demo/src",
+            "prefix": "app",
+            "architect": {
+                "build": {
+                    "builder": "@angular-devkit/build-angular:browser",
+                    "options": {
+                        "outputPath": "dist/button-chooser-demo",
+                        "index": "projects/button-chooser-demo/src/index.html",
+                        "main": "projects/button-chooser-demo/src/main.ts",
+                        "polyfills": "projects/button-chooser-demo/src/polyfills.ts",
+                        "tsConfig": "projects/button-chooser-demo/tsconfig.app.json",
+                        "aot": true,
+                        "assets": [
+                            "projects/button-chooser-demo/src/favicon.ico",
+                            "projects/button-chooser-demo/src/assets"
+                        ],
+                        "styles": [
+                            "projects/button-chooser-demo/src/styles.css"
+                        ],
+                        "scripts": [
+                            "projects/button-chooser-demo/src/assets/button-chooser-webcomponent/polyfills.js",
+                            "projects/button-chooser-demo/src/assets/button-chooser-webcomponent/runtime.js",
+                            "projects/button-chooser-demo/src/assets/button-chooser-webcomponent/vendor.js",
+                            "projects/button-chooser-demo/src/assets/button-chooser-webcomponent/main.js",
+                            "projects/button-chooser-demo/src/assets/button-chooser-webcomponent/styles.js"
+                        ]
+                    },
+                    "configurations": {
+                        "production": {
+                            "fileReplacements": [{
+                                "replace": "projects/button-chooser-demo/src/environments/environment.ts",
+                                "with": "projects/button-chooser-demo/src/environments/environment.prod.ts"
+                            }],
+                            "optimization": true,
+                            "outputHashing": "all",
+                            "sourceMap": false,
+                            "extractCss": true,
+                            "namedChunks": false,
+                            "extractLicenses": true,
+                            "vendorChunk": false,
+                            "buildOptimizer": true,
+                            "budgets": [{
+                                    "type": "initial",
+                                    "maximumWarning": "2mb",
+                                    "maximumError": "5mb"
+                                },
+                                {
+                                    "type": "anyComponentStyle",
+                                    "maximumWarning": "6kb",
+                                    "maximumError": "10kb"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "serve": {
+                    "builder": "@angular-devkit/build-angular:dev-server",
+                    "options": {
+                        "browserTarget": "button-chooser-demo:build"
+                    },
+                    "configurations": {
+                        "production": {
+                            "browserTarget": "button-chooser-demo:build:production"
+                        }
+                    }
+                },
+                "extract-i18n": {
+                    "builder": "@angular-devkit/build-angular:extract-i18n",
+                    "options": {
+                        "browserTarget": "button-chooser-demo:build"
+                    }
+                },
+                "test": {
+                    "builder": "@angular-devkit/build-angular:karma",
+                    "options": {
+                        "main": "projects/button-chooser-demo/src/test.ts",
+                        "polyfills": "projects/button-chooser-demo/src/polyfills.ts",
+                        "tsConfig": "projects/button-chooser-demo/tsconfig.spec.json",
+                        "karmaConfig": "projects/button-chooser-demo/karma.conf.js",
+                        "assets": [
+                            "projects/button-chooser-demo/src/favicon.ico",
+                            "projects/button-chooser-demo/src/assets"
+                        ],
+                        "styles": [
+                            "projects/button-chooser-demo/src/styles.css"
+                        ],
+                        "scripts": []
+                    }
+                },
+                "lint": {
+                    "builder": "@angular-devkit/build-angular:tslint",
+                    "options": {
+                        "tsConfig": [
+                            "projects/button-chooser-demo/tsconfig.app.json",
+                            "projects/button-chooser-demo/tsconfig.spec.json",
+                            "projects/button-chooser-demo/e2e/tsconfig.json"
+                        ],
+                        "exclude": [
+                            "**/node_modules/**"
+                        ]
+                    }
+                },
+                "e2e": {
+                    "builder": "@angular-devkit/build-angular:protractor",
+                    "options": {
+                        "protractorConfig": "projects/button-chooser-demo/e2e/protractor.conf.js",
+                        "devServerTarget": "button-chooser-demo:serve"
+                    },
+                    "configurations": {
+                        "production": {
+                            "devServerTarget": "button-chooser-demo:serve:production"
+                        }
+                    }
+                }
+            }
         }
     },
     "defaultProject": "angular-webcomponents"

@@ -18,6 +18,12 @@
     },
     {
       "path": "./projects/button-chooser-webcomponent/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/button-chooser-demo/tsconfig.app.json"
+    },
+    {
+      "path": "./projects/button-chooser-demo/tsconfig.spec.json"
     }
 ]
 }
