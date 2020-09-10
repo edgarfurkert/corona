@@ -1,0 +1,13 @@
+<div class="listContainer">
+    <ef-checkbox-list class="territory-list" columnHeader="Territory" (selectItem)="selectTerritory($event)"></ef-checkbox-list>
+    <ef-checkbox-list class="region-list" columnHeader="Regions" (selectItem)="selectRegion($event)"></ef-checkbox-list>
+</div>
+<div>
+    <form class="form" #form="ngForm" (ngSubmit)="update(form.value)">
+
+        <ef-time-range class="time-range" title="Time range" [start]="startDate" [end]="endDate" [max]="maxDate"></ef-time-range>
+
+        <button type="submit" class="submit-button" [disabled]="!form.valid" mat-raised-button color="primary">Aktualisieren</button>
+
+    </form>
+</div>

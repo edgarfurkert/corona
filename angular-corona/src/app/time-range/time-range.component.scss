@@ -1,0 +1,19 @@
+.time-range-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.time-range {
+    display: flex;
+    flex-direction: row;
+}
+
+.time-range__datepicker-start {
+    padding-right: 10px;
+    width: 150px;
+}
+
+.time-range__datepicker-end {
+    padding-right: 10px;
+    width: 150px;
+}
