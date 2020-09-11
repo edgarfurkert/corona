@@ -1,10 +1,11 @@
-import { Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges, ViewChild, ElementRef } from '@angular/core';
 import { MAT_DATE_LOCALE, DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
 import {
   MAT_MOMENT_DATE_FORMATS,
   MomentDateAdapter,
   MAT_MOMENT_DATE_ADAPTER_OPTIONS,
 } from '@angular/material-moment-adapter';
+import { FormGroup, ControlContainer, NgForm } from '@angular/forms';
 
 export class TimeRange {
   startDate: Date;
@@ -41,7 +42,8 @@ export const MY_DATE_FORMATS = {
       deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS]
     },
     { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS }
-  ]
+  ],
+  viewProviders: [ { provide: ControlContainer, useExisting: NgForm } ]
 })
 export class TimeRangeComponent implements OnInit {
 
@@ -50,6 +52,8 @@ export class TimeRangeComponent implements OnInit {
   @Input() min: Date;
   @Input() max: Date;
   @Input() title: string;
+
+  @Input() form: FormGroup;
 
   @Output() timeRangeChange = new EventEmitter();
 

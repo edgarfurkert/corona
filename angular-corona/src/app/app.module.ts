@@ -20,6 +20,9 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatRadioModule } from '@angular/material/radio';
+
+import { HighchartsChartModule } from 'highcharts-angular';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -27,7 +30,11 @@ import { AnalysisComponent } from './analysis/analysis.component';
 import { DataInfoComponent } from './data-info/data-info.component';
 import { CheckboxListComponent } from './checkbox-list/checkbox-list.component';
 import { TimeRangeComponent } from './time-range/time-range.component';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { SelectionBoxComponent } from './selection-box/selection-box.component';
+import { RadioButtonGroupComponent } from './radio-button-group/radio-button-group.component';
+import { Graphic1Component } from './graphic1/graphic1.component';
+import { Graphic2Component } from './graphic2/graphic2.component';
 
 @NgModule({
   declarations: [
@@ -35,11 +42,16 @@ import { FormsModule } from '@angular/forms';
     AnalysisComponent,
     DataInfoComponent,
     CheckboxListComponent,
-    TimeRangeComponent
+    TimeRangeComponent,
+    SelectionBoxComponent,
+    RadioButtonGroupComponent,
+    Graphic1Component,
+    Graphic2Component
   ],
   imports: [
     BrowserModule,
     FormsModule,
+    ReactiveFormsModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     MatToolbarModule,
@@ -59,7 +71,9 @@ import { FormsModule } from '@angular/forms';
     MatCheckboxModule,
     MatGridListModule,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    MatRadioModule,
+    HighchartsChartModule
   ],
   providers: [
     MatDatepickerModule

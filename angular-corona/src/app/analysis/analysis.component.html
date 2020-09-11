@@ -1,13 +1,22 @@
-<div class="listContainer">
-    <ef-checkbox-list class="territory-list" columnHeader="Territory" (selectItem)="selectTerritory($event)"></ef-checkbox-list>
-    <ef-checkbox-list class="region-list" columnHeader="Regions" (selectItem)="selectRegion($event)"></ef-checkbox-list>
-</div>
-<div>
-    <form class="form" #form="ngForm" (ngSubmit)="update(form.value)">
+<section class="listContainer">
+    <ef-checkbox-list class="territory-list" columnHeader="Territories" [items]="territories" (selectItem)="selectTerritory($event)"></ef-checkbox-list>
+    <ef-checkbox-list class="region-list" columnHeader="Regions" [items]="regions" (selectItem)="selectRegion($event)"></ef-checkbox-list>
+</section>
+<section class="dataContainer">
+    <div class="formContainer">
+        <form class="form" #form="ngForm" (ngSubmit)="update(form.value)">
+            <div class="container-left">
+                <ef-time-range class="time-range" [form]="form" title="Time range" [start]="startDate" [end]="endDate" [max]="maxDate"></ef-time-range>
+                <ef-selection-box class="graphic-type" title="Graphic Type" [choices]="graphicTypes" [selected]="graphicTypeSelected" (onSelect)="selectGraphicType($event)"></ef-selection-box>
+            </div>
+            <ef-radio-button-group class="data-type" name="dataTypes" title="Data Types" [choices]="dataTypes" [selected]="dataTypeSelected" (onSelect)="selectDataType($event)"></ef-radio-button-group>
+            <ef-radio-button-group class="data-category" name="dataCategories" title="Data Category" [choices]="dataCategories" [selected]="dataCategorySelected" (onSelect)="selectDataCategory($event)"></ef-radio-button-group>
+            <ef-radio-button-group class="y-axis-type" name="yAxisTypes" title="y-Axis Type" [choices]="yAxisTypes" [selected]="yAxisTypeSelected" (onSelect)="selectYAxisType($event)"></ef-radio-button-group>
 
-        <ef-time-range class="time-range" title="Time range" [start]="startDate" [end]="endDate" [max]="maxDate"></ef-time-range>
-
-        <button type="submit" class="submit-button" [disabled]="!form.valid" mat-raised-button color="primary">Aktualisieren</button>
-
-    </form>
-</div>
+            <button type="submit" class="submit-button" [disabled]="!form.valid" mat-raised-button color="primary">Update</button>
+        </form>
+    </div>
+    <div class="graphicContainer">
+        <router-outlet name="graphic" (activate)="onGraphicActivate($event)" (deactivate)="onGraphicDeactivate($event)"></router-outlet>
+    </div>
+</section>

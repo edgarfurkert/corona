@@ -8,6 +8,14 @@
     flex-direction: row;
 }
 
+::ng-deep .time-range .mat-form-field-flex {
+    padding: 0em 0em 0 .75em !important;
+}
+
+::ng-deep .time-range .mat-form-field-infix {
+    padding: 0.25em 0 0.25em 0 !important;
+}
+
 .time-range__datepicker-start {
     padding-right: 10px;
     width: 150px;
@@ -16,4 +24,9 @@
 .time-range__datepicker-end {
     padding-right: 10px;
     width: 150px;
+}
+
+.time-range__title {
+    text-align: center;
+    padding-bottom: 5px;
 }

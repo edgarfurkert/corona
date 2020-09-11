@@ -1,10 +1,8 @@
-import { Component, OnInit, ViewChild, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, ViewChild, Input, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { SelectionModel } from '@angular/cdk/collections';
-
-import { CheckboxItem } from '../models/model.interfaces';
 
 const ELEMENT_DATA: CheckboxItem[] = [
   { id: '1', position: 1, text: 'Text 1', data: { territoryId: 'tid1' } },
@@ -14,6 +12,13 @@ const ELEMENT_DATA: CheckboxItem[] = [
   { id: '5', position: 5, text: 'Ein Text 5, der noch länger ist als Text 4', data: { territoryId: 'tid5' } }
 ];
 
+export interface CheckboxItem {
+  id?: string;
+  position: number;
+  text: string;
+  data?: any;
+}
+
 @Component({
   selector: 'ef-checkbox-list',
   templateUrl: './checkbox-list.component.html',
@@ -22,19 +27,22 @@ const ELEMENT_DATA: CheckboxItem[] = [
 export class CheckboxListComponent implements OnInit {
 
   @Input() columnHeader: string = 'Header';
+  @Input() items: CheckboxItem[];
   @Output() selectItem = new EventEmitter();
 
   displayedColumns: string[] = ['select', 'item'];
-  dataSource = new MatTableDataSource(ELEMENT_DATA);
+  dataSource: MatTableDataSource<CheckboxItem>;
   selected: string;
 
   @ViewChild(MatSort) sort: MatSort;
 
   selection = new SelectionModel<CheckboxItem>(true, []);
 
-  constructor(/*private dataService: DataTableService*/) { }
+  constructor() { }
 
   ngOnInit(): void {
+    console.log('CheckboxListComponent.ngOnInit', this.items);
+    this.dataSource = new MatTableDataSource(this.items);
   }
 
   ngAfterViewInit() {
@@ -66,9 +74,11 @@ export class CheckboxListComponent implements OnInit {
       if (this.selected !== JSON.stringify(this.selection.selected)) {
         this.selected = JSON.stringify(this.selection.selected);
 
+        let items: any[] = [];
         this.selection.selected.forEach(item => {
-          this.selectItem.emit(item.data);
+          items.push(item.data);
         });
+        this.selectItem.emit(items);
       }
     }
 

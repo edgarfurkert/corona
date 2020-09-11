@@ -1,3 +1,5 @@
+import { CheckboxItem } from '../checkbox-list/checkbox-list.component';
+import { Optional } from '@angular/core';
 
 export interface Territory {
     territoryId: string;
@@ -8,9 +10,18 @@ export interface Territory {
     regions?: Territory[];
 }
 
-export interface CheckboxItem {
+export class TerritoryItem implements CheckboxItem {
     id?: string;
     position: number;
     text: string;
     data?: any;
-}
+
+    constructor(@Optional() t: Territory) {
+        if (t) {
+            this.id = t.territoryId + '-' + t.parentId;
+            this.position = 1;
+            this.text = t.territoryName + ' (' + t.parentName + ')';
+            this.data = t;
+        }
+    }
+};

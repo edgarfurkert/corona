@@ -16,15 +16,32 @@
     left: 20px;
 }
 
-.form {
+.dataContainer {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     position: fixed;
     top: 85px;
     left: 340px;
     width: 100%;
+}
+
+.formContainer {
+    order: 0;
+    height: 150px;
+}
+
+.form {
+    display: flex;
+    flex-direction: row;
     margin: 0 auto;
     margin-bottom: 24px;
+    //overflow: auto;
+}
+
+.graphicContainer {
+    order: 1;
+    align-self: stretch;
+    background-color: burlywood;
 }
 
 mat-form-field {
@@ -32,8 +49,29 @@ mat-form-field {
 }
 
 .submit-button {
-    align-self: flex-end;
+    align-self: flex-start;
     max-width: 200px;
 }
 
+.container-left {
+    display: flex;
+    flex-direction: column;
+}
+
 .time-range {}
+
+.graphic-type {
+    padding-top: 5px;
+}
+
+.data-type {
+    width: 230px;
+}
+
+.data-category {
+    width: 280px;
+}
+
+.y-axis-type {
+    width: 120px;
+}

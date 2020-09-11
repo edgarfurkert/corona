@@ -1,0 +1,10 @@
+<mat-form-field>
+    <mat-select [placeholder]="title" [(ngModel)]="selected" name="selection" ngModel #selectionModel="ngModel" (selectionChange)="select($event)" required>
+        <mat-option *ngFor="let choice of choices" [value]="choice.id">
+            {{choice.title}}
+        </mat-option>
+    </mat-select>
+    <mat-error *ngIf="selectionModel.hasError('required')">
+        Selection required.
+    </mat-error>
+</mat-form-field>
