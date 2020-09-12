@@ -25,6 +25,7 @@
     "highcharts": "^8.2.0",
     "highcharts-angular": "^2.8.0",
     "moment": "^2.27.0",
+    "ngx-webstorage-service": "^4.1.0",
     "rxjs": "~6.5.5",
     "tslib": "^2.0.0",
     "zone.js": "~0.10.3"

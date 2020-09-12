@@ -52,9 +52,7 @@ export class TimeRangeComponent implements OnInit {
   @Input() min: Date;
   @Input() max: Date;
   @Input() title: string;
-
-  @Input() form: FormGroup;
-
+  @Input() log: boolean = false;
   @Output() timeRangeChange = new EventEmitter();
 
   timeRange: TimeRange = new TimeRange();
@@ -68,20 +66,26 @@ export class TimeRangeComponent implements OnInit {
     this.timeRange.endDate = this.end;
     this.minDate = this.min;
     this.maxDate = this.max;
-    console.log('TimeRangeComponent.ngOnInit: timeRange', this.timeRange);
+    if (this.log) {
+      console.log('TimeRangeComponent.ngOnInit: timeRange', this.timeRange);
+    }
   }
 
   startDateChange(event) {
     // Return date object 
     this.timeRange.startDate = event.value;
-    console.log('TimeRangeComponent.startDateChange: timeRange', this.timeRange);
+    if (this.log) {
+      console.log('TimeRangeComponent.startDateChange: timeRange', this.timeRange);
+    }
     this.timeRangeChange.emit(this.timeRange);
   }
 
   endDateChange(event) {
     // Return date object
     this.timeRange.endDate = event.value;
-    console.log('TimeRangeComponent.startDateChange: timeRange', this.timeRange);
+    if (this.log) {
+      console.log('TimeRangeComponent.startDateChange: timeRange', this.timeRange);
+    }
     this.timeRangeChange.emit(this.timeRange);
   }
 }

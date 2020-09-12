@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
 import { Territory, TerritoryItem } from '../models/model.interfaces';
@@ -6,6 +6,8 @@ import { SBChoice } from '../selection-box/selection-box.component';
 import { RBChoice } from '../radio-button-group/radio-button-group.component';
 import { CheckboxItem } from '../checkbox-list/checkbox-list.component';
 import { TerritoryService } from '../services/territory.service';
+import { SessionService } from '../services/session.service';
+import { ANALYSIS_LOG_ENABLED } from '../app.tokens';
 
 
 @Component({
@@ -48,7 +50,7 @@ export class AnalysisComponent implements OnInit {
   ];
   yAxisTypeSelected = 'linear';
 
-  constructor(private router: Router, private route: ActivatedRoute, private territoryService: TerritoryService) { }
+  constructor(@Inject(ANALYSIS_LOG_ENABLED) private log: boolean, private router: Router, private route: ActivatedRoute, private territoryService: TerritoryService, private session: SessionService) { }
 
   ngOnInit(): void {
     this.maxDate = new Date();
@@ -57,76 +59,117 @@ export class AnalysisComponent implements OnInit {
 
     let tArray: TerritoryItem[] = [];
     this.territoryService.getTerritoryMap().forEach(t => {
-      console.log('AnalysisComponent.ngAfterViewInit', t);
+      if (this.log) {
+        console.log('AnalysisComponent.ngOnInit', t);
+      }
       let item = new TerritoryItem(t);
       tArray.push(item);
     });
 
     this.territories = tArray;
-  }
 
-  ngAfterViewInit() {
+    // init session data
+    this.session.set('territories', this.territories);
+    this.session.set('regions', this.regions);
+    this.session.set('startDate', this.startDate);
+    this.session.set('endDate', this.endDate);
+    this.session.set('graphicTypeSelected', this.dataTypeSelected);
+    this.session.set('dataTypeSelected', this.dataTypeSelected);
+    this.session.set('dataCategorySelected', this.dataCategorySelected);
+    this.session.set('yAxisTypeSelected', this.yAxisTypeSelected);
   }
 
   selectTerritory(selectedTerritories: Territory[]) {
-    console.log('AnalysisComponent.selectTerritory', selectedTerritories);
+    if (this.log) {
+      console.log('AnalysisComponent.selectTerritory', selectedTerritories);
+    }
     let tArray: TerritoryItem[] = [];
     selectedTerritories.forEach(t => {
       t.regions.forEach(r => {
-        console.log('AnalysisComponent.selectTerritory', r);
         let item = new TerritoryItem(r);
-        console.log('AnalysisComponent.selectTerritory: item', item);
+        if (this.log) {
+          console.log('AnalysisComponent.selectTerritory: item', item);
+        }
         tArray.push(item);
         });
     });
-    this.regions = tArray;
+    setTimeout(() => {
+      this.regions = tArray;
+      this.session.set('regions', this.regions);
+    });
   }
 
   selectRegion(ev: Territory) {
-    console.log('AnalysisComponent.selectRegion: ev', ev);
+    if (this.log) {
+      console.log('AnalysisComponent.selectRegion: ev', ev);
+    }
   }
 
   update(data) {
-    console.log('AnalysisComponent.update: data', data);
+    if (this.log) {
+      console.log('AnalysisComponent.update: data', data);
+    }
     this.routeBySelection(this.graphicTypeSelected);
   }
 
   selectGraphicType(selection) {
-    console.log('AnalysisComponent.selectGraphicType', selection);
+    if (this.log) {
+      console.log('AnalysisComponent.selectGraphicType', selection);
+    }
     this.graphicTypeSelected = selection;
+    this.session.set('graphicTypeSelected', this.dataTypeSelected);
   }
 
   selectDataType(selection) {
-    console.log('AnalysisComponent.selectDataType', selection);
+    if (this.log) {
+      console.log('AnalysisComponent.selectDataType', selection);
+    }
     this.dataTypeSelected = selection;
+    this.session.set('dataTypeSelected', this.dataTypeSelected);
   }
 
   selectDataCategory(selection) {
-    console.log('AnalysisComponent.selectDataCategory', selection);
+    if (this.log) {
+      console.log('AnalysisComponent.selectDataCategory', selection);
+    }
     this.dataCategorySelected = selection;
+    this.session.set('dataCategorySelected', this.dataCategorySelected);
   }
 
   selectYAxisType(selection) {
-    console.log('AnalysisComponent.selectYAxisType', selection);
+    if (this.log) {
+      console.log('AnalysisComponent.selectYAxisType', selection);
+    }
     this.yAxisTypeSelected = selection;
+    this.session.set('yAxisTypeSelected', this.yAxisTypeSelected);
   }
 
   onGraphicActivate(ev) {
-    console.log('AnalysisComponent.onGraphicActivate', ev);
+    if (this.log) {
+      console.log('AnalysisComponent.onGraphicActivate', ev);
+    }
   }
 
   onGraphicDeactivate(ev) {
-    console.log('AnalysisComponent.onGraphicDeactivate', ev);
+    if (this.log) {
+      console.log('AnalysisComponent.onGraphicDeactivate', ev);
+    }
   }
 
   routeBySelection(selection: string) {
-    console.log('AnalysisComponent.routeBySelection', selection);
+    if (this.log) {
+      console.log('AnalysisComponent.routeBySelection', selection);
+    }
     this.router.navigate([{outlets: {graphic: [selection]}}], { relativeTo: this.route })
     .then(() => {
-      console.log('graphic done');
+      if (this.log) {
+        console.log('graphic done');
+      }
     })
     .catch(error => {
-      console.log('graphic', error);
+      if (this.log) {
+        console.log('graphic', error);
+      }
     });
   }
 }

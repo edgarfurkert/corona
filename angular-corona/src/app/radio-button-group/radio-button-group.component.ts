@@ -17,6 +17,7 @@ export class RadioButtonGroupComponent implements OnInit {
   @Input() selected: string;
   @Input() title: string;
   @Input() name: string;
+  @Input() log: boolean = false;
   @Output() onSelect = new EventEmitter();
 
   constructor() { }
@@ -25,7 +26,9 @@ export class RadioButtonGroupComponent implements OnInit {
   }
 
   select(ev: MatRadioChange) {
-    console.log('RadioButtonGroupComponent.select', ev);
+    if (this.log) {
+      console.log('RadioButtonGroupComponent.select', ev);
+    }
     this.onSelect.emit(ev.value);
   }
 }

@@ -23,6 +23,9 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatRadioModule } from '@angular/material/radio';
 
 import { HighchartsChartModule } from 'highcharts-angular';
+import { StorageServiceModule } from 'ngx-webstorage-service';
+
+import { CONSOLE_LOG_ENABLED, ANALYSIS_LOG_ENABLED, SERVICE_LOG_ENABLED } from './app.tokens';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -35,6 +38,7 @@ import { SelectionBoxComponent } from './selection-box/selection-box.component';
 import { RadioButtonGroupComponent } from './radio-button-group/radio-button-group.component';
 import { Graphic1Component } from './graphic1/graphic1.component';
 import { Graphic2Component } from './graphic2/graphic2.component';
+
 
 @NgModule({
   declarations: [
@@ -73,10 +77,14 @@ import { Graphic2Component } from './graphic2/graphic2.component';
     MatDatepickerModule,
     MatNativeDateModule,
     MatRadioModule,
-    HighchartsChartModule
+    HighchartsChartModule,
+    StorageServiceModule
   ],
   providers: [
-    MatDatepickerModule
+    MatDatepickerModule,
+    { provide: CONSOLE_LOG_ENABLED, useValue: true },
+    { provide: ANALYSIS_LOG_ENABLED, useValue: true },
+    { provide: SERVICE_LOG_ENABLED, useValue: false },
   ],
   bootstrap: [AppComponent]
 })

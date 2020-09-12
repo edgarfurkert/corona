@@ -1,8 +1,9 @@
-import { Component, OnInit, ViewChild, Input, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewChild, Input, Output, EventEmitter, ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
 
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { SelectionModel } from '@angular/cdk/collections';
+import { i18nMetaToDocStmt } from '@angular/compiler/src/render3/view/i18n/meta';
 
 const ELEMENT_DATA: CheckboxItem[] = [
   { id: '1', position: 1, text: 'Text 1', data: { territoryId: 'tid1' } },
@@ -24,14 +25,15 @@ export interface CheckboxItem {
   templateUrl: './checkbox-list.component.html',
   styleUrls: ['./checkbox-list.component.scss']
 })
-export class CheckboxListComponent implements OnInit {
+export class CheckboxListComponent implements OnInit, OnChanges {
 
   @Input() columnHeader: string = 'Header';
-  @Input() items: CheckboxItem[];
+  @Input() items: CheckboxItem[] = [];
+  @Input() log: boolean = false;
   @Output() selectItem = new EventEmitter();
 
   displayedColumns: string[] = ['select', 'item'];
-  dataSource: MatTableDataSource<CheckboxItem>;
+  dataSource: MatTableDataSource<CheckboxItem> = new MatTableDataSource<CheckboxItem>();
   selected: string;
 
   @ViewChild(MatSort) sort: MatSort;
@@ -41,12 +43,26 @@ export class CheckboxListComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    console.log('CheckboxListComponent.ngOnInit', this.items);
-    this.dataSource = new MatTableDataSource(this.items);
   }
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (this.log) {
+      console.log('CheckboxListComponent.ngOnChanges', changes);
+    }
+    if (changes['items']) {
+      this.items.sort((i1, i2) => {
+        if (i1.text > i2.text)
+          return 1;
+        if (i1.text < i2.text)
+          return -1;
+        return 0;
+      });
+      this.dataSource.data = this.items;
+    }
   }
 
   applyFilter(event: Event) {

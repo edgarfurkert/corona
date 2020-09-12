@@ -6,7 +6,7 @@
     <div class="formContainer">
         <form class="form" #form="ngForm" (ngSubmit)="update(form.value)">
             <div class="container-left">
-                <ef-time-range class="time-range" [form]="form" title="Time range" [start]="startDate" [end]="endDate" [max]="maxDate"></ef-time-range>
+                <ef-time-range class="time-range" title="Time range" [start]="startDate" [end]="endDate" [max]="maxDate"></ef-time-range>
                 <ef-selection-box class="graphic-type" title="Graphic Type" [choices]="graphicTypes" [selected]="graphicTypeSelected" (onSelect)="selectGraphicType($event)"></ef-selection-box>
             </div>
             <ef-radio-button-group class="data-type" name="dataTypes" title="Data Types" [choices]="dataTypes" [selected]="dataTypeSelected" (onSelect)="selectDataType($event)"></ef-radio-button-group>

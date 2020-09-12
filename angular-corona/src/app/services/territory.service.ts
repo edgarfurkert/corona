@@ -1,6 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 
 import { Territory } from '../models/model.interfaces';
+import { SERVICE_LOG_ENABLED } from '../app.tokens';
 
 const TERRITORIES: Territory[] = [
   { territoryId: 't1' , territoryName: 'T1', parentId: 'p1', parentName: 'P1', orderId: 1, 
@@ -30,10 +31,13 @@ export class TerritoryService {
 
   private territoryMap: Map<string, Territory> = new Map<string, Territory>();
 
-  constructor() { 
+  constructor(@Inject(SERVICE_LOG_ENABLED) private log: boolean) { 
     TERRITORIES.forEach(t => {
       this.territoryMap.set(t.territoryId + '-' + t.parentId, t);
     });
+    if (this.log) {
+      console.log('TerritoryService: territoryMap', this.territoryMap);
+    }
   }
 
   getTerritoryMap(): Map<string, Territory> {
