@@ -1,8 +1,14 @@
 <section class="listContainer">
-    <ef-checkbox-list class="territory-list" columnHeader="Territories" [items]="territories" (selectItem)="selectTerritory($event)"></ef-checkbox-list>
+    <div *ngIf="territories.length == 0">
+        <ef-checkbox-list class="territory-list" columnHeader="Territories"></ef-checkbox-list>
+    </div>
+    <div *ngIf="territories.length > 0">
+        <ef-checkbox-list class="territory-list" columnHeader="Territories" [log]="log" [items]="territories" (selectItem)="selectTerritory($event)"></ef-checkbox-list>
+    </div>
     <ef-checkbox-list class="region-list" columnHeader="Regions" [items]="regions" (selectItem)="selectRegion($event)"></ef-checkbox-list>
 </section>
 <section class="dataContainer">
+    <ngx-spinner></ngx-spinner>
     <div class="formContainer">
         <form class="form" #form="ngForm" (ngSubmit)="update(form.value)">
             <div class="container-left">

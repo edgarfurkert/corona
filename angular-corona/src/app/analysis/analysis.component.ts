@@ -1,13 +1,16 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject, ChangeDetectorRef } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
+import { tap } from 'rxjs/internal/operators';
+import { NGXLogger } from 'ngx-logger';
 
 import { Territory, TerritoryItem } from '../models/model.interfaces';
 import { SBChoice } from '../selection-box/selection-box.component';
 import { RBChoice } from '../radio-button-group/radio-button-group.component';
-import { CheckboxItem } from '../checkbox-list/checkbox-list.component';
 import { TerritoryService } from '../services/territory.service';
 import { SessionService } from '../services/session.service';
 import { ANALYSIS_LOG_ENABLED } from '../app.tokens';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 
 @Component({
@@ -20,8 +23,8 @@ export class AnalysisComponent implements OnInit {
   startDate: Date;
   endDate: Date;
   maxDate: Date;
-  territories: CheckboxItem[] = [];
-  regions: CheckboxItem[] = [];
+  territories: TerritoryItem[] = [];
+  regions: TerritoryItem[] = [];
 
   graphicTypes: SBChoice[] = [
     { id: 's1', title: 'Selection 1' },
@@ -50,23 +53,56 @@ export class AnalysisComponent implements OnInit {
   ];
   yAxisTypeSelected = 'linear';
 
-  constructor(@Inject(ANALYSIS_LOG_ENABLED) private log: boolean, private router: Router, private route: ActivatedRoute, private territoryService: TerritoryService, private session: SessionService) { }
+  constructor(private spinner: NgxSpinnerService, private logger: NGXLogger, @Inject(ANALYSIS_LOG_ENABLED) public log: boolean, private router: Router, private route: ActivatedRoute, private territoryService: TerritoryService, private session: SessionService) {
+    if (this.log) {
+      this.logger.debug('AnalysisComponent');
+    }
+  }
 
   ngOnInit(): void {
+    if (this.log) {
+      this.logger.debug('AnalysisComponent.ngOnInit');
+    }
+    this.spinner.show();
+
     this.maxDate = new Date();
-    this.maxDate.setDate( this.maxDate.getDate() - 1 );
+    this.maxDate.setDate(this.maxDate.getDate() - 1);
     this.endDate = this.maxDate;
 
     let tArray: TerritoryItem[] = [];
-    this.territoryService.getTerritoryMap().forEach(t => {
-      if (this.log) {
-        console.log('AnalysisComponent.ngOnInit', t);
-      }
-      let item = new TerritoryItem(t);
-      tArray.push(item);
-    });
+    this.territoryService.getTerritories().pipe(
+      tap((allTerritories) => {
+        // sort territories
+        allTerritories.sort((t1, t2) => {
+          if (t1.orderId < t2.orderId) {
+            return -1;
+          }
+          if (t1.orderId > t2.orderId) {
+            return 1;
+          }
+          if (t1.territoryName < t2.territoryName) {
+            return -1;
+          }
+          if (t1.territoryName > t2.territoryName) {
+            return 1;
+          }
+          return 0;
+        });
+        var counter = 1;
+        allTerritories.forEach(t => {
+          let item = new TerritoryItem(t);
+          item.position = counter;
+          tArray.push(item);
+          counter++;
+        });
 
-    this.territories = tArray;
+        this.territories = tArray;
+        if (this.log) {
+          this.logger.debug('AnalysisComponent.ngOnInit: territories$', this.territories);
+        }
+        this.spinner.hide();
+      })
+    ).subscribe();
 
     // init session data
     this.session.set('territories', this.territories);
@@ -79,21 +115,43 @@ export class AnalysisComponent implements OnInit {
     this.session.set('yAxisTypeSelected', this.yAxisTypeSelected);
   }
 
+  ngAfterViewInit() {
+    if (this.log) {
+      this.logger.debug('AnalysisComponent.ngAfterViewInit');
+    }
+  }
+
   selectTerritory(selectedTerritories: Territory[]) {
     if (this.log) {
-      console.log('AnalysisComponent.selectTerritory', selectedTerritories);
+      this.logger.debug('AnalysisComponent.selectTerritory', selectedTerritories);
     }
     let tArray: TerritoryItem[] = [];
     selectedTerritories.forEach(t => {
       t.regions.forEach(r => {
         let item = new TerritoryItem(r);
         if (this.log) {
-          console.log('AnalysisComponent.selectTerritory: item', item);
+          this.logger.debug('AnalysisComponent.selectTerritory: item', item);
         }
         tArray.push(item);
-        });
+      });
     });
     setTimeout(() => {
+      // sort territories
+      tArray.sort((t1, t2) => {
+        if (t1.data.orderId < t2.data.orderId) {
+          return -1;
+        }
+        if (t1.data.orderId > t2.data.orderId) {
+          return 1;
+        }
+        if (t1.data.territoryName < t2.data.territoryName) {
+          return -1;
+        }
+        if (t1.data.territoryName > t2.data.territoryName) {
+          return 1;
+        }
+        return 0;
+      });
       this.regions = tArray;
       this.session.set('regions', this.regions);
     });
@@ -101,20 +159,20 @@ export class AnalysisComponent implements OnInit {
 
   selectRegion(ev: Territory) {
     if (this.log) {
-      console.log('AnalysisComponent.selectRegion: ev', ev);
+      this.logger.debug('AnalysisComponent.selectRegion: ev', ev);
     }
   }
 
   update(data) {
     if (this.log) {
-      console.log('AnalysisComponent.update: data', data);
+      this.logger.debug('AnalysisComponent.update: data', data);
     }
     this.routeBySelection(this.graphicTypeSelected);
   }
 
   selectGraphicType(selection) {
     if (this.log) {
-      console.log('AnalysisComponent.selectGraphicType', selection);
+      this.logger.debug('AnalysisComponent.selectGraphicType', selection);
     }
     this.graphicTypeSelected = selection;
     this.session.set('graphicTypeSelected', this.dataTypeSelected);
@@ -122,7 +180,7 @@ export class AnalysisComponent implements OnInit {
 
   selectDataType(selection) {
     if (this.log) {
-      console.log('AnalysisComponent.selectDataType', selection);
+      this.logger.debug('AnalysisComponent.selectDataType', selection);
     }
     this.dataTypeSelected = selection;
     this.session.set('dataTypeSelected', this.dataTypeSelected);
@@ -130,7 +188,7 @@ export class AnalysisComponent implements OnInit {
 
   selectDataCategory(selection) {
     if (this.log) {
-      console.log('AnalysisComponent.selectDataCategory', selection);
+      this.logger.debug('AnalysisComponent.selectDataCategory', selection);
     }
     this.dataCategorySelected = selection;
     this.session.set('dataCategorySelected', this.dataCategorySelected);
@@ -138,7 +196,7 @@ export class AnalysisComponent implements OnInit {
 
   selectYAxisType(selection) {
     if (this.log) {
-      console.log('AnalysisComponent.selectYAxisType', selection);
+      this.logger.debug('AnalysisComponent.selectYAxisType', selection);
     }
     this.yAxisTypeSelected = selection;
     this.session.set('yAxisTypeSelected', this.yAxisTypeSelected);
@@ -146,30 +204,30 @@ export class AnalysisComponent implements OnInit {
 
   onGraphicActivate(ev) {
     if (this.log) {
-      console.log('AnalysisComponent.onGraphicActivate', ev);
+      this.logger.debug('AnalysisComponent.onGraphicActivate', ev);
     }
   }
 
   onGraphicDeactivate(ev) {
     if (this.log) {
-      console.log('AnalysisComponent.onGraphicDeactivate', ev);
+      this.logger.debug('AnalysisComponent.onGraphicDeactivate', ev);
     }
   }
 
   routeBySelection(selection: string) {
     if (this.log) {
-      console.log('AnalysisComponent.routeBySelection', selection);
+      this.logger.debug('AnalysisComponent.routeBySelection', selection);
     }
-    this.router.navigate([{outlets: {graphic: [selection]}}], { relativeTo: this.route })
-    .then(() => {
-      if (this.log) {
-        console.log('graphic done');
-      }
-    })
-    .catch(error => {
-      if (this.log) {
-        console.log('graphic', error);
-      }
-    });
+    this.router.navigate([{ outlets: { graphic: [selection] } }], { relativeTo: this.route })
+      .then(() => {
+        if (this.log) {
+          this.logger.debug('graphic done');
+        }
+      })
+      .catch(error => {
+        if (this.log) {
+          this.logger.debug('graphic', error);
+        }
+      });
   }
 }

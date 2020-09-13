@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { HttpClientModule } from '@angular/common/http';
 
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
@@ -24,6 +25,8 @@ import { MatRadioModule } from '@angular/material/radio';
 
 import { HighchartsChartModule } from 'highcharts-angular';
 import { StorageServiceModule } from 'ngx-webstorage-service';
+import { LoggerModule, NgxLoggerLevel } from 'ngx-logger';
+import { NgxSpinnerModule } from 'ngx-spinner';
 
 import { CONSOLE_LOG_ENABLED, ANALYSIS_LOG_ENABLED, SERVICE_LOG_ENABLED } from './app.tokens';
 
@@ -57,6 +60,9 @@ import { Graphic2Component } from './graphic2/graphic2.component';
     FormsModule,
     ReactiveFormsModule,
     AppRoutingModule,
+    HttpClientModule,
+    LoggerModule.forRoot({serverLoggingUrl: '/api/logs', level: NgxLoggerLevel.DEBUG, serverLogLevel: NgxLoggerLevel.ERROR}),
+    NgxSpinnerModule,
     BrowserAnimationsModule,
     MatToolbarModule,
     MatIconModule,
@@ -80,11 +86,12 @@ import { Graphic2Component } from './graphic2/graphic2.component';
     HighchartsChartModule,
     StorageServiceModule
   ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [
     MatDatepickerModule,
     { provide: CONSOLE_LOG_ENABLED, useValue: true },
     { provide: ANALYSIS_LOG_ENABLED, useValue: true },
-    { provide: SERVICE_LOG_ENABLED, useValue: false },
+    { provide: SERVICE_LOG_ENABLED, useValue: true },
   ],
   bootstrap: [AppComponent]
 })

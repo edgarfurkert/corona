@@ -1,4 +1,7 @@
 import { Injectable, Inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { tap } from 'rxjs/internal/operators';
+import { Observable, BehaviorSubject } from 'rxjs';
 
 import { Territory } from '../models/model.interfaces';
 import { SERVICE_LOG_ENABLED } from '../app.tokens';
@@ -24,23 +27,38 @@ const TERRITORIES: Territory[] = [
     ]}
 ];
 
+const API = 'http://localhost:8080/api/territories';
+
 @Injectable({
   providedIn: 'root'
 })
 export class TerritoryService {
 
-  private territoryMap: Map<string, Territory> = new Map<string, Territory>();
+  private territories$: Observable<Territory[]>;
+  private territory$ = new BehaviorSubject<Territory[]>([]);
 
-  constructor(@Inject(SERVICE_LOG_ENABLED) private log: boolean) { 
+  constructor(@Inject(SERVICE_LOG_ENABLED) private log: boolean, private http: HttpClient) { 
+    /*
     TERRITORIES.forEach(t => {
       this.territoryMap.set(t.territoryId + '-' + t.parentId, t);
     });
-    if (this.log) {
-      console.log('TerritoryService: territoryMap', this.territoryMap);
-    }
+    */
+   this.territories$ = this.territory$;
   }
 
-  getTerritoryMap(): Map<string, Territory> {
-    return this.territoryMap;
+  getTerritories(): Observable<Territory[]> {
+    this.http.get<Territory[]>(API).pipe(
+      tap((territories) => {
+        if (this.log) {
+          console.log('TerritoryService: territories', territories);
+        }
+        this.territory$.next(territories);
+      })).subscribe();
+    if (this.log) {
+      console.log('TerritoryService: territories$', this.territories$);
+    }
+
+    return this.territories$;
   }
+
 }

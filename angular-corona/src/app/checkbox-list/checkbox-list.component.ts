@@ -1,9 +1,11 @@
 import { Component, OnInit, ViewChild, Input, Output, EventEmitter, ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
 
-import { MatTableDataSource } from '@angular/material/table';
+import { MatTableDataSource, MatTable } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { SelectionModel } from '@angular/cdk/collections';
-import { i18nMetaToDocStmt } from '@angular/compiler/src/render3/view/i18n/meta';
+import { BehaviorSubject } from 'rxjs';
+import { tap } from 'rxjs/internal/operators';
+import { NGXLogger } from 'ngx-logger';
 
 const ELEMENT_DATA: CheckboxItem[] = [
   { id: '1', position: 1, text: 'Text 1', data: { territoryId: 'tid1' } },
@@ -33,40 +35,46 @@ export class CheckboxListComponent implements OnInit, OnChanges {
   @Output() selectItem = new EventEmitter();
 
   displayedColumns: string[] = ['select', 'item'];
-  dataSource: MatTableDataSource<CheckboxItem> = new MatTableDataSource<CheckboxItem>();
+  dataSource: MatTableDataSource<CheckboxItem> = new MatTableDataSource<CheckboxItem>([]);
   selected: string;
 
   @ViewChild(MatSort) sort: MatSort;
 
   selection = new SelectionModel<CheckboxItem>(true, []);
 
-  constructor() { }
+  constructor(private logger: NGXLogger) {
+    this.logger.debug('CheckboxListComponent');
+  }
 
   ngOnInit(): void {
+    this.logger.debug('CheckboxListComponent.ngOnInit');
+
+    this.dataSource.data = this.items;
+    if (this.log) {
+      this.logger.debug('CheckboxListComponent.ngOnInit', this.dataSource);
+    }
   }
 
   ngAfterViewInit() {
+    this.logger.debug('CheckboxListComponent.ngAfterViewInit');
     this.dataSource.sort = this.sort;
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (this.log) {
-      console.log('CheckboxListComponent.ngOnChanges', changes);
-    }
+    this.logger.debug('CheckboxListComponent.ngOnChanges', changes);
     if (changes['items']) {
-      this.items.sort((i1, i2) => {
-        if (i1.text > i2.text)
-          return 1;
-        if (i1.text < i2.text)
-          return -1;
-        return 0;
-      });
+      if (this.log) {
+        this.logger.debug('CheckboxListComponent.ngOnChanges: sort items', this.items, this.items.length);
+      }
       this.dataSource.data = this.items;
     }
   }
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
+    if (this.log) {
+      this.logger.debug('CheckboxListComponent.applyFilter: filterValue', filterValue);
+    }
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
