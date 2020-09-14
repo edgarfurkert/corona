@@ -39,6 +39,25 @@
     //overflow: auto;
 }
 
+.form-left {
+    display: flex;
+    flex-direction: column;
+    order: 0;
+}
+
+.form-right {
+    display: flex;
+    flex-direction: row;
+    order: 1;
+}
+
+.form-button {
+    align-self: flex-start;
+    max-width: 200px;
+    padding-top: 25px;
+    order: 2;
+}
+
 .graphicContainer {
     order: 1;
     align-self: stretch;
@@ -49,16 +68,6 @@ mat-form-field {
     margin-bottom: 16px;
 }
 
-.submit-button {
-    align-self: flex-start;
-    max-width: 200px;
-}
-
-.container-left {
-    display: flex;
-    flex-direction: column;
-}
-
 .time-range {}
 
 .graphic-type {
@@ -66,13 +75,16 @@ mat-form-field {
 }
 
 .data-type {
-    width: 230px;
+    order: 0;
 }
 
 .data-category {
-    width: 280px;
+    padding-left: 15px;
+    order: 1;
 }
 
 .y-axis-type {
-    width: 120px;
+    padding-left: 15px;
+    padding-right: 15px;
+    order: 2;
 }

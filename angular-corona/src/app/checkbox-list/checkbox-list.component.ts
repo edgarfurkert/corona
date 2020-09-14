@@ -43,11 +43,15 @@ export class CheckboxListComponent implements OnInit, OnChanges {
   selection = new SelectionModel<CheckboxItem>(true, []);
 
   constructor(private logger: NGXLogger) {
-    this.logger.debug('CheckboxListComponent');
+    if (this.log) {
+      this.logger.debug('CheckboxListComponent');
+    }
   }
 
   ngOnInit(): void {
-    this.logger.debug('CheckboxListComponent.ngOnInit');
+    if (this.log) {
+      this.logger.debug('CheckboxListComponent.ngOnInit');
+    }
 
     this.dataSource.data = this.items;
     if (this.log) {
@@ -56,12 +60,16 @@ export class CheckboxListComponent implements OnInit, OnChanges {
   }
 
   ngAfterViewInit() {
-    this.logger.debug('CheckboxListComponent.ngAfterViewInit');
+    if (this.log) {
+      this.logger.debug('CheckboxListComponent.ngAfterViewInit');
+    }
     this.dataSource.sort = this.sort;
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.logger.debug('CheckboxListComponent.ngOnChanges', changes);
+    if (this.log) {
+      this.logger.debug('CheckboxListComponent.ngOnChanges', changes);
+    }
     if (changes['items']) {
       if (this.log) {
         this.logger.debug('CheckboxListComponent.ngOnChanges: sort items', this.items, this.items.length);

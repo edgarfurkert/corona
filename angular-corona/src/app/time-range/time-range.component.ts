@@ -48,7 +48,9 @@ export const MY_DATE_FORMATS = {
 export class TimeRangeComponent implements OnInit {
 
   @Input() start: Date;
+  @Input() startTitle: string;
   @Input() end: Date;
+  @Input() endTitle: string;
   @Input() min: Date;
   @Input() max: Date;
   @Input() title: string;

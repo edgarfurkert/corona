@@ -20,7 +20,7 @@ export class TerritoryItem implements CheckboxItem {
         if (t) {
             this.id = t.territoryId + '-' + t.parentId;
             this.position = 1;
-            this.text = t.territoryName + ' (' + t.parentId + ')';
+            this.text = t.territoryName + ' (' + t.parentName + ')';
             this.data = t;
         }
     }

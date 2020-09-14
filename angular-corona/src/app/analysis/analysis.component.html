@@ -1,25 +1,38 @@
 <section class="listContainer">
-    <div *ngIf="territories.length == 0">
+    <div *ngIf="!territoriesLoaded">
         <ef-checkbox-list class="territory-list" columnHeader="Territories"></ef-checkbox-list>
     </div>
-    <div *ngIf="territories.length > 0">
-        <ef-checkbox-list class="territory-list" columnHeader="Territories" [log]="log" [items]="territories" (selectItem)="selectTerritory($event)"></ef-checkbox-list>
+    <div *ngIf="territoriesLoaded">
+        <ef-checkbox-list class="territory-list" [columnHeader]="getTranslation('label.territories')" [items]="territories" (selectItem)="selectTerritory($event)"></ef-checkbox-list>
     </div>
-    <ef-checkbox-list class="region-list" columnHeader="Regions" [items]="regions" (selectItem)="selectRegion($event)"></ef-checkbox-list>
+    <ef-checkbox-list class="region-list" [columnHeader]="getTranslation('label.regions')" [items]="regions" (selectItem)="selectRegion($event)"></ef-checkbox-list>
 </section>
 <section class="dataContainer">
-    <ngx-spinner></ngx-spinner>
+    <ngx-spinner>Please wait...</ngx-spinner>
     <div class="formContainer">
         <form class="form" #form="ngForm" (ngSubmit)="update(form.value)">
-            <div class="container-left">
-                <ef-time-range class="time-range" title="Time range" [start]="startDate" [end]="endDate" [max]="maxDate"></ef-time-range>
-                <ef-selection-box class="graphic-type" title="Graphic Type" [choices]="graphicTypes" [selected]="graphicTypeSelected" (onSelect)="selectGraphicType($event)"></ef-selection-box>
+            <div class="form-left" *ngIf="!configurationLoaded">
+                <ef-time-range class="time-range" title="Date range"></ef-time-range>
+                <ef-selection-box class="graphic-type" title="Graphic Type"></ef-selection-box>
             </div>
-            <ef-radio-button-group class="data-type" name="dataTypes" title="Data Types" [choices]="dataTypes" [selected]="dataTypeSelected" (onSelect)="selectDataType($event)"></ef-radio-button-group>
-            <ef-radio-button-group class="data-category" name="dataCategories" title="Data Category" [choices]="dataCategories" [selected]="dataCategorySelected" (onSelect)="selectDataCategory($event)"></ef-radio-button-group>
-            <ef-radio-button-group class="y-axis-type" name="yAxisTypes" title="y-Axis Type" [choices]="yAxisTypes" [selected]="yAxisTypeSelected" (onSelect)="selectYAxisType($event)"></ef-radio-button-group>
+            <div class="form-left" *ngIf="configurationLoaded">
+                <ef-time-range class="time-range" [title]="getTranslation('label.dateRange')" [startTitle]="getTranslation('label.from')" [endTitle]="getTranslation('label.to')" [start]="startDate" [end]="endDate" [min]="minDate" [max]="maxDate"></ef-time-range>
+                <ef-selection-box class="graphic-type" [title]="getTranslation('label.graphType')" [choices]="graphicTypes" [selected]="graphicTypeSelected" (onSelect)="selectGraphicType($event)"></ef-selection-box>
+            </div>
+            <div class="form-right" *ngIf="!configurationLoaded">
+                <ef-radio-button-group class="data-type" name="dataTypes" title="Data Types"></ef-radio-button-group>
+                <ef-radio-button-group class="data-category" name="dataCategories" title="Data Category"></ef-radio-button-group>
+                <ef-radio-button-group class="y-axis-type" name="yAxisTypes" title="y-Axis Type"></ef-radio-button-group>
+            </div>
+            <div class="form-right" *ngIf="configurationLoaded">
+                <ef-radio-button-group class="data-type" name="dataTypes" [title]="getTranslation('label.dataTypes')" [choices]="dataTypes" [selected]="dataTypeSelected" (onSelect)="selectDataType($event)"></ef-radio-button-group>
+                <ef-radio-button-group class="data-category" name="dataCategories" [title]="getTranslation('label.dataCategories')" [choices]="dataCategories" [selected]="dataCategorySelected" (onSelect)="selectDataCategory($event)"></ef-radio-button-group>
+                <ef-radio-button-group class="y-axis-type" name="yAxisTypes" [title]="getTranslation('label.yAxisType')" [choices]="yAxisTypes" [selected]="yAxisTypeSelected" (onSelect)="selectYAxisType($event)"></ef-radio-button-group>
+            </div>
 
-            <button type="submit" class="submit-button" [disabled]="!form.valid" mat-raised-button color="primary">Update</button>
+            <div class="form-button">
+                <button type="submit" class="submit-button" [disabled]="!form.valid" mat-raised-button color="primary">{{getTranslation('label.update')}}</button>
+            </div>
         </form>
     </div>
     <div class="graphicContainer">

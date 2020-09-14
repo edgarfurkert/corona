@@ -27,15 +27,14 @@ const TERRITORIES: Territory[] = [
     ]}
 ];
 
-const API = 'http://localhost:8080/api/territories';
+const API_URL = 'http://localhost:8080/api/territories';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TerritoryService {
 
-  private territories$: Observable<Territory[]>;
-  private territory$ = new BehaviorSubject<Territory[]>([]);
+  private territories$ = new BehaviorSubject<Territory[]>([]);
 
   constructor(@Inject(SERVICE_LOG_ENABLED) private log: boolean, private http: HttpClient) { 
     /*
@@ -43,22 +42,21 @@ export class TerritoryService {
       this.territoryMap.set(t.territoryId + '-' + t.parentId, t);
     });
     */
-   this.territories$ = this.territory$;
   }
 
   getTerritories(): Observable<Territory[]> {
-    this.http.get<Territory[]>(API).pipe(
+    this.http.get<Territory[]>(API_URL).pipe(
       tap((territories) => {
         if (this.log) {
           console.log('TerritoryService: territories', territories);
         }
-        this.territory$.next(territories);
+        this.territories$.next(territories);
       })).subscribe();
     if (this.log) {
       console.log('TerritoryService: territories$', this.territories$);
     }
 
-    return this.territories$;
+    return this.territories$.asObservable();
   }
 
 }
