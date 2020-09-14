@@ -15,6 +15,9 @@ public interface CoronaDataJpaRepository extends CrudRepository<CoronaDataEntity
 	@Query("SELECT DISTINCT c.territoryId FROM CoronaDataEntity c WHERE c.territoryParent IN ?1 ORDER BY c.territoryId")
 	public List<String> findDistinctTerritoryIdByTerritoryParent(List<String> parents);
 	
+	@Query("SELECT DISTINCT new CoronaDataEntity(c.territoryId, c.territory, c.territoryParent, c.orderId) FROM CoronaDataEntity c ORDER BY c.territoryParent, c.territoryId")
+	public List<CoronaDataEntity> findDistinctTerritories();
+	
 	public List<CoronaDataEntity> findByTerritoryIdInAndDateRepBetween(List<String> territories, LocalDate from, LocalDate to);
 	
 	public Optional<CoronaDataEntity> findFirstByTerritoryParent(String parent);

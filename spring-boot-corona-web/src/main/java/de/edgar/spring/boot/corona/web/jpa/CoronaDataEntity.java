@@ -49,6 +49,13 @@ public class CoronaDataEntity {
 	private Double activePer100000Pop;
 	private Long orderId;
 	
+	public CoronaDataEntity(String territoryId, String territory, String territoryParent, Long orderId) {
+		this.territoryId = territoryId;
+		this.territory = territory;
+		this.territoryParent = territoryParent;
+		this.orderId = orderId;
+	}
+	
 	public CoronaData toCoronaData() {
 		CoronaData data = new CoronaData();
 		data.setCases(getCases() != null ? getCases() : 0L);

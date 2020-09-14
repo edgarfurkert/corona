@@ -1,7 +1,11 @@
 package de.edgar.spring.boot.corona.web.service;
 
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
+import java.util.ResourceBundle;
 
 import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +26,26 @@ public class MessageSourceService {
 	
 	@Autowired
 	private CoronaDataJpaRepository repo;
+	
+	public Map<String, String> getMessages(Locale locale, Map<String, Object[]> params) {
+		log.debug("MessageSourceService.getMessages: locale = {}", locale);
+		Map<String, String> map = new HashMap<>();
+		
+		ResourceBundle messageBundle = ResourceBundle.getBundle("messages", locale);
+		Enumeration<String> keys = messageBundle.getKeys();
+		String key, value;
+		while (keys.hasMoreElements()) {
+			key = keys.nextElement();
+			if (params.containsKey(key)) {
+				value = getMessage(key, locale, params.get(key));
+			} else {
+				value = messageBundle.getString(key);
+			}
+			map.put(key, value);
+		}
+		
+		return map;
+	}
 	
 	public String getMessage(String code, Locale locale) {
 		return getMessage(code, locale, "");

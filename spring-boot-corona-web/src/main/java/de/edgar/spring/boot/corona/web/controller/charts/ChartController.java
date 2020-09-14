@@ -130,7 +130,7 @@ public class ChartController {
 	    	territoryMap.get(t).forEach(d -> {
 				log.debug(d.toString());
 				double value = getValueBySelectedData(cds, d);
-	    		if (!"perDay".equals(cds.getSelectedDataCategory())) {
+	    		if (!cds.getSelectedDataCategory().startsWith("perDay")) {
 			    	if (value == 0.0) {
 			    		value = getDouble(valueMap.get("last"));
 			    	} else {
@@ -177,9 +177,11 @@ public class ChartController {
 			List<CoronaData> cdList = territoryMap.get(t);
 			cdList.forEach(cd -> {
 				Long value = cd.getCases();
+				log.debug("cases: {} - {}", cd.getDateRep(), value);
 				if (valueList.size() == days.get()) {
 					cd.setCasesDaysKum(sum.get());
 					cd.setCasesDaysPer100000Pop(getCasesPerDaysAnd100000(cd));
+					log.debug("cases: {} - {}, {}, {}", cd.getDateRep(), cd.getCasesDaysKum(), cd.getCasesDaysPer100000Pop(), cd.getPopulation());
 					sum.addAndGet(valueList.remove(0) * -1l);
 				}
 				sum.addAndGet(value);
@@ -280,6 +282,9 @@ public class ChartController {
 		});
 		coronaData.sort(Comparator.comparing(CoronaData::getDateRep));
 		coronaData.forEach(d -> { 
+			if (!cds.getSelectedTerritoryParents().contains(d.getTerritoryParent())) {
+				return;
+			}
 			List<CoronaData> coronaDataList = territoryMap.get(d.getTerritoryId());
 			d.setCasesDaysPer100000Pop(getCasesPerDaysAnd100000(d));
 
@@ -312,6 +317,7 @@ public class ChartController {
 			        	cd.setPopulation(d.getPopulation());
 			        	coronaDataList.add(cd);
 			        	lastDate = date;
+			        	log.debug("getHistoricalData: {} - {}", date, cd.getPopulation());
 			        }
 				}
 				territoryMap.put(d.getTerritoryId(), coronaDataList);
@@ -342,6 +348,7 @@ public class ChartController {
 		        	cd.setGeoId(d.getGeoId());
 		        	cd.setPopulation(d.getPopulation());
 		        	coronaDataList.add(cd);
+		        	log.debug("getHistoricalData: {} - {}", day, cd.getPopulation());
 				}
 			}
 			coronaDataList.add(d);
