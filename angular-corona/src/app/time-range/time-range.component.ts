@@ -64,8 +64,8 @@ export class TimeRangeComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    this.timeRange.startDate = this.start;
-    this.timeRange.endDate = this.end;
+    this.timeRange.startDate = new Date(this.start);
+    this.timeRange.endDate = new Date(this.end);
     this.minDate = this.min;
     this.maxDate = this.max;
     if (this.log) {
@@ -75,7 +75,7 @@ export class TimeRangeComponent implements OnInit {
 
   startDateChange(event) {
     // Return date object 
-    this.timeRange.startDate = event.value;
+    this.timeRange.startDate = new Date(event.value);
     if (this.log) {
       console.log('TimeRangeComponent.startDateChange: timeRange', this.timeRange);
     }
@@ -84,7 +84,7 @@ export class TimeRangeComponent implements OnInit {
 
   endDateChange(event) {
     // Return date object
-    this.timeRange.endDate = event.value;
+    this.timeRange.endDate = new Date(event.value);
     if (this.log) {
       console.log('TimeRangeComponent.startDateChange: timeRange', this.timeRange);
     }

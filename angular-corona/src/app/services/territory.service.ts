@@ -5,6 +5,7 @@ import { Observable, BehaviorSubject } from 'rxjs';
 
 import { Territory } from '../models/model.interfaces';
 import { SERVICE_LOG_ENABLED } from '../app.tokens';
+import { environment } from 'src/environments/environment';
 
 const TERRITORIES: Territory[] = [
   { territoryId: 't1' , territoryName: 'T1', parentId: 'p1', parentName: 'P1', orderId: 1, 
@@ -27,8 +28,6 @@ const TERRITORIES: Territory[] = [
     ]}
 ];
 
-const API_URL = 'http://localhost:8080/api/territories';
-
 @Injectable({
   providedIn: 'root'
 })
@@ -45,7 +44,7 @@ export class TerritoryService {
   }
 
   getTerritories(): Observable<Territory[]> {
-    this.http.get<Territory[]>(API_URL).pipe(
+    this.http.get<Territory[]>(environment.apiUrlTerritories).pipe(
       tap((territories) => {
         if (this.log) {
           console.log('TerritoryService: territories', territories);

@@ -23,7 +23,7 @@
     position: fixed;
     top: 85px;
     left: 340px;
-    width: 100%;
+    width: calc(100% - 340px);
 }
 
 .formContainer {
@@ -55,13 +55,8 @@
     align-self: flex-start;
     max-width: 200px;
     padding-top: 25px;
+    padding-right: 15px;
     order: 2;
-}
-
-.graphicContainer {
-    order: 1;
-    align-self: stretch;
-    background-color: burlywood;
 }
 
 mat-form-field {
@@ -87,4 +82,9 @@ mat-form-field {
     padding-left: 15px;
     padding-right: 15px;
     order: 2;
+}
+
+.graphicContainer {
+    order: 1;
+    width: 100%;
 }

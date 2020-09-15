@@ -1,10 +1,17 @@
 import { Routes } from '@angular/router';
 
-import { Graphic1Component } from '../graphic1/graphic1.component';
-import { Graphic2Component } from '../graphic2/graphic2.component';
+import { HistoricalGraphComponent } from '../historical-graph/historical-graph.component';
+import { HistoricalBubblesGraphComponent } from '../historical-bubbles-graph/historical-bubbles-graph.component';
 
-
+/*
+path	historical
+path	historicalBubbles
+path	historicalStackedAreas
+path	infectionsAnd
+path	top25Of
+path	startOf
+*/
 export const analysisRoutes: Routes = [
-    { path: 'historical', component: Graphic1Component, outlet: 'graphic' },
-    { path: 'historicalBubbles', component: Graphic2Component, outlet: 'graphic' }
+    { path: 'historical', component: HistoricalGraphComponent, outlet: 'graphic' },
+    { path: 'historicalBubbles', component: HistoricalBubblesGraphComponent, outlet: 'graphic' }
 ];

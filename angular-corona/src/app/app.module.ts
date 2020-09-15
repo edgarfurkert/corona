@@ -23,6 +23,10 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatRadioModule } from '@angular/material/radio';
 
+import * as Highcharts from 'highcharts';
+import more from 'highcharts/highcharts-more';
+more(Highcharts);
+
 import { HighchartsChartModule } from 'highcharts-angular';
 import { StorageServiceModule } from 'ngx-webstorage-service';
 import { LoggerModule, NgxLoggerLevel } from 'ngx-logger';
@@ -39,9 +43,8 @@ import { TimeRangeComponent } from './time-range/time-range.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SelectionBoxComponent } from './selection-box/selection-box.component';
 import { RadioButtonGroupComponent } from './radio-button-group/radio-button-group.component';
-import { Graphic1Component } from './graphic1/graphic1.component';
-import { Graphic2Component } from './graphic2/graphic2.component';
-
+import { HistoricalGraphComponent } from './historical-graph/historical-graph.component';
+import { HistoricalBubblesGraphComponent } from './historical-bubbles-graph/historical-bubbles-graph.component';
 
 @NgModule({
   declarations: [
@@ -52,8 +55,8 @@ import { Graphic2Component } from './graphic2/graphic2.component';
     TimeRangeComponent,
     SelectionBoxComponent,
     RadioButtonGroupComponent,
-    Graphic1Component,
-    Graphic2Component
+    HistoricalGraphComponent,
+    HistoricalBubblesGraphComponent
   ],
   imports: [
     BrowserModule,

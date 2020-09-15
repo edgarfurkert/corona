@@ -19,7 +19,7 @@
 .content {
     flex-grow: 1;
     flex-shrink: 1;
-    overflow: auto;
+    overflow: hidden;
     padding: 24px;
 }
 
@@ -27,8 +27,8 @@
 ::ng-deep router-outlet+* {
     display: block;
     width: 100%;
-    max-width: 500px;
-    margin: 0 auto
+    height: 700px;
+    padding-right: 15px;
 }
 
 .sidenav {
@@ -46,4 +46,12 @@
 
 .stretch {
     flex-grow: 1;
+}
+
+.footer {
+    align-self: flex-start;
+}
+
+.footer-title {
+    padding-left: 20px;
 }

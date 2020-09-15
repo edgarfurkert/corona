@@ -4,8 +4,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { tap } from 'rxjs/internal/operators';
 
 import { SERVICE_LOG_ENABLED } from '../app.tokens';
-
-const API_URL = 'http://localhost:8080/api/translations';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +19,7 @@ export class TranslationsService {
     const headers = new HttpHeaders().append('Content-Type', 'application/json');
     const params = new HttpParams().append('locale', locale);
 
-    this.http.get<Map<string, string>>(API_URL, {headers, params}).pipe(
+    this.http.get<Map<string, string>>(environment.apiUrlTranslations, {headers, params}).pipe(
       tap((translations) => {
         if (this.log) {
           console.log('TranslationsService: translations', translations);

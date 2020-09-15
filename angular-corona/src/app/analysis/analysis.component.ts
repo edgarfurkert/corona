@@ -11,8 +11,10 @@ import { TerritoryService } from '../services/territory.service';
 import { ConfigurationService } from '../services/configuration.service';
 import { TranslationsService } from '../services/translations.service';
 import { SessionService } from '../services/session.service';
+import { GraphService } from '../services/graph.service';
 import { ANALYSIS_LOG_ENABLED } from '../app.tokens';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { TimeRange } from '../time-range/time-range.component';
 
 
 @Component({
@@ -29,17 +31,19 @@ export class AnalysisComponent implements OnInit {
   territories: TerritoryItem[] = [];
   regions: TerritoryItem[] = [];
 
+  regionsSelected: boolean = false;
+
   graphicTypes: SBChoice[] = [];
-  graphicTypeSelected = 'historical';
+  selectedGraphicType = 'historical';
 
   dataTypes: RBChoice[] = [];
-  dataTypeSelected = 'infections';
+  selectedDataType = 'infections';
 
   dataCategories: RBChoice[] = [];
-  dataCategorySelected = 'cumulated';
+  selectedDataCategory = 'cumulated';
 
   yAxisTypes: RBChoice[] = [];
-  yAxisTypeSelected = 'linear';
+  selectedYAxisType = 'linear';
 
   territoriesLoaded: boolean = false;
   configurationLoaded: boolean = false;
@@ -49,7 +53,7 @@ export class AnalysisComponent implements OnInit {
   allLoadedSubscription: Subscription;
 
   locale: string = 'de';
-  translationMap: Map<string,string> = new Map<string,string>();
+  translationMap: Map<string, string> = new Map<string, string>();
 
   constructor(private spinner: NgxSpinnerService,
     private logger: NGXLogger,
@@ -59,12 +63,13 @@ export class AnalysisComponent implements OnInit {
     private translationsService: TranslationsService,
     private territoryService: TerritoryService,
     private configurationService: ConfigurationService,
+    private graphService: GraphService,
     private session: SessionService) {
 
     if (this.log) {
       this.logger.debug('AnalysisComponent');
     }
-    this.spinner.show();
+    this.spinner.show('pleaseWait');
   }
 
   ngOnInit(): void {
@@ -78,7 +83,7 @@ export class AnalysisComponent implements OnInit {
         if (this.log) {
           this.logger.debug('AnalysisComponent.ngOnInit: dataLoaded');
         }
-        this.spinner.hide();
+        this.spinner.hide('pleaseWait');
         this.allLoadedSubscription.unsubscribe();
       }
     });
@@ -103,10 +108,13 @@ export class AnalysisComponent implements OnInit {
     this.session.set('regions', this.regions);
     this.session.set('startDate', this.startDate);
     this.session.set('endDate', this.endDate);
-    this.session.set('graphicTypeSelected', this.dataTypeSelected);
-    this.session.set('dataTypeSelected', this.dataTypeSelected);
-    this.session.set('dataCategorySelected', this.dataCategorySelected);
-    this.session.set('yAxisTypeSelected', this.yAxisTypeSelected);
+    this.session.set('graphicTypeSelected', this.selectedGraphicType);
+    this.session.set('dataTypeSelected', this.selectedDataType);
+    this.session.set('dataCategorySelected', this.selectedDataCategory);
+    this.session.set('yAxisTypeSelected', this.selectedYAxisType);
+    this.session.set('locale', this.locale);
+
+    this.routeBySelection(this.selectedGraphicType);
   }
 
   ngAfterViewInit() {
@@ -123,16 +131,13 @@ export class AnalysisComponent implements OnInit {
     let tArray: TerritoryItem[] = [];
     this.territoryService.getTerritories().pipe(
       tap((allTerritories) => {
-        // translation
-        let translations = new Map<string,string>(Object.entries(this.session.get('translations')));
-
         allTerritories.forEach(t => {
-          t.parentName = translations.get(t.parentId) || t.parentName;
-          t.territoryName =  translations.get(t.territoryId) || t.territoryName;
+          t.parentName = this.getTranslation(t.parentId) || t.parentName;
+          t.territoryName = this.getTranslation(t.territoryId) || t.territoryName;
           if (t.regions) {
             t.regions.forEach(r => {
-              r.parentName = translations.get(r.parentId) || r.parentName;
-              r.territoryName =  translations.get(r.territoryId) || r.territoryName;
+              r.parentName = this.getTranslation(r.parentId) || r.parentName;
+              r.territoryName = this.getTranslation(r.territoryId) || r.territoryName;
             });
           }
         });
@@ -184,37 +189,35 @@ export class AnalysisComponent implements OnInit {
           if (this.log) {
             this.logger.debug('AnalysisComponent.ngOnInit: configuration', configuration);
           }
-          this.startDate = configuration.fromDate;
+          this.startDate = new Date(configuration.fromDate);
           this.session.set('startDate', this.startDate);
-          this.endDate = configuration.toDate;
+          this.endDate = new Date(configuration.toDate);
           this.session.set('endDate', this.endDate);
-          this.maxDate = configuration.toDate;
-          this.minDate = configuration.fromDate;
+          this.maxDate = new Date(configuration.toDate);
+          this.minDate = new Date(configuration.fromDate);
 
           // translation
-          let translations = new Map<string,string>(Object.entries(this.session.get('translations')));
-
           configuration.graphTypes.forEach(gt => {
-            console.log(gt.key, translations.get(gt.key))
-            gt.name = translations.get(gt.key) || gt.name;
+            console.log(gt.key, this.getTranslation(gt.key))
+            gt.name = this.getTranslation(gt.key) || gt.name;
             let graphicType: SBChoice = { id: gt.key, title: gt.name };
             this.graphicTypes.push(graphicType);
           });
 
           configuration.dataTypes.forEach(dt => {
-            dt.name = translations.get(dt.key) || dt.name;
+            dt.name = this.getTranslation(dt.key) || dt.name;
             let dataType: RBChoice = { id: dt.key, title: dt.name };
             this.dataTypes.push(dataType);
           });
 
           configuration.dataCategories.forEach(dc => {
-            dc.name = translations.get(dc.key) || dc.name;
+            dc.name = this.getTranslation(dc.key) || dc.name;
             let dataCategory: RBChoice = { id: dc.key, title: dc.name };
             this.dataCategories.push(dataCategory);
           });
 
           configuration.yaxisTypes.forEach(at => {
-            at.name = translations.get(at.key) || at.name;
+            at.name = this.getTranslation(at.key) || at.name;
             let axisType: RBChoice = { id: at.key, title: at.name };
             this.yAxisTypes.push(axisType);
           });
@@ -238,77 +241,93 @@ export class AnalysisComponent implements OnInit {
     selectedTerritories.forEach(t => {
       t.regions.forEach(r => {
         let item = new TerritoryItem(r);
-        if (this.log) {
-          this.logger.debug('AnalysisComponent.selectTerritory: item', item);
-        }
         tArray.push(item);
       });
     });
+    // sort territories
+    tArray.sort((t1, t2) => {
+      if (t1.data.orderId < t2.data.orderId) {
+        return -1;
+      }
+      if (t1.data.orderId > t2.data.orderId) {
+        return 1;
+      }
+      if (t1.data.territoryName < t2.data.territoryName) {
+        return -1;
+      }
+      if (t1.data.territoryName > t2.data.territoryName) {
+        return 1;
+      }
+      return 0;
+    });
+    // set position
+    let counter = 1;
+    tArray.forEach(r => {
+      r.position = counter;
+      counter++;
+      if (this.log) {
+        this.logger.debug('AnalysisComponent.selectTerritory: item', r);
+      }
+    });
+    // update region list
     setTimeout(() => {
-      // sort territories
-      tArray.sort((t1, t2) => {
-        if (t1.data.orderId < t2.data.orderId) {
-          return -1;
-        }
-        if (t1.data.orderId > t2.data.orderId) {
-          return 1;
-        }
-        if (t1.data.territoryName < t2.data.territoryName) {
-          return -1;
-        }
-        if (t1.data.territoryName > t2.data.territoryName) {
-          return 1;
-        }
-        return 0;
-      });
       this.regions = tArray;
       this.session.set('regions', this.regions);
     });
   }
 
-  selectRegion(ev: Territory) {
+  selectRegion(selectedRegions: Territory[]) {
     if (this.log) {
-      this.logger.debug('AnalysisComponent.selectRegion: ev', ev);
+      this.logger.debug('AnalysisComponent.selectRegion: selectedRegions', selectedRegions);
     }
+    Promise.resolve(selectedRegions.length > 0).then((selected) => this.regionsSelected = selected);
+    this.session.set('selectedRegions', selectedRegions);
   }
 
   update(data) {
     if (this.log) {
       this.logger.debug('AnalysisComponent.update: data', data);
     }
-    this.routeBySelection(this.graphicTypeSelected);
+    this.spinner.show('dataLoading');
+    this.graphService.loadGraphData();
+    this.routeBySelection(this.selectedGraphicType);
+  }
+
+  changeTimeRange(timeRange: TimeRange) {
+    if (this.log) {
+      this.logger.debug('AnalysisComponent.changeTimeRange', timeRange);
+    }
+    this.session.set('startDate', timeRange.startDate);
+    this.session.set('endDate', timeRange.endDate);
   }
 
   selectGraphicType(selection) {
     if (this.log) {
       this.logger.debug('AnalysisComponent.selectGraphicType', selection);
     }
-    this.graphicTypeSelected = selection;
-    this.session.set('graphicTypeSelected', this.dataTypeSelected);
+    this.selectedGraphicType = selection;
+    this.session.set('graphicTypeSelected', selection);
   }
 
   selectDataType(selection) {
     if (this.log) {
       this.logger.debug('AnalysisComponent.selectDataType', selection);
     }
-    this.dataTypeSelected = selection;
-    this.session.set('dataTypeSelected', this.dataTypeSelected);
+    this.session.set('dataTypeSelected', selection);
   }
 
   selectDataCategory(selection) {
     if (this.log) {
       this.logger.debug('AnalysisComponent.selectDataCategory', selection);
     }
-    this.dataCategorySelected = selection;
-    this.session.set('dataCategorySelected', this.dataCategorySelected);
+    this.session.set('dataCategorySelected', selection);
   }
 
   selectYAxisType(selection) {
     if (this.log) {
       this.logger.debug('AnalysisComponent.selectYAxisType', selection);
     }
-    this.yAxisTypeSelected = selection;
-    this.session.set('yAxisTypeSelected', this.yAxisTypeSelected);
+    this.session.set('yAxisTypeSelected', selection);
   }
 
   onGraphicActivate(ev) {
@@ -330,12 +349,12 @@ export class AnalysisComponent implements OnInit {
     this.router.navigate([{ outlets: { graphic: [selection] } }], { relativeTo: this.route })
       .then(() => {
         if (this.log) {
-          this.logger.debug('graphic done');
+          this.logger.debug('route selection done');
         }
       })
       .catch(error => {
         if (this.log) {
-          this.logger.debug('graphic', error);
+          this.logger.debug('route selection error', error);
         }
       });
   }

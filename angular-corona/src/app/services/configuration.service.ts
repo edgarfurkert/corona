@@ -4,8 +4,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/internal/operators';
 
 import { SERVICE_LOG_ENABLED } from '../app.tokens';
-
-const API_URL = 'http://localhost:8080/api/configuration';
+import { environment } from 'src/environments/environment';
 
 export interface KeyName {
   key: string;
@@ -13,8 +12,8 @@ export interface KeyName {
 }
 
 export class Configuration {
-  fromDate: Date;
-  toDate: Date;
+  fromDate: string;
+  toDate: string;
   graphTypes: KeyName[];
   dataTypes: KeyName[];
   dataCategories: KeyName[];
@@ -31,7 +30,7 @@ export class ConfigurationService {
   constructor(@Inject(SERVICE_LOG_ENABLED) private log: boolean, private http: HttpClient) { }
 
   getConfiguration(): Observable<Configuration> {
-    this.http.get<Configuration>(API_URL).pipe(
+    this.http.get<Configuration>(environment.apiUrlConfiguration).pipe(
       tap((configuration) => {
         if (this.log) {
           console.log('ConfigurationService: configuration', configuration);

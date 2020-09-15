@@ -34,7 +34,7 @@ export class CheckboxListComponent implements OnInit, OnChanges {
   @Input() log: boolean = false;
   @Output() selectItem = new EventEmitter();
 
-  displayedColumns: string[] = ['select', 'item'];
+  displayedColumns: string[] = ['select', 'text'];
   dataSource: MatTableDataSource<CheckboxItem> = new MatTableDataSource<CheckboxItem>([]);
   selected: string;
 
@@ -75,6 +75,17 @@ export class CheckboxListComponent implements OnInit, OnChanges {
         this.logger.debug('CheckboxListComponent.ngOnChanges: sort items', this.items, this.items.length);
       }
       this.dataSource.data = this.items;
+      // merge selection
+      let selectedItemIds: string[] = [];
+      this.selection.selected.forEach(item => {
+        selectedItemIds.push(item.id);
+      });
+      this.selection.clear();
+      this.items.forEach(item => {
+        if (selectedItemIds.includes(item.id)) {
+          this.selection.select(item);
+        }
+      });
     }
   }
 
@@ -88,6 +99,11 @@ export class CheckboxListComponent implements OnInit, OnChanges {
 
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
+    /*
+    if (this.log) {
+      this.logger.debug('CheckboxListComponent.isAllSelected');
+    }
+    */
     const numSelected = this.selection.selected.length;
     const numRows = this.dataSource.data.length;
     return numSelected === numRows;
@@ -95,6 +111,9 @@ export class CheckboxListComponent implements OnInit, OnChanges {
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   masterToggle() {
+    if (this.log) {
+      this.logger.debug('CheckboxListComponent.masterToggle: isAllSelected', this.isAllSelected());
+    }
     this.isAllSelected() ?
       this.selection.clear() :
       this.dataSource.data.forEach(row => this.selection.select(row));
@@ -104,6 +123,9 @@ export class CheckboxListComponent implements OnInit, OnChanges {
   checkboxLabel(row?: CheckboxItem): string {
     if (row) {
       if (this.selected !== JSON.stringify(this.selection.selected)) {
+        if (this.log) {
+          this.logger.debug('CheckboxListComponent.checkboxLabel: row', row);
+        }
         this.selected = JSON.stringify(this.selection.selected);
 
         let items: any[] = [];
