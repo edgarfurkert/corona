@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +21,10 @@ import de.edgar.spring.boot.corona.web.api.model.ApiConfiguration;
 import de.edgar.spring.boot.corona.web.api.model.ApiTerritory;
 import de.edgar.spring.boot.corona.web.config.SessionConfig;
 import de.edgar.spring.boot.corona.web.jpa.CoronaDataJpaRepository;
+import de.edgar.spring.boot.corona.web.model.CoronaDataSession;
+import de.edgar.spring.boot.corona.web.model.GraphType;
+import de.edgar.spring.boot.corona.web.model.charts.LineChartData;
+import de.edgar.spring.boot.corona.web.service.GraphService;
 import de.edgar.spring.boot.corona.web.service.MessageSourceService;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
@@ -39,6 +45,9 @@ public class CoronaApiRestController {
 
 	@Autowired
 	private SessionConfig sessionConfig;
+	
+	@Autowired
+	private GraphService graphService;
 
 	@GetMapping("/territories")
 	public Flux<ApiTerritory> territories() {
@@ -104,5 +113,43 @@ public class CoronaApiRestController {
 		Map<String, String> translations = messageSourceService.getMessages(locale.orElse(Locale.getDefault()), params);
 
 		return Mono.just(translations);
+	}
+	
+	/**
+	 * Supported selectedGraphTypes:
+	 * 	- historical
+	 *  - historicalBubbles
+	 *  - historicalStackedAreas
+	 *  - infectionsAnd
+	 *  - top25Of
+	 *	- startOf
+	 *
+	 * @param cds CoronaDataSession
+	 * @return graph data Mono
+	 */
+	@PostMapping("/graph")
+	public Mono<Object> graph(@RequestBody CoronaDataSession cds) {
+		log.debug("CoronaApiRestController: POST /graph - session data = {}", cds);
+		
+		switch (cds.getSelectedGraphType()) {
+			case "historical":
+				return Mono.just(graphService.getLineGraphData(cds));
+				
+			case "historicalBubbles":
+				return Mono.just(graphService.getBubbleGraphData(cds));
+				
+			case "historicalStackedAreas":
+				return Mono.just(graphService.getStackedAreaChartData(cds));
+				
+			case "infectionsAnd":
+				return Mono.just(graphService.getInfectionsAndGraphData(cds));
+				
+			case "top25Of":
+				return Mono.just(graphService.getBarGraphData(cds));
+				
+			case "startOf":
+				return Mono.just(graphService.getStackedBarChartData(cds));
+		}
+		return Mono.just(null);
 	}
 }

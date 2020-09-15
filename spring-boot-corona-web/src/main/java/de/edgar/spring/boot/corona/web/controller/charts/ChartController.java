@@ -1,46 +1,18 @@
 package de.edgar.spring.boot.corona.web.controller.charts;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
-import de.edgar.spring.boot.corona.web.cache.CoronaDataCache;
-import de.edgar.spring.boot.corona.web.config.ColorProperties;
-import de.edgar.spring.boot.corona.web.config.ColorProperty;
-import de.edgar.spring.boot.corona.web.jpa.CoronaDataEntity;
-import de.edgar.spring.boot.corona.web.jpa.CoronaDataJpaRepository;
-import de.edgar.spring.boot.corona.web.model.CoronaData;
 import de.edgar.spring.boot.corona.web.model.CoronaDataSession;
 import de.edgar.spring.boot.corona.web.model.charts.BarChartData;
-import de.edgar.spring.boot.corona.web.model.charts.BarSeries;
-import de.edgar.spring.boot.corona.web.model.charts.Bubble;
 import de.edgar.spring.boot.corona.web.model.charts.BubbleChartData;
-import de.edgar.spring.boot.corona.web.model.charts.BubbleSeries;
 import de.edgar.spring.boot.corona.web.model.charts.LineChartData;
-import de.edgar.spring.boot.corona.web.model.charts.Series;
 import de.edgar.spring.boot.corona.web.model.charts.StackedAreaChartData;
-import de.edgar.spring.boot.corona.web.model.charts.StackedAreaSeries;
 import de.edgar.spring.boot.corona.web.model.charts.StackedBarChartData;
-import de.edgar.spring.boot.corona.web.model.charts.StackedBarSeries;
-import de.edgar.spring.boot.corona.web.model.charts.XAxis;
-import de.edgar.spring.boot.corona.web.model.charts.YAxis;
-import de.edgar.spring.boot.corona.web.service.MessageSourceService;
+import de.edgar.spring.boot.corona.web.service.GraphService;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -52,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 @SessionAttributes("coronaDataSession")
 public class ChartController {
 	
+	/*
 	@Value( "${corona.data.daysToKum}" )
 	private Integer daysToKum;
 
@@ -69,7 +42,12 @@ public class ChartController {
 
 	@Autowired
 	private MessageSourceService messageSourceService;
+	*/
 	
+	@Autowired
+	private GraphService graphService;
+	
+	/*
 	private long getLong(Long value) {
 		return getLong(value, 0L);
 	}
@@ -93,9 +71,12 @@ public class ChartController {
 	private double getDouble(Long value, Double defaultValue) {
 		return value != null ? value.doubleValue() : defaultValue;
 	}
+	*/
 
 	@GetMapping("/ajax/lineGraph")
     public LineChartData getLineGraph(@ModelAttribute CoronaDataSession cds) {
+		return graphService.getLineGraphData(cds);
+		/*
     	LineChartData data = new LineChartData();
 
     	String title = getTitleBySelectedData(cds);
@@ -160,8 +141,10 @@ public class ChartController {
     	
     	
         return data;
+        */
     }
 	
+	/*
 	private void calcDaysPer100000(CoronaDataSession cds, Map<String,List<CoronaData>> territoryMap) {
 		AtomicInteger days = new AtomicInteger();
 		switch (cds.getSelectedDataCategory()) {
@@ -192,7 +175,8 @@ public class ChartController {
 			}
 		});
 	}
-
+	*/
+	/*
 	private double getValueBySelectedData(CoronaDataSession cds, CoronaData d) {
 		double value = 0.0;
 		switch(cds.getSelectedDataType() + "-" + cds.getSelectedDataCategory()) {
@@ -216,7 +200,8 @@ public class ChartController {
 		}
 		return value;
 	}
-
+	*/
+	/*
 	private String getTitleBySelectedData(CoronaDataSession cds) {
 		String title = "";
 		switch (cds.getSelectedDataType() + "-" + cds.getSelectedDataCategory()) {
@@ -263,7 +248,8 @@ public class ChartController {
 		}
 		return title;
 	}
-	
+	*/
+	/*
 	private Map<String,List<CoronaData>> getHistoricalData(CoronaDataSession cds) {
 		Map<String,List<CoronaData>> territoryMap = new HashMap<>();
 		
@@ -358,13 +344,17 @@ public class ChartController {
 
 		return territoryMap;
 	}
-
+	*/
+	/*
 	private double getCasesPerDaysAnd100000(CoronaData d) {
 		return getDouble(d.getPopulation()) > 0L ? (getDouble(d.getCasesDaysKum()) * (double)daysToKumPop / d.getPopulation()) : 0.0;
 	}
-
+	*/
+	
     @GetMapping("/ajax/barGraph")
     public BarChartData getBarGraph(@ModelAttribute CoronaDataSession cds) {
+    	return graphService.getBarGraphData(cds);
+    	/*
     	BarChartData data = new BarChartData();
     	
 		LocalDate selectedDate = cds.getToDate();
@@ -509,10 +499,13 @@ public class ChartController {
     	data.setSeries(series);
     	
     	return data;
+    	*/
     }
 
     @GetMapping("/ajax/stackedBarGraph")
     public StackedBarChartData getStackedBarGraph(@ModelAttribute CoronaDataSession cds) {
+    	return graphService.getStackedBarChartData(cds);
+    	/*
     	StackedBarChartData data = new StackedBarChartData();
     	
 		Map<String, CoronaData> coronaData = new HashMap<>();
@@ -605,10 +598,13 @@ public class ChartController {
     	});
     	
     	return data;
+    	*/
     }
 
     @GetMapping("/ajax/stackedAreaGraph")
     public StackedAreaChartData getStackedAreaGraph(@ModelAttribute CoronaDataSession cds) {
+    	return graphService.getStackedAreaChartData(cds);
+    	/*
     	StackedAreaChartData data = new StackedAreaChartData();
     	
 		Map<String, List<CoronaData>> territoryMap = new HashMap<>();
@@ -672,8 +668,10 @@ public class ChartController {
     	});
     	
     	return data;
+    	*/
     }
 
+    /*
 	private XAxis getXAxisWithDates(CoronaDataSession cds) {
 		List<String> dates = new ArrayList<>();
         for (LocalDate date = cds.getFromDate(); date.isBefore(cds.getToDate().plusDays(1)); date=date.plusDays(1)) {
@@ -684,9 +682,12 @@ public class ChartController {
     	xAxis.setDates(dates);
 		return xAxis;
 	}
+	*/
     
     @GetMapping("/ajax/infectionsAndGraph")
     public LineChartData getInfectionsAndGraph(@ModelAttribute CoronaDataSession cds) {
+    	return graphService.getInfectionsAndGraphData(cds);
+    	/*
     	LineChartData data = new LineChartData();
 
     	String title = "";
@@ -895,10 +896,13 @@ public class ChartController {
     	data.setSeries(series);
     	
         return data;
+        */
     }
 
     @GetMapping("/ajax/bubbleGraph")
     public BubbleChartData getBubbleGraph(@ModelAttribute CoronaDataSession cds) {
+		return graphService.getBubbleGraphData(cds);
+		/*
     	BubbleChartData data = new BubbleChartData();
 
     	String title = getTitleBySelectedData(cds);
@@ -1023,5 +1027,6 @@ public class ChartController {
     	data.setSeries(series);
     	
         return data;
+        */
     }
 }
