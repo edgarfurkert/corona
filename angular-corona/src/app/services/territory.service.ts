@@ -44,7 +44,7 @@ export class TerritoryService {
   }
 
   getTerritories(): Observable<Territory[]> {
-    this.http.get<Territory[]>(environment.apiUrlTerritories).pipe(
+    this.http.get<Territory[]>(environment.webApiBaseUrl + '/territories').pipe(
       tap((territories) => {
         if (this.log) {
           console.log('TerritoryService: territories', territories);

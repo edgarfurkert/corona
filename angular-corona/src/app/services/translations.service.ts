@@ -19,7 +19,7 @@ export class TranslationsService {
     const headers = new HttpHeaders().append('Content-Type', 'application/json');
     const params = new HttpParams().append('locale', locale);
 
-    this.http.get<Map<string, string>>(environment.apiUrlTranslations, {headers, params}).pipe(
+    this.http.get<Map<string, string>>(environment.webApiBaseUrl + '/translations', {headers, params}).pipe(
       tap((translations) => {
         if (this.log) {
           console.log('TranslationsService: translations', translations);

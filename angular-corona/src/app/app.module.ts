@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA, LOCALE_ID } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
 
@@ -45,6 +45,12 @@ import { SelectionBoxComponent } from './selection-box/selection-box.component';
 import { RadioButtonGroupComponent } from './radio-button-group/radio-button-group.component';
 import { HistoricalGraphComponent } from './historical-graph/historical-graph.component';
 import { HistoricalBubblesGraphComponent } from './historical-bubbles-graph/historical-bubbles-graph.component';
+import { HistoricalStackedAreasGraphComponent } from './historical-stacked-areas-graph/historical-stacked-areas-graph.component';
+import { InfectionsAndGraphComponent } from './infections-and-graph/infections-and-graph.component';
+import { Top25GraphComponent } from './top25-graph/top25-graph.component';
+import { StartOfGraphComponent } from './start-of-graph/start-of-graph.component';
+
+const locale = (<any>document).locale;
 
 @NgModule({
   declarations: [
@@ -56,7 +62,11 @@ import { HistoricalBubblesGraphComponent } from './historical-bubbles-graph/hist
     SelectionBoxComponent,
     RadioButtonGroupComponent,
     HistoricalGraphComponent,
-    HistoricalBubblesGraphComponent
+    HistoricalBubblesGraphComponent,
+    HistoricalStackedAreasGraphComponent,
+    InfectionsAndGraphComponent,
+    Top25GraphComponent,
+    StartOfGraphComponent
   ],
   imports: [
     BrowserModule,
@@ -95,6 +105,7 @@ import { HistoricalBubblesGraphComponent } from './historical-bubbles-graph/hist
     { provide: CONSOLE_LOG_ENABLED, useValue: true },
     { provide: ANALYSIS_LOG_ENABLED, useValue: true },
     { provide: SERVICE_LOG_ENABLED, useValue: true },
+    { provide: LOCALE_ID, useValue: locale} 
   ],
   bootstrap: [AppComponent]
 })

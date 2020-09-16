@@ -30,6 +30,10 @@ export class GraphService {
 
   historicalGraphData$ = new BehaviorSubject<Map<string, Object>>(null);
   historicalBubblesGraphData$ = new BehaviorSubject<Map<string, Object>>(null);
+  historicalStackedAreasGraphData$ = new BehaviorSubject<Map<string, Object>>(null);
+  infectionsAndGraphData$ = new BehaviorSubject<Map<string, Object>>(null);
+  top25GraphData$ = new BehaviorSubject<Map<string, Object>>(null);
+  startOfGraphData$ = new BehaviorSubject<Map<string, Object>>(null);
 
   constructor(@Inject(SERVICE_LOG_ENABLED) private log: boolean, 
               private logger: NGXLogger,
@@ -58,17 +62,33 @@ export class GraphService {
       this.logger.debug('GraphService: session data', gsd);
 
     }
-    this.http.post<Map<string, Object>>(environment.apiUrlGraph, gsd).pipe(
+    this.http.post<Map<string, Object>>(environment.webApiBaseUrl + "/graph", gsd).pipe(
       tap((graphData) => {
         if (this.log) {
           this.logger.debug('GraphService: graphData', graphData);
         }
         switch(gsd.selectedGraphType) {
+          case 'historical': 
+            this.historicalGraphData$.next(new Map(Object.entries(graphData)));
+            break;
+          case 'historicalBubbles': 
+            this.historicalBubblesGraphData$.next(new Map(Object.entries(graphData)));
+            break;
+          case 'historicalStackedAreas': 
+            this.historicalStackedAreasGraphData$.next(new Map(Object.entries(graphData)));
+            break;
+          case 'infectionsAnd': 
+            this.infectionsAndGraphData$.next(new Map(Object.entries(graphData)));
+            break;
+          case 'top25Of': 
+            this.top25GraphData$.next(new Map(Object.entries(graphData)));
+            break;
+          case 'startOf': 
+            this.startOfGraphData$.next(new Map(Object.entries(graphData)));
+            break;
           default:
-          case 'historical': this.historicalGraphData$.next(new Map(Object.entries(graphData)));
-                             break;
-          case 'historicalBubbles': this.historicalBubblesGraphData$.next(new Map(Object.entries(graphData)));
-                             break;
+            this.logger.error('GraphService: selectedGraphType not supported', gsd.selectedGraphType);
+            break;
         }
         
       })

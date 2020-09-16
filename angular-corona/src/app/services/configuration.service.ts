@@ -30,7 +30,7 @@ export class ConfigurationService {
   constructor(@Inject(SERVICE_LOG_ENABLED) private log: boolean, private http: HttpClient) { }
 
   getConfiguration(): Observable<Configuration> {
-    this.http.get<Configuration>(environment.apiUrlConfiguration).pipe(
+    this.http.get<Configuration>(environment.webApiBaseUrl + '/configuration').pipe(
       tap((configuration) => {
         if (this.log) {
           console.log('ConfigurationService: configuration', configuration);

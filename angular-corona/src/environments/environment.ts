@@ -4,10 +4,8 @@
 
 export const environment = {
   production: false,
-  apiUrlConfiguration: 'http://localhost:8080/api/configuration',
-  apiUrlTerritories: 'http://localhost:8080/api/territories',
-  apiUrlTranslations: 'http://localhost:8080/api/translations',
-  apiUrlGraph: 'http://localhost:8080/api/graph/'
+  webApiBaseUrl: 'http://localhost:8100/api',
+  importApiBaseUrl: 'http://localhost:8101/api'
 };
 
 /*

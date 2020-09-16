@@ -28,7 +28,7 @@
             <div class="form-right" *ngIf="configurationLoaded">
                 <ef-radio-button-group class="data-type" name="dataTypes" [title]="getTranslation('label.dataTypes')" [choices]="dataTypes" [selected]="selectedDataType" (onSelect)="selectDataType($event)"></ef-radio-button-group>
                 <ef-radio-button-group class="data-category" name="dataCategories" [title]="getTranslation('label.dataCategories')" [choices]="dataCategories" [selected]="selectedDataCategory" (onSelect)="selectDataCategory($event)"></ef-radio-button-group>
-                <ef-radio-button-group class="y-axis-type" name="yAxisTypes" [title]="getTranslation('label.yAxisType')" [choices]="yAxisTypes" [selected]="selectedYAxisType" (onSelect)="selectYAxisType($event)"></ef-radio-button-group>
+                <ef-radio-button-group class="y-axis-type" name="yAxisTypes" [title]="getTranslation('label.yAxisType')" [choices]="yAxisTypes" [selected]="selectedYAxisType" [disabled]="disabledYAxisTypes" (onSelect)="selectYAxisType($event)"></ef-radio-button-group>
             </div>
 
             <div class="form-button">

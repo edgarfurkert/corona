@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, Inject, LOCALE_ID } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { tap } from 'rxjs/internal/operators';
 import { Observable, timer, Subscription } from 'rxjs';
@@ -52,10 +52,12 @@ export class AnalysisComponent implements OnInit {
   allLoaded$: Observable<number> = timer(0, 100);
   allLoadedSubscription: Subscription;
 
-  locale: string = 'de';
+  disabledYAxisTypes: string[] = [];
+
   translationMap: Map<string, string> = new Map<string, string>();
 
   constructor(private spinner: NgxSpinnerService,
+    @Inject(LOCALE_ID) private locale: string,
     private logger: NGXLogger,
     @Inject(ANALYSIS_LOG_ENABLED) public log: boolean,
     private router: Router,
@@ -67,7 +69,8 @@ export class AnalysisComponent implements OnInit {
     private session: SessionService) {
 
     if (this.log) {
-      this.logger.debug('AnalysisComponent');
+      this.logger.debug('AnalysisComponent: locale', this.locale);
+      this.logger.debug('AnalysisComponent: log', this.log);
     }
     this.spinner.show('pleaseWait');
   }
@@ -307,6 +310,21 @@ export class AnalysisComponent implements OnInit {
     }
     this.selectedGraphicType = selection;
     this.session.set('graphicTypeSelected', selection);
+
+    switch (selection) {
+      case 'top25Of':
+      case 'startOf':
+        // disable y-Axis type 'logarithmic'
+        this.disabledYAxisTypes = ['logarithmic'];
+        break;
+
+      default:
+        this.disabledYAxisTypes = [];
+        break;
+    }
+    if (this.log) {
+      this.logger.debug('AnalysisComponent.selectGraphicType: disabledYAxisTypes', this.disabledYAxisTypes);
+    }
   }
 
   selectDataType(selection) {

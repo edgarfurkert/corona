@@ -1,7 +1,7 @@
 <div>
     <div class="radio-button-group__title">{{title}}</div>
     <mat-radio-group [(ngModel)]="selected" [name]="name" ngModel #groupModel="ngModel" (change)="select($event)" required>
-        <mat-radio-button class="radio-button-group__button" *ngFor="let choice of choices" [value]="choice.id">
+        <mat-radio-button class="radio-button-group__button" *ngFor="let choice of choices" [value]="choice.id" [disabled]="choice.disabled">
             {{choice.title}}
         </mat-radio-button>
     </mat-radio-group>
