@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +26,7 @@ import de.edgar.spring.boot.corona.web.service.MessageSourceService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Profile("!api")
 @Controller
 @RequestMapping("/")
 @SessionAttributes("coronaDataSession")

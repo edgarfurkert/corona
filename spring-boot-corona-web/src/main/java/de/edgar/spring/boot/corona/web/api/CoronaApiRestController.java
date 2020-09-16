@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,15 +23,14 @@ import de.edgar.spring.boot.corona.web.api.model.ApiTerritory;
 import de.edgar.spring.boot.corona.web.config.SessionConfig;
 import de.edgar.spring.boot.corona.web.jpa.CoronaDataJpaRepository;
 import de.edgar.spring.boot.corona.web.model.CoronaDataSession;
-import de.edgar.spring.boot.corona.web.model.GraphType;
-import de.edgar.spring.boot.corona.web.model.charts.LineChartData;
-import de.edgar.spring.boot.corona.web.service.GraphService;
+import de.edgar.spring.boot.corona.web.service.GraphDataService;
 import de.edgar.spring.boot.corona.web.service.MessageSourceService;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Slf4j
+@Profile("api")
 @RestController
 @RequestMapping(path="/api", produces="application/json")
 @CrossOrigin(origins="*")
@@ -47,7 +47,7 @@ public class CoronaApiRestController {
 	private SessionConfig sessionConfig;
 	
 	@Autowired
-	private GraphService graphService;
+	private GraphDataService graphService;
 
 	@GetMapping("/territories")
 	public Flux<ApiTerritory> territories() {

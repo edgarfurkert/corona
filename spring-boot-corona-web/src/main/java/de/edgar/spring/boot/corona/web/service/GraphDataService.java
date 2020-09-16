@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.ModelAttribute;
 
 import de.edgar.spring.boot.corona.web.cache.CoronaDataCache;
 import de.edgar.spring.boot.corona.web.config.ColorProperties;
@@ -42,7 +41,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-public class GraphService {
+public class GraphDataService {
 
 	@Value( "${corona.data.daysToKum}" )
 	private Integer daysToKum;
@@ -295,6 +294,7 @@ public class GraphService {
 				CoronaDataSession cdsBar = new CoronaDataSession();
 				cdsBar.setSelectedDataCategory(cds.getSelectedDataCategory());
 				cdsBar.setSelectedTerritories(cds.getSelectedTerritories());
+				cdsBar.setSelectedTerritoryParents(cds.getSelectedTerritoryParents());
 				cdsBar.setFromDate(toDate);
 				cdsBar.setToDate(toDate);
 				Map<String,List<CoronaData>> map = getHistoricalData(cdsBar);

@@ -1,10 +1,13 @@
 package de.edgar.spring.boot.corona.web.api.model;
 
 import java.util.List;
-import lombok.Data;
+
+import org.springframework.context.annotation.Profile;
 
 import de.edgar.spring.boot.corona.web.jpa.CoronaDataEntity;
+import lombok.Data;
 
+@Profile("api")
 @Data
 public class ApiTerritory {
 	private String territoryId;
