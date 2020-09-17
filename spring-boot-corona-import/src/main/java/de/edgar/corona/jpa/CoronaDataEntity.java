@@ -21,6 +21,12 @@ import lombok.NoArgsConstructor;
 @Table(name="corona_data")
 public class CoronaDataEntity {
 	
+	public CoronaDataEntity(String territoryId, String territory, String territoryParent) {
+		this.setTerritoryId(territoryId);
+		this.setTerritory(territory);
+		this.setTerritoryParent(territoryParent);
+	}
+	
 	public CoronaDataEntity(CoronaData data) {
 		this.setCases(data.getCases());
 		this.setCasesKum(data.getCasesKum());

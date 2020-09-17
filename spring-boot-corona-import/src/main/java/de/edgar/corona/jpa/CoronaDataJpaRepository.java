@@ -1,6 +1,7 @@
 package de.edgar.corona.jpa;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.Query;
@@ -23,4 +24,11 @@ public interface CoronaDataJpaRepository extends CrudRepository<CoronaDataEntity
 	public Optional<LocalDate> getMinDateRepByTerritoryId(String territoryId);
 	
 	public Optional<CoronaDataEntity> findByTerritoryIdAndDateRep(String territoryId, LocalDate dateRep);
+	
+	@Query("SELECT COUNT(DISTINCT c.territory) FROM CoronaDataEntity c")
+	public long countTerritories();
+	
+	@Query("SELECT DISTINCT new CoronaDataEntity(c.territoryId, c.territory, c.territoryParent) FROM CoronaDataEntity c")
+	public List<CoronaDataEntity> getTerritories();
+	
 }

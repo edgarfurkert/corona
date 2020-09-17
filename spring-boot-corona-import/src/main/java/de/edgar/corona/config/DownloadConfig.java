@@ -21,6 +21,7 @@ import org.apache.commons.io.input.ReversedLinesFileReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -42,6 +43,7 @@ import de.edgar.corona.service.UpdateCheckService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Profile("!api")
 @Configuration
 @EnableScheduling
 @EnableAsync
