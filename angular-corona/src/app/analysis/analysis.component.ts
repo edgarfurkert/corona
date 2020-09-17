@@ -91,7 +91,7 @@ export class AnalysisComponent implements OnInit {
       }
     });
 
-    this.translationsService.getTranslations(this.locale).pipe(
+    this.translationsService.getTranslations$().pipe(
       tap(t => {
         if (t) {
           this.translationMap = t;
@@ -102,6 +102,8 @@ export class AnalysisComponent implements OnInit {
           this.translationsLoaded = true;
           this.loadConfiguration();
           this.loadTerritories();
+        } else {
+          this.translationsService.getTranslations(this.locale);
         }
       })
     ).subscribe();
@@ -152,6 +154,14 @@ export class AnalysisComponent implements OnInit {
           }
           if (t1.orderId > t2.orderId) {
             return 1;
+          }
+          if (t1.orderId < 100) {
+            if (t1.parentName < t2.parentName) {
+              return -1;
+            }
+            if (t1.parentName > t2.parentName) {
+              return 1;
+            }
           }
           if (t1.territoryName < t2.territoryName) {
             return -1;

@@ -17,6 +17,14 @@
     left: 20px;
 }
 
+::ng-deep .territory-list .checkbox-list__table-container {
+    height: 30vh;
+}
+
+::ng-deep .region-list .checkbox-list__table-container {
+    height: 30vh;
+}
+
 .dataContainer {
     display: flex;
     flex-direction: column;
@@ -82,6 +90,14 @@ mat-form-field {
     padding-left: 15px;
     padding-right: 15px;
     order: 2;
+}
+
+// ::ng-deep (Shadow Piercing, Break of Style-Encapsulation), + * (Adjacent Sibling Combinator, Selektion des ersten Elements nach dem router-outlet)
+::ng-deep router-outlet+* {
+    display: block;
+    width: 100%;
+    height: 60vh;
+    padding-right: 15px;
 }
 
 .graphicContainer {

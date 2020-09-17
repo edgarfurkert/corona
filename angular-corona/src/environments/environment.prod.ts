@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  webApiBaseUrl: 'http://localhost:8100/api',
-  importApiBaseUrl: 'http://localhost:8101/api'
+  webApiBaseUrl: 'http://raspberrypi4:8100/api',
+  importApiBaseUrl: 'http://raspberrypi4:8101/api'
 };

@@ -1,1 +1,54 @@
-<p>data-info works!</p>
+<!--mat-accordion-->
+<mat-expansion-panel>
+    <mat-expansion-panel-header>
+        <mat-panel-title>
+            <div class="data-sources__title">Daten-Quellen</div>
+        </mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <div class="data-sources">
+        <table class="data-sources__table mat-elevation-z8" mat-table [dataSource]="dataSourcesDS">
+            <!-- Header Column -->
+            <ng-container matColumnDef="url">
+                <th class="data-sources__column" mat-header-cell *matHeaderCellDef>{{dataSourcesColumnHeader}}</th>
+                <td class="data-sources__column" mat-cell *matCellDef="let element"> {{element.url}} </td>
+            </ng-container>
+
+            <tr class="data-sources__mat-header-row" mat-header-row *matHeaderRowDef="dataSourcesDisplayedColumns;">
+            </tr>
+            <tr class="data-sources__mat-row" mat-row *matRowDef="let row; columns: dataSourcesDisplayedColumns;"></tr>
+        </table>
+    </div>
+</mat-expansion-panel>
+<mat-expansion-panel>
+    <mat-expansion-panel-header>
+        <mat-panel-title>Daten-Informationen</mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <div class="data-information">
+        <table class="data-information__table">
+            <tr>
+                <td>Number of Records</td>
+                <td>{{dataInformation.numberOfRecords}}</td>
+            </tr>
+            <tr>
+                <td>Number of Territories</td>
+                <td>{{dataInformation.numberOfTerritories}}</td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <table class="data-information__territory-table">
+                        <tr *ngFor="let territory of dataInformation.territories">
+                            <td>{{ territory.territoryName }}</td>
+                            <td>{{ territory.parentName }}</td>
+                            <td>{{ territory.minDate }}</td>
+                            <td>{{ territory.maxDate }}</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+</mat-expansion-panel>
+<!--/mat-accordion-->
+<ngx-spinner>{{textLoadingData}}...</ngx-spinner>

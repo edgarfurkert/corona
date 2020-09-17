@@ -1,30 +1,30 @@
 /* Structure */
 
-table {
+.checkbox-list {
     width: 300px;
 }
 
-.mat-form-field {
-    font-size: 14px;
-    width: 100%;
-}
-
-.table-container {
+.checkbox-list__table-container {
     height: 300px;
     width: 100%;
     overflow: auto;
 }
 
-.checkbox-list {
+.checkbox-list__table {
     width: 300px;
 }
 
-.mat-row {
-    height: 32px;
+.checkbox-list__mat-form-field {
+    font-size: 14px !important;
+    width: 100% !important;
 }
 
-.mat-header-row {
-    height: 36px;
+.checkbox-list__mat-row {
+    height: 32px !important;
+}
+
+.checkbox-list__mat-header-row {
+    height: 36px !important;
 }
 
 .checkbox-list__checkbox {

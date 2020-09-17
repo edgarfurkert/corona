@@ -1,10 +1,8 @@
-import { Component, OnInit, ViewChild, Input, Output, EventEmitter, ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, ViewChild, Input, Output, EventEmitter, OnChanges, SimpleChanges, ViewEncapsulation } from '@angular/core';
 
 import { MatTableDataSource, MatTable } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { SelectionModel } from '@angular/cdk/collections';
-import { BehaviorSubject } from 'rxjs';
-import { tap } from 'rxjs/internal/operators';
 import { NGXLogger } from 'ngx-logger';
 
 const ELEMENT_DATA: CheckboxItem[] = [
@@ -24,6 +22,7 @@ export interface CheckboxItem {
 
 @Component({
   selector: 'ef-checkbox-list',
+  encapsulation: ViewEncapsulation.None,
   templateUrl: './checkbox-list.component.html',
   styleUrls: ['./checkbox-list.component.scss']
 })

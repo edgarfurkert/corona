@@ -11,6 +11,7 @@ import { environment } from 'src/environments/environment';
 })
 export class TranslationsService {
 
+  private translations: Map<string, string> = null;
   private translations$ = new BehaviorSubject<Map<string, string>>(null);
 
   constructor(@Inject(SERVICE_LOG_ENABLED) private log: boolean, private http: HttpClient) { }
@@ -24,6 +25,7 @@ export class TranslationsService {
         if (this.log) {
           console.log('TranslationsService: translations', translations);
         }
+        this.translations = translations;
         this.translations$.next(new Map(Object.entries(translations)));
       })).subscribe();
     if (this.log) {
@@ -33,4 +35,7 @@ export class TranslationsService {
     return this.translations$.asObservable();
   }
 
+  getTranslations$(): Observable<Map<string, string>> {
+    return this.translations$;
+  }
 }

@@ -8,6 +8,8 @@ export interface Territory {
     parentName?: string;
     orderId?: number;
     regions?: Territory[];
+    minDate?: Date,
+    maxDate?: Date
 }
 
 export class TerritoryItem implements CheckboxItem {

@@ -4,8 +4,10 @@
 
 export const environment = {
   production: false,
-  webApiBaseUrl: 'http://localhost:8100/api',
-  importApiBaseUrl: 'http://localhost:8101/api'
+  //webApiBaseUrl: 'http://localhost:8100/api',
+  webApiBaseUrl: 'http://raspberrypi4:8100/api',
+  //importApiBaseUrl: 'http://localhost:8101/api'
+  importApiBaseUrl: 'http://raspberrypi4:8101/api'
 };
 
 /*
