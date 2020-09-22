@@ -21,10 +21,11 @@ import lombok.NoArgsConstructor;
 @Table(name="corona_data")
 public class CoronaDataEntity {
 	
-	public CoronaDataEntity(String territoryId, String territory, String territoryParent) {
+	public CoronaDataEntity(String territoryId, String territory, String territoryParent, Long orderId) {
 		this.setTerritoryId(territoryId);
 		this.setTerritory(territory);
 		this.setTerritoryParent(territoryParent);
+		this.setOrderId(orderId);
 	}
 	
 	public CoronaDataEntity(CoronaData data) {

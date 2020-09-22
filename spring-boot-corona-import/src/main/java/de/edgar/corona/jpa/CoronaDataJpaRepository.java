@@ -25,10 +25,11 @@ public interface CoronaDataJpaRepository extends CrudRepository<CoronaDataEntity
 	
 	public Optional<CoronaDataEntity> findByTerritoryIdAndDateRep(String territoryId, LocalDate dateRep);
 	
-	@Query("SELECT COUNT(DISTINCT c.territory) FROM CoronaDataEntity c")
-	public long countTerritories();
+	// multiple columns not supported! 
+	//@Query("SELECT COUNT(DISTINCT c.territory) FROM CoronaDataEntity c")
+	//public long countTerritories();
 	
-	@Query("SELECT DISTINCT new CoronaDataEntity(c.territoryId, c.territory, c.territoryParent) FROM CoronaDataEntity c")
+	@Query("SELECT DISTINCT new CoronaDataEntity(c.territoryId, c.territory, c.territoryParent, c.orderId) FROM CoronaDataEntity c")
 	public List<CoronaDataEntity> getTerritories();
 	
 }

@@ -14,6 +14,7 @@ public class ApiTerritoryInfo {
 	private String territoryId;
 	private String territoryName;
 	private String parentId;
+	private Long orderId;
 	private LocalDate minDate;
 	private LocalDate maxDate;
 
