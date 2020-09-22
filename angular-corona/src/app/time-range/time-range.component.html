@@ -3,7 +3,7 @@
     <div class="time-range">
         <mat-form-field class="time-range__datepicker-start" appearance="fill">
             <mat-label>{{startTitle}}</mat-label>
-            <input matInput [min]="minDate" [matDatepicker]="pickerStart" [(ngModel)]="timeRange.startDate" name="startDate" ngModel #startDateModel="ngModel" required (dateChange)="startDateChange($event)">
+            <input matInput [min]="minDate" [max]="maxDate" [matDatepicker]="pickerStart" [(ngModel)]="timeRange.startDate" name="startDate" ngModel #startDateModel="ngModel" required (dateChange)="startDateChange($event)">
             <mat-datepicker-toggle matSuffix [for]="pickerStart"></mat-datepicker-toggle>
             <mat-datepicker touchUi #pickerStart></mat-datepicker>
             <mat-error *ngIf="startDateModel.hasError('required')">
@@ -12,7 +12,7 @@
         </mat-form-field>
         <mat-form-field class="time-range__datepicker-end" appearance="fill">
             <mat-label>{{endTitle}}</mat-label>
-            <input matInput [max]="maxDate" [matDatepicker]="pickerEnd" [(ngModel)]="timeRange.endDate" name="endDate" ngModel #endDateModel="ngModel" required (dateChange)="endDateChange($event)">
+            <input matInput [min]="minDate" [max]="maxDate" [matDatepicker]="pickerEnd" [(ngModel)]="timeRange.endDate" name="endDate" ngModel #endDateModel="ngModel" required (dateChange)="endDateChange($event)">
             <mat-datepicker-toggle matSuffix [for]="pickerEnd"></mat-datepicker-toggle>
             <mat-datepicker touchUi #pickerEnd></mat-datepicker>
             <mat-error *ngIf="endDateModel.hasError('required')">

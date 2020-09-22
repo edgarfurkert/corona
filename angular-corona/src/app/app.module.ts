@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA, LOCALE_ID } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HttpClient } from '@angular/common/http';
 
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
@@ -23,6 +23,13 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatRadioModule } from '@angular/material/radio';
 
+import { registerLocaleData } from '@angular/common';
+import localeDe from '@angular/common/locales/de';
+import localeEn from '@angular/common/locales/en';
+
+registerLocaleData(localeDe);
+registerLocaleData(localeEn);
+
 import * as Highcharts from 'highcharts';
 import more from 'highcharts/highcharts-more';
 more(Highcharts);
@@ -31,8 +38,10 @@ import { HighchartsChartModule } from 'highcharts-angular';
 import { StorageServiceModule } from 'ngx-webstorage-service';
 import { LoggerModule, NgxLoggerLevel } from 'ngx-logger';
 import { NgxSpinnerModule } from 'ngx-spinner';
+import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
-import { CONSOLE_LOG_ENABLED, ANALYSIS_LOG_ENABLED, SERVICE_LOG_ENABLED } from './app.tokens';
+import { CONSOLE_LOG_ENABLED, ANALYSIS_LOG_ENABLED, SERVICE_LOG_ENABLED, DATAINFO_LOG_ENABLED } from './app.tokens';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -49,6 +58,7 @@ import { HistoricalStackedAreasGraphComponent } from './historical-stacked-areas
 import { InfectionsAndGraphComponent } from './infections-and-graph/infections-and-graph.component';
 import { Top25GraphComponent } from './top25-graph/top25-graph.component';
 import { StartOfGraphComponent } from './start-of-graph/start-of-graph.component';
+import { DebugPipe } from './debug.pipe';
 
 const locale = (<any>document).locale;
 
@@ -66,7 +76,8 @@ const locale = (<any>document).locale;
     HistoricalStackedAreasGraphComponent,
     InfectionsAndGraphComponent,
     Top25GraphComponent,
-    StartOfGraphComponent
+    StartOfGraphComponent,
+    DebugPipe
   ],
   imports: [
     BrowserModule,
@@ -74,7 +85,15 @@ const locale = (<any>document).locale;
     ReactiveFormsModule,
     AppRoutingModule,
     HttpClientModule,
-    LoggerModule.forRoot({serverLoggingUrl: '/api/logs', level: NgxLoggerLevel.DEBUG, serverLogLevel: NgxLoggerLevel.ERROR}),
+    LoggerModule.forRoot({ serverLoggingUrl: '/api/logs', level: NgxLoggerLevel.DEBUG, serverLogLevel: NgxLoggerLevel.ERROR }),
+    TranslateModule.forRoot({
+      defaultLanguage: 'en',
+      loader: {
+          provide: TranslateLoader,
+          useFactory: HttpLoaderFactory,
+          deps: [HttpClient]
+      }
+    }),
     NgxSpinnerModule,
     BrowserAnimationsModule,
     MatToolbarModule,
@@ -102,11 +121,17 @@ const locale = (<any>document).locale;
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [
     MatDatepickerModule,
-    { provide: CONSOLE_LOG_ENABLED, useValue: true },
-    { provide: ANALYSIS_LOG_ENABLED, useValue: true },
-    { provide: SERVICE_LOG_ENABLED, useValue: true },
+    { provide: CONSOLE_LOG_ENABLED, useValue: false },
+    { provide: ANALYSIS_LOG_ENABLED, useValue: false },
+    { provide: DATAINFO_LOG_ENABLED, useValue: false },
+    { provide: SERVICE_LOG_ENABLED, useValue: false },
     { provide: LOCALE_ID, useValue: locale} 
   ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+
+// required for AOT compilation
+export function HttpLoaderFactory(http: HttpClient) {
+  return new TranslateHttpLoader(http);
+}

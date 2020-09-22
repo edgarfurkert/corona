@@ -43,7 +43,7 @@
                                 "with": "src/environments/environment.prod.ts"
                             }],
                             "optimization": true,
-                            "outputHashing": "all",
+                            "outputHashing": "none",
                             "sourceMap": false,
                             "extractCss": true,
                             "namedChunks": false,

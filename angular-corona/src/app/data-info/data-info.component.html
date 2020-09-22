@@ -1,54 +1,73 @@
-<!--mat-accordion-->
-<mat-expansion-panel>
-    <mat-expansion-panel-header>
-        <mat-panel-title>
-            <div class="data-sources__title">Daten-Quellen</div>
-        </mat-panel-title>
-    </mat-expansion-panel-header>
+<mat-accordion>
+    <mat-expansion-panel>
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                <div class="data-sources__title">{{ 'data-sources.title' | translate }}</div>
+            </mat-panel-title>
+        </mat-expansion-panel-header>
 
-    <div class="data-sources">
-        <table class="data-sources__table mat-elevation-z8" mat-table [dataSource]="dataSourcesDS">
-            <!-- Header Column -->
-            <ng-container matColumnDef="url">
-                <th class="data-sources__column" mat-header-cell *matHeaderCellDef>{{dataSourcesColumnHeader}}</th>
-                <td class="data-sources__column" mat-cell *matCellDef="let element"> {{element.url}} </td>
-            </ng-container>
+        <div class="data-sources">
+            <table class="data-sources__table mat-elevation-z8" mat-table [dataSource]="dataSourcesDS">
+                <!-- Header Column -->
+                <ng-container matColumnDef="url">
+                    <th class="data-sources__column" mat-header-cell *matHeaderCellDef>{{ 'data-sources.header.url' | translate }}</th>
+                    <td class="data-sources__column" mat-cell *matCellDef="let element"> {{element.url}} </td>
+                </ng-container>
 
-            <tr class="data-sources__mat-header-row" mat-header-row *matHeaderRowDef="dataSourcesDisplayedColumns;">
-            </tr>
-            <tr class="data-sources__mat-row" mat-row *matRowDef="let row; columns: dataSourcesDisplayedColumns;"></tr>
-        </table>
-    </div>
-</mat-expansion-panel>
-<mat-expansion-panel>
-    <mat-expansion-panel-header>
-        <mat-panel-title>Daten-Informationen</mat-panel-title>
-    </mat-expansion-panel-header>
+                <tr class="data-sources__mat-header-row" mat-header-row *matHeaderRowDef="dataSourcesDisplayedColumns;"></tr>
+                <tr class="data-sources__mat-row" mat-row *matRowDef="let row; columns: dataSourcesDisplayedColumns;"></tr>
+            </table>
+        </div>
+    </mat-expansion-panel>
+    <mat-expansion-panel>
+        <mat-expansion-panel-header>
+            <mat-panel-title>{{ 'data-information.title' | translate }}</mat-panel-title>
+        </mat-expansion-panel-header>
 
-    <div class="data-information">
-        <table class="data-information__table">
-            <tr>
-                <td>Number of Records</td>
-                <td>{{dataInformation.numberOfRecords}}</td>
-            </tr>
-            <tr>
-                <td>Number of Territories</td>
-                <td>{{dataInformation.numberOfTerritories}}</td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <table class="data-information__territory-table">
-                        <tr *ngFor="let territory of dataInformation.territories">
-                            <td>{{ territory.territoryName }}</td>
-                            <td>{{ territory.parentName }}</td>
-                            <td>{{ territory.minDate }}</td>
-                            <td>{{ territory.maxDate }}</td>
-                        </tr>
+        <div class="data-information">
+            <div class="data-information-top">
+                <table class="data-information-top__table mat-elevation-z8" mat-table [dataSource]="dataInformationTopDS">
+                    <ng-container matColumnDef="name">
+                        <td class="data-information-top__column" mat-cell *matCellDef="let element"> {{ 'data-information.' + element.name | translate }} </td>
+                    </ng-container>
+                    <ng-container matColumnDef="value">
+                        <td class="data-information-top__column" mat-cell *matCellDef="let element"> {{element.value}} </td>
+                    </ng-container>
+
+                    <tr class="data-information-top__mat-row" mat-row *matRowDef="let row; columns: dataInformationTopDisplayedColumns;"></tr>
+                </table>
+            </div>
+            <div class="data-information-territories">
+                <mat-form-field class="data-information-territories__mat-form-field">
+                    <mat-label>{{ 'data-information.territories.filter' | translate }}</mat-label>
+                    <input matInput (keyup)="applyFilter($event)" #input>
+                </mat-form-field>
+
+                <div class="data-information-territories__table-container">
+                    <table class="data-information-territories__table mat-elevation-z8" mat-table [dataSource]="dataInformationTerritoriesTopDS">
+                        <ng-container matColumnDef="territoryName">
+                            <th class="data-information-territories__column" mat-header-cell *matHeaderCellDef>{{ 'data-information.territories.territory' | translate }}</th>
+                            <td class="data-information-territories__column" mat-cell *matCellDef="let element"> {{element.territoryName}} </td>
+                        </ng-container>
+                        <ng-container matColumnDef="parentName">
+                            <th class="data-information-territories__column" mat-header-cell *matHeaderCellDef>{{ 'data-information.territories.parent' | translate }}</th>
+                            <td class="data-information-territories__column" mat-cell *matCellDef="let element"> {{element.parentName}} </td>
+                        </ng-container>
+                        <ng-container matColumnDef="minDate">
+                            <th class="data-information-territories__column" mat-header-cell *matHeaderCellDef>{{ 'data-information.territories.minDate' | translate }}</th>
+                            <td class="data-information-territories__column" mat-cell *matCellDef="let element"> {{element.minDate | date}} </td>
+                        </ng-container>
+                        <ng-container matColumnDef="maxDate">
+                            <th class="data-information-territories__column" mat-header-cell *matHeaderCellDef>{{ 'data-information.territories.maxDate' | translate }}</th>
+                            <td class="data-information-territories__column" mat-cell *matCellDef="let element"> {{element.maxDate | date}} </td>
+                        </ng-container>
+
+                        <tr class="data-information-territories__mat-header-row" mat-header-row *matHeaderRowDef="dataInformationTerritoriesDisplayedColumns; sticky: true"></tr>
+                        <tr class="data-information-territories__mat-row" mat-row *matRowDef="let row; columns: dataInformationTerritoriesDisplayedColumns;"></tr>
                     </table>
-                </td>
-            </tr>
-        </table>
-    </div>
-</mat-expansion-panel>
-<!--/mat-accordion-->
-<ngx-spinner>{{textLoadingData}}...</ngx-spinner>
+                </div>
+            </div>
+        </div>
+    </mat-expansion-panel>
+</mat-accordion>
+<ngx-spinner>{{ 'spinner.loading-data' | translate }}</ngx-spinner>

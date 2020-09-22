@@ -14,17 +14,20 @@ export class SessionService {
               @Inject(SESSION_STORAGE) private storage: StorageService) {
   }
 
-  set(key:string, value:Object) {
+  set(key:string, value:any) {
     if (this.log) {
       this.logger.debug('SessionService: set', key, '=', value);
     }
     this.storage.set(key, value);
     if (this.log) {
-      this.logger.debug('SessionService: storage', this.storage);
+      this.logger.debug('SessionService: storage', key, '=', this.storage.get(key));
     }
   }
 
-  get(key:string): Object {
+  get(key:string): any {
+    if (this.log) {
+      this.logger.debug('SessionService: get', key, '=', this.storage.get(key));
+    }
     return this.storage.get(key);
   }
 }

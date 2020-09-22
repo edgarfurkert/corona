@@ -76,7 +76,9 @@ export class HistoricalBubblesGraphComponent implements OnInit {
     series: [] //data.series
   }; // required
   chartCallback: Highcharts.ChartCallbackFunction = function (chart) { 
-    console.log('HistoricalBubblesGraphComponent.chartCallback'); 
+    setTimeout(function () {
+      chart.reflow();
+    }, 0);
   } // optional function, defaults to null
   updateFlag: boolean = false; // optional boolean
   oneToOneFlag: boolean = true; // optional boolean, defaults to false

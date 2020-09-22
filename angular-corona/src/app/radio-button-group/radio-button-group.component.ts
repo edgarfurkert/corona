@@ -32,7 +32,7 @@ export class RadioButtonGroupComponent implements OnInit, OnChanges {
       console.log('RadioButtonGroupComponent.ngOnChanges: changes', changes);
     }
     this.choices.forEach(c => {
-      c.disabled = this.disabled.includes(c.id);
+      c.disabled = this.disabled ? this.disabled.includes(c.id) : false;
       if (this.log) {
         console.log('RadioButtonGroupComponent.ngOnInit: disabled choice', c);
       }

@@ -30,7 +30,15 @@ export class CheckboxListComponent implements OnInit, OnChanges {
 
   @Input() columnHeader: string = 'Header';
   @Input() items: CheckboxItem[] = [];
-  @Input() log: boolean = false;
+  private _log: boolean = false;
+  @Input()
+  set log(value: string) {
+    this._log = value === 'true';
+  }
+  get log(): string {
+    return this._log.toString();
+  }
+  @Input('selected') selectedItems: CheckboxItem[] = [];
   @Output() selectItem = new EventEmitter();
 
   displayedColumns: string[] = ['select', 'text'];
@@ -42,37 +50,34 @@ export class CheckboxListComponent implements OnInit, OnChanges {
   selection = new SelectionModel<CheckboxItem>(true, []);
 
   constructor(private logger: NGXLogger) {
-    if (this.log) {
+    if (this._log) {
       this.logger.debug('CheckboxListComponent');
     }
   }
 
   ngOnInit(): void {
-    if (this.log) {
+    if (this._log) {
       this.logger.debug('CheckboxListComponent.ngOnInit');
     }
 
     this.dataSource.data = this.items;
-    if (this.log) {
+    if (this._log) {
       this.logger.debug('CheckboxListComponent.ngOnInit', this.dataSource);
     }
   }
 
   ngAfterViewInit() {
-    if (this.log) {
+    if (this._log) {
       this.logger.debug('CheckboxListComponent.ngAfterViewInit');
     }
     this.dataSource.sort = this.sort;
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (this.log) {
+    if (this._log) {
       this.logger.debug('CheckboxListComponent.ngOnChanges', changes);
     }
     if (changes['items']) {
-      if (this.log) {
-        this.logger.debug('CheckboxListComponent.ngOnChanges: sort items', this.items, this.items.length);
-      }
       this.dataSource.data = this.items;
       // merge selection
       let selectedItemIds: string[] = [];
@@ -82,6 +87,27 @@ export class CheckboxListComponent implements OnInit, OnChanges {
       this.selection.clear();
       this.items.forEach(item => {
         if (selectedItemIds.includes(item.id)) {
+          if (this._log) {
+            this.logger.debug('CheckboxListComponent.ngOnChanges: select', item);
+          }
+          this.selection.select(item);
+        }
+      });
+    }
+    if (changes['selectedItems']) {
+      let selectedItemIds: string[] = [];
+      if (this.selectedItems) {
+        // merge selection
+        this.selectedItems.forEach(item => {
+          selectedItemIds.push(item.id);
+        });
+      }
+      this.selection.clear();
+      this.items.forEach(item => {
+        if (selectedItemIds.includes(item.id)) {
+          if (this._log) {
+            this.logger.debug('CheckboxListComponent.ngOnChanges: select', item);
+          }
           this.selection.select(item);
         }
       });
@@ -90,7 +116,7 @@ export class CheckboxListComponent implements OnInit, OnChanges {
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    if (this.log) {
+    if (this._log) {
       this.logger.debug('CheckboxListComponent.applyFilter: filterValue', filterValue);
     }
     this.dataSource.filter = filterValue.trim().toLowerCase();
@@ -110,7 +136,7 @@ export class CheckboxListComponent implements OnInit, OnChanges {
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   masterToggle() {
-    if (this.log) {
+    if (this._log) {
       this.logger.debug('CheckboxListComponent.masterToggle: isAllSelected', this.isAllSelected());
     }
     this.isAllSelected() ?
@@ -122,7 +148,7 @@ export class CheckboxListComponent implements OnInit, OnChanges {
   checkboxLabel(row?: CheckboxItem): string {
     if (row) {
       if (this.selected !== JSON.stringify(this.selection.selected)) {
-        if (this.log) {
+        if (this._log) {
           this.logger.debug('CheckboxListComponent.checkboxLabel: row', row);
         }
         this.selected = JSON.stringify(this.selection.selected);

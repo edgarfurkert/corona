@@ -5,3 +5,46 @@ mat-panel-title {
 ::ng-deep .mat-expansion-panel-content {
     align-items: center;
 }
+
+.data-information-top {
+    padding-top: 10px;
+}
+
+.data-information-top__table {
+    width: 40vw;
+}
+
+.data-information-territories {
+    padding-top: 8px;
+}
+
+.data-information-territories__mat-form-field {
+    height: 40px;
+}
+
+.data-information-territories__table-container {
+    overflow: auto;
+    height: 44vh;
+    width: 40vw;
+}
+
+.data-information-territories__table {
+    width: 40vw;
+}
+
+.data-information-territories__mat-header-row {
+    height: 48px !important;
+    white-space: pre-wrap;
+}
+
+.mat-column-minDate {
+    text-align: center !important;
+}
+
+.mat-column-maxDate {
+    text-align: center !important;
+}
+
+.data-information-territories__mat-row {
+    height: 32px !important;
+}

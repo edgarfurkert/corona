@@ -7,7 +7,7 @@ import { NGXLogger } from 'ngx-logger';
 
 import { SERVICE_LOG_ENABLED } from '../app.tokens';
 import { SessionService } from './session.service';
-import { Territory } from '../models/model.interfaces';
+import { Territory, TerritoryItem } from '../models/model.interfaces';
 import { environment } from 'src/environments/environment';
 
 
@@ -35,10 +35,10 @@ export class GraphService {
   top25GraphData$ = new BehaviorSubject<Map<string, Object>>(null);
   startOfGraphData$ = new BehaviorSubject<Map<string, Object>>(null);
 
-  constructor(@Inject(SERVICE_LOG_ENABLED) private log: boolean, 
-              private logger: NGXLogger,
-              private http: HttpClient, 
-              private sessionService: SessionService) { }
+  constructor(@Inject(SERVICE_LOG_ENABLED) private log: boolean,
+    private logger: NGXLogger,
+    private http: HttpClient,
+    private sessionService: SessionService) { }
 
   loadGraphData() {
     let gsd = new GraphSessionData();
@@ -49,10 +49,10 @@ export class GraphService {
     gsd.selectedDataType = <string>this.sessionService.get('dataTypeSelected');
     gsd.selectedTerritories = [];
     gsd.selectedTerritoryParents = [];
-    (<Territory[]>this.sessionService.get('selectedRegions')).forEach(t => {
-      gsd.selectedTerritories.push(t.territoryId);
-      if (!gsd.selectedTerritoryParents.includes(t.parentId)) {
-        gsd.selectedTerritoryParents.push(t.parentId);
+    (<TerritoryItem[]>this.sessionService.get('selectedRegions')).forEach(t => {
+      gsd.selectedTerritories.push(t.data.territoryId);
+      if (!gsd.selectedTerritoryParents.includes(t.data.parentId)) {
+        gsd.selectedTerritoryParents.push(t.data.parentId);
       }
     });
     gsd.selectedYAxisType = <string>this.sessionService.get('yAxisTypeSelected');
@@ -62,37 +62,68 @@ export class GraphService {
       this.logger.debug('GraphService: session data', gsd);
 
     }
-    this.http.post<Map<string, Object>>(environment.webApiBaseUrl + "/graph", gsd).pipe(
+    this.http.post<any>(environment.webApiBaseUrl + "/graph", gsd).pipe(
       tap((graphData) => {
         if (this.log) {
           this.logger.debug('GraphService: graphData', graphData);
         }
-        switch(gsd.selectedGraphType) {
-          case 'historical': 
+        this.sessionService.set('graphData', graphData);
+        this.sessionService.set('graphDataType', gsd.selectedGraphType);
+        switch (gsd.selectedGraphType) {
+          case 'historical':
             this.historicalGraphData$.next(new Map(Object.entries(graphData)));
             break;
-          case 'historicalBubbles': 
+          case 'historicalBubbles':
             this.historicalBubblesGraphData$.next(new Map(Object.entries(graphData)));
             break;
-          case 'historicalStackedAreas': 
+          case 'historicalStackedAreas':
             this.historicalStackedAreasGraphData$.next(new Map(Object.entries(graphData)));
             break;
-          case 'infectionsAnd': 
+          case 'infectionsAnd':
             this.infectionsAndGraphData$.next(new Map(Object.entries(graphData)));
             break;
-          case 'top25Of': 
+          case 'top25Of':
             this.top25GraphData$.next(new Map(Object.entries(graphData)));
             break;
-          case 'startOf': 
+          case 'startOf':
             this.startOfGraphData$.next(new Map(Object.entries(graphData)));
             break;
           default:
             this.logger.error('GraphService: selectedGraphType not supported', gsd.selectedGraphType);
             break;
         }
-        
+
       })
     ).subscribe();
   }
 
+  updateGraph() {
+    let selectedGraphType: string = <string>this.sessionService.get('graphDataType');
+    let graphData: any = this.sessionService.get('graphData');
+    if (graphData) {
+      switch (selectedGraphType) {
+        case 'historical':
+          this.historicalGraphData$.next(new Map(Object.entries(graphData)));
+          break;
+        case 'historicalBubbles':
+          this.historicalBubblesGraphData$.next(new Map(Object.entries(graphData)));
+          break;
+        case 'historicalStackedAreas':
+          this.historicalStackedAreasGraphData$.next(new Map(Object.entries(graphData)));
+          break;
+        case 'infectionsAnd':
+          this.infectionsAndGraphData$.next(new Map(Object.entries(graphData)));
+          break;
+        case 'top25Of':
+          this.top25GraphData$.next(new Map(Object.entries(graphData)));
+          break;
+        case 'startOf':
+          this.startOfGraphData$.next(new Map(Object.entries(graphData)));
+          break;
+        default:
+          this.logger.error('GraphService: selectedGraphType not supported', selectedGraphType);
+          break;
+      }
+    }
+  }
 }

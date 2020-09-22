@@ -53,7 +53,11 @@ export class HistoricalGraphComponent implements OnInit {
     },
     series: [] //data.series
   }; // required
-  chartCallback: Highcharts.ChartCallbackFunction = function (chart) { console.log('chartCallback'); } // optional function, defaults to null
+  chartCallback: Highcharts.ChartCallbackFunction = function (chart) { 
+    setTimeout(function () {
+      chart.reflow();
+    }, 0);
+  } // optional function, defaults to null
   updateFlag: boolean = false; // optional boolean
   oneToOneFlag: boolean = true; // optional boolean, defaults to false
   runOutsideAngularFlag: boolean = false; // optional boolean, defaults to false
@@ -61,7 +65,7 @@ export class HistoricalGraphComponent implements OnInit {
   constructor(private logger: NGXLogger, private spinner: NgxSpinnerService, private graphService: GraphService) {
     this.graphService.historicalGraphData$.subscribe(data => {
       if (data !== null) {
-        this.logger.debug('HistoricalGraphComponent: data', data);
+        //this.logger.debug('HistoricalGraphComponent: data', data);
         this.chartOptions.title.text = <string>data.get('title');
         this.chartOptions.subtitle.text = <string>data.get('subTitle');
         this.chartOptions.series = <Highcharts.SeriesOptionsType[]>data.get('series');
@@ -82,7 +86,7 @@ export class HistoricalGraphComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.logger.debug('HistoricalGraphComponent.ngOnInit');
+    //this.logger.debug('HistoricalGraphComponent.ngOnInit');
   }
 
 }

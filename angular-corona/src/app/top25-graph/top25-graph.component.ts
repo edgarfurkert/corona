@@ -75,7 +75,11 @@ export class Top25GraphComponent implements OnInit {
       }
     }]
   }; // required
-  chartCallback: Highcharts.ChartCallbackFunction = function (chart) { console.log('chartCallback'); } // optional function, defaults to null
+  chartCallback: Highcharts.ChartCallbackFunction = function (chart) { 
+    setTimeout(function () {
+      chart.reflow();
+    }, 0);
+  } // optional function, defaults to null
   updateFlag: boolean = false; // optional boolean
   oneToOneFlag: boolean = true; // optional boolean, defaults to false
   runOutsideAngularFlag: boolean = false; // optional boolean, defaults to false

@@ -12,6 +12,7 @@ export class TimeRange {
   endDate: Date;
 }
 
+/*
 export const MY_DATE_FORMATS = {
   parse: {
     dateInput: 'DD.MM.YYYY',
@@ -23,11 +24,13 @@ export const MY_DATE_FORMATS = {
     monthYearA11yLabel: 'MMMM YYYY'
   },
 };
+*/
 
 @Component({
   selector: 'ef-time-range',
   templateUrl: './time-range.component.html',
   styleUrls: ['./time-range.component.scss'],
+  /*
   providers: [
     // The locale would typically be provided on the root module of your application. We do it at
     // the component level here, due to limitations of our example generation script.
@@ -43,6 +46,7 @@ export const MY_DATE_FORMATS = {
     },
     { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS }
   ],
+  */
   viewProviders: [ { provide: ControlContainer, useExisting: NgForm } ]
 })
 export class TimeRangeComponent implements OnInit {

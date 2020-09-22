@@ -1,0 +1,32 @@
+{
+    "app": {
+        "menu": {
+            "analysis": "Corona-Daten-Analyse",
+            "information": "Corona-Daten-Informationen"
+        },
+        "data-analysis": "Daten - Analyse",
+        "data-information": "Daten - Informationen"
+    },
+    "data-sources": {
+        "title": "Daten - Quellen",
+        "header": {
+            "url": "URL"
+        }
+    },
+    "data-information": {
+        "title": "Daten - Informationen",
+        "numberOfRecords": "Anzahl Datensätze (gesamt)",
+        "numberOfTerritories": "Anzahl der unterstützten Regionen",
+        "territories": {
+            "territory": "Region",
+            "parent": "Gebiet",
+            "minDate": "Daten verfügbar\nab",
+            "maxDate": "Daten verfügbar\nbis",
+            "filter": "Filter"
+        }
+    },
+    "spinner": {
+        "please-wait": "Bitte warten...",
+        "loading-data": "Daten werden geladen..."
+    }
+}

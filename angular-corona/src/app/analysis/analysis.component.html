@@ -1,29 +1,29 @@
 <section class="listContainer">
     <div *ngIf="!territoriesLoaded">
-        <ef-checkbox-list class="territory-list" columnHeader="Territories"></ef-checkbox-list>
+        <ef-checkbox-list class="territory-list" [columnHeader]="getTranslation('label.territories')"></ef-checkbox-list>
     </div>
     <div *ngIf="territoriesLoaded">
-        <ef-checkbox-list class="territory-list" log="false" [columnHeader]="getTranslation('label.territories')" [items]="territories" (selectItem)="selectTerritory($event)"></ef-checkbox-list>
+        <ef-checkbox-list class="territory-list" log="false" [columnHeader]="getTranslation('label.territories')" [items]="territories" [selected]="selectedTerritories" (selectItem)="selectTerritory($event)"></ef-checkbox-list>
     </div>
-    <ef-checkbox-list class="region-list" log="false" [columnHeader]="getTranslation('label.regions')" [items]="regions" (selectItem)="selectRegion($event)"></ef-checkbox-list>
+    <ef-checkbox-list class="region-list" log="false" [columnHeader]="getTranslation('label.regions')" [items]="regions" [selected]="selectedRegions" (selectItem)="selectRegion($event)"></ef-checkbox-list>
 </section>
 <section class="dataContainer">
-    <ngx-spinner name="pleaseWait">Please wait...</ngx-spinner>
-    <ngx-spinner name="dataLoading" type="line-scale">Loading data...</ngx-spinner>
+    <ngx-spinner name="pleaseWait">{{'spinner.please-wait' | translate}}</ngx-spinner>
+    <ngx-spinner name="dataLoading" type="line-scale">{{'spinner.loading-data' | translate}}</ngx-spinner>
     <div class="formContainer">
         <form class="form" #form="ngForm" (ngSubmit)="update(form.value)">
             <div class="form-left" *ngIf="!configurationLoaded">
-                <ef-time-range class="time-range" title="Date range"></ef-time-range>
-                <ef-selection-box class="graphic-type" title="Graphic Type"></ef-selection-box>
+                <ef-time-range class="time-range" [title]="getTranslation('label.dateRange')"></ef-time-range>
+                <ef-selection-box class="graphic-type" [title]="getTranslation('label.graphType')"></ef-selection-box>
             </div>
             <div class="form-left" *ngIf="configurationLoaded">
                 <ef-time-range class="time-range" [title]="getTranslation('label.dateRange')" [startTitle]="getTranslation('label.from')" [endTitle]="getTranslation('label.to')" [start]="startDate" [end]="endDate" [min]="minDate" [max]="maxDate" (timeRangeChange)="changeTimeRange($event)"></ef-time-range>
                 <ef-selection-box class="graphic-type" [title]="getTranslation('label.graphType')" [choices]="graphicTypes" [selected]="selectedGraphicType" (onSelect)="selectGraphicType($event)"></ef-selection-box>
             </div>
             <div class="form-right" *ngIf="!configurationLoaded">
-                <ef-radio-button-group class="data-type" name="dataTypes" title="Data Types"></ef-radio-button-group>
-                <ef-radio-button-group class="data-category" name="dataCategories" title="Data Category"></ef-radio-button-group>
-                <ef-radio-button-group class="y-axis-type" name="yAxisTypes" title="y-Axis Type"></ef-radio-button-group>
+                <ef-radio-button-group class="data-type" name="dataTypes" [title]="getTranslation('label.dataTypes')"></ef-radio-button-group>
+                <ef-radio-button-group class="data-category" name="dataCategories" [title]="getTranslation('label.dataCategories')"></ef-radio-button-group>
+                <ef-radio-button-group class="y-axis-type" name="yAxisTypes" [title]="getTranslation('label.yAxisType')"></ef-radio-button-group>
             </div>
             <div class="form-right" *ngIf="configurationLoaded">
                 <ef-radio-button-group class="data-type" name="dataTypes" [title]="getTranslation('label.dataTypes')" [choices]="dataTypes" [selected]="selectedDataType" (onSelect)="selectDataType($event)"></ef-radio-button-group>
