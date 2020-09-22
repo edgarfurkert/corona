@@ -9,11 +9,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -60,6 +63,9 @@ public class GraphDataService {
 
 	@Autowired
 	private MessageSourceService messageSourceService;
+	
+	@Autowired
+	private GraphDataAsyncService asyncService;
 	
 	private long getLong(Long value) {
 		return getLong(value, 0L);
@@ -312,7 +318,7 @@ public class GraphDataService {
 					}
 					List<String> territory = new ArrayList<>();
 					territory.add(t);
-					repo.findByTerritoryIdInAndDateRepBetween(territory, date, date).forEach(d -> {
+					repo.findByTerritoryIdInAndDateRepBetweenOrderByDateRep(territory, date, date).forEach(d -> {
 						CoronaData cd = d.toCoronaData();
 						cd.setCasesDaysPer100000Pop(getCasesPerDaysAnd100000(cd));
 						coronaData.add(cd);
@@ -872,8 +878,50 @@ public class GraphDataService {
 	}
 
 	private Map<String,List<CoronaData>> getHistoricalData(CoronaDataSession cds) {
+		//log.info("-> getHistoricalData");
 		Map<String,List<CoronaData>> territoryMap = new HashMap<>();
 		
+		List<CompletableFuture<Map<String,List<CoronaData>>>> asyncs = new ArrayList<>();
+		
+		int subListSize = (int)((cds.getSelectedTerritories().size() / 4.0) + 0.5);
+		//log.info("{}, {}", cds.getSelectedTerritories().size(), subListSize);
+		
+		int fromIndex = 0;
+		int toIndex = subListSize - 1;
+		for (int i = 0; i < 4; i++) {
+			//log.info("{}, {}", fromIndex, toIndex);
+			List<String> subList = cds.getSelectedTerritories().subList(fromIndex, toIndex);
+			fromIndex += subListSize;
+			toIndex += subListSize;
+			if (toIndex > cds.getSelectedTerritories().size()-1) {
+				toIndex = cds.getSelectedTerritories().size()-1;
+			}
+			LocalDate fromDate = cds.getFromDate();
+			int days = 0;
+			switch (cds.getSelectedDataCategory()) {
+			case "perDaysAnd100000":
+				// 7 days/100.000
+				days = 7;
+				fromDate = fromDate.minusDays(days);
+				break;
+			}
+			asyncs.add(asyncService.getHistoricalDataAsync(subList, cds, LocalDate.from(fromDate)));
+		}
+		
+		asyncs.forEach(async -> {
+			try {
+				Map<String,List<CoronaData>> asyncMap = async.get();
+				territoryMap.putAll(asyncMap);
+				//log.info("getHistoricalData: {} added", asyncMap.keySet());
+			} catch (InterruptedException | ExecutionException e) {
+				log.error("getHistoricalData: Exception {}", e);
+			}
+		});
+		
+		//log.info("getHistoricalData");
+		//if (true) return territoryMap;
+		
+		/*
 		LocalDate fromDate = cds.getFromDate();
 		int days = 0;
 		switch (cds.getSelectedDataCategory()) {
@@ -883,12 +931,9 @@ public class GraphDataService {
 			fromDate = fromDate.minusDays(days);
 			break;
 		}
-		List<CoronaData> coronaData = new ArrayList<>();
-		repo.findByTerritoryIdInAndDateRepBetween(cds.getSelectedTerritories(), fromDate, cds.getToDate()).forEach(d -> {
-			coronaData.add(d.toCoronaData());
-		});
-		coronaData.sort(Comparator.comparing(CoronaData::getDateRep));
-		coronaData.forEach(d -> { 
+		
+		repo.findByTerritoryIdInAndDateRepBetweenOrderByDateRep(cds.getSelectedTerritories(), fromDate, cds.getToDate()).forEach(e -> {
+			CoronaData d = e.toCoronaData();
 			if (!cds.getSelectedTerritoryParents().contains(d.getTerritoryParent())) {
 				return;
 			}
@@ -962,10 +1007,12 @@ public class GraphDataService {
 		});
 		
 		calcDaysPer100000(cds, territoryMap);
+		*/
 
+		//log.info("<- getHistoricalData");
 		return territoryMap;
 	}
-
+	
 	private XAxis getXAxisWithDates(CoronaDataSession cds) {
 		List<String> dates = new ArrayList<>();
         for (LocalDate date = cds.getFromDate(); date.isBefore(cds.getToDate().plusDays(1)); date=date.plusDays(1)) {
