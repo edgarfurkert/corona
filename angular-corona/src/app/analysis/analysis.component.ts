@@ -7,7 +7,7 @@ import { NGXLogger } from 'ngx-logger';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { TranslateService } from '@ngx-translate/core';
 
-import { Territory, TerritoryItem } from '../models/model.interfaces';
+import { Territory, TerritoryItem, Refreshable } from '../models/model.interfaces';
 import { SBChoice } from '../selection-box/selection-box.component';
 import { RBChoice } from '../radio-button-group/radio-button-group.component';
 import { TerritoryService } from '../services/territory.service';
@@ -24,7 +24,7 @@ import { TimeRange } from '../time-range/time-range.component';
   templateUrl: './analysis.component.html',
   styleUrls: ['./analysis.component.scss']
 })
-export class AnalysisComponent implements OnInit {
+export class AnalysisComponent implements OnInit, Refreshable {
 
   startDate: Date;
   endDate: Date;
@@ -50,8 +50,11 @@ export class AnalysisComponent implements OnInit {
   selectedYAxisType = 'linear';
 
   configurationLoaded: boolean = false;
+  configurationLoadedSubscription: Subscription;
   territoriesLoaded: boolean = false;
+  territoriesLoadedSubscription: Subscription;
   translationsLoaded: boolean = false;
+  translationsLoadedSubscription: Subscription;
   dataLoaded: boolean = false;
   allLoaded$: Observable<number> = timer(0, 100);
   allLoadedSubscription: Subscription;
@@ -87,39 +90,13 @@ export class AnalysisComponent implements OnInit {
     if (this.log) {
       this.logger.debug('AnalysisComponent.ngOnInit');
     }
-
-    let sessionDate: Date = new Date(this.session.get('date'));
-    let today: Date = new Date();
-    if (sessionDate.getDay !== today.getDay) {
-      if (this.log) {
-        this.logger.debug('AnalysisComponent.ngOnInit: reload min/maxDate');
-      }
-      this.spinner.show('pleaseWait');
-      this.dataLoaded = false;
-      this.configurationLoaded = false;
-      this.session.set('configurationLoaded', this.configurationLoaded);
-      this.loadMinMaxDate();
-    }
-
-    if (!this.dataLoaded) {
-      this.allLoadedSubscription = this.allLoaded$.subscribe(() => {
-        this.dataLoaded = <boolean>this.session.get('territoriesLoaded') && <boolean>this.session.get('configurationLoaded') && <boolean>this.session.get('translationsLoaded');
-        this.session.set('dataLoaded', this.dataLoaded);
-        if (this.dataLoaded) {
-          if (this.log) {
-            this.logger.debug('AnalysisComponent.ngOnInit: dataLoaded');
-          }
-          this.spinner.hide('pleaseWait');
-          this.allLoadedSubscription.unsubscribe();
-        }
-      });
-    }
+    this.checkDataLoaded();
 
     if (!this.translationsLoaded) {
       // init session data
       this.initSession();
 
-      this.translationsService.getTranslations$().pipe(
+      this.translationsLoadedSubscription = this.translationsService.getTranslations$().pipe(
         tap(t => {
           if (t) {
             if (this.log) {
@@ -135,7 +112,12 @@ export class AnalysisComponent implements OnInit {
             this.translationsService.getTranslations(this.locale);
           }
         })
-      ).subscribe();
+      ).subscribe((s) => {
+        if (this.log) {
+          console.log('AnalysisComponent.ngOnInit: translationsLoadedSubscription', s);
+        }
+        //this.translationsLoadedSubscription.unsubscribe();
+      });
     }
 
     let graphDataType = <string>this.session.get('graphDataType');
@@ -145,6 +127,38 @@ export class AnalysisComponent implements OnInit {
   ngAfterViewInit() {
     if (this.log) {
       this.logger.debug('AnalysisComponent.ngAfterViewInit');
+    }
+  }
+
+  refresh() {
+    if (this.log) {
+      this.logger.debug('AnalysisComponent.refresh');
+    }
+    if (this.log) {
+      this.logger.debug('AnalysisComponent.refresh: reload min/maxDate');
+    }
+    this.spinner.show('pleaseWait');
+    this.dataLoaded = false;
+    this.session.set('dataLoaded', this.configurationLoaded);
+    this.configurationLoaded = false;
+    this.session.set('configurationLoaded', this.configurationLoaded);
+    this.checkDataLoaded();
+    this.loadMinMaxDate();
+  };
+
+  checkDataLoaded() {
+    if (!this.dataLoaded) {
+      this.allLoadedSubscription = this.allLoaded$.subscribe(() => {
+        this.dataLoaded = <boolean>this.session.get('territoriesLoaded') && <boolean>this.session.get('configurationLoaded') && <boolean>this.session.get('translationsLoaded');
+        this.session.set('dataLoaded', this.dataLoaded);
+        if (this.dataLoaded) {
+          if (this.log) {
+            this.logger.debug('AnalysisComponent.checkDataLoaded: dataLoaded');
+          }
+          this.spinner.hide('pleaseWait');
+          this.allLoadedSubscription.unsubscribe();
+        }
+      });
     }
   }
 
@@ -163,7 +177,7 @@ export class AnalysisComponent implements OnInit {
 
   restoreFromSession() {
     this.locale = <string>this.session.get('locale');
-    this.translationMap = new Map<string,string>(JSON.parse(this.session.get('translations')));
+    this.translationMap = new Map<string, string>(JSON.parse(this.session.get('translations')));
 
     this.territories = <TerritoryItem[]>this.session.get('territories');
     this.selectedTerritories = <TerritoryItem[]>this.session.get('selectedTerritories');
@@ -201,7 +215,7 @@ export class AnalysisComponent implements OnInit {
   loadTerritories() {
     if (!this.territoriesLoaded) {
       let tArray: TerritoryItem[] = [];
-      this.territoryService.getTerritories().pipe(
+      this.territoriesLoadedSubscription = this.territoryService.getTerritories().pipe(
         tap((allTerritories) => {
           allTerritories.forEach(t => {
             t.parentName = this.getTranslation(t.parentId) || t.parentName;
@@ -249,100 +263,109 @@ export class AnalysisComponent implements OnInit {
 
           this.territories = tArray;
           if (this.log) {
-            this.logger.debug('AnalysisComponent.ngOnInit: territories', this.territories);
+            this.logger.debug('AnalysisComponent.loadTerritories: territories', this.territories);
           }
           this.session.set('territories', this.territories);
           if (allTerritories.length > 0) {
             if (this.log) {
-              this.logger.debug('AnalysisComponent.ngOnInit: territories loaded');
+              this.logger.debug('AnalysisComponent.loadTerritories: territories loaded');
             }
             this.territoriesLoaded = true;
             this.session.set('territoriesLoaded', true);
           }
         })
-      ).subscribe();
+      ).subscribe((s) => {
+        if (this.log) {
+          console.log('AnalysisComponent.loadTerritories: territoriesLoadedSubscription', s);
+        }
+        //this.territoriesLoadedSubscription.unsubscribe();
+      });
     }
   }
 
   loadMinMaxDate() {
     if (!this.configurationLoaded) {
-      this.configurationService.getConfiguration().pipe(
-        tap((configuration) => {
-          if (configuration) {
-            if (this.log) {
-              this.logger.debug('AnalysisComponent.loadMinMaxDate: configuration', configuration);
-            }
-            this.maxDate = new Date(configuration.toDate);
-            this.session.set('maxDate', this.maxDate);
-            this.minDate = new Date(configuration.fromDate);
-            this.session.set('minDate', this.minDate);
-
-            if (this.log) {
-              this.logger.debug('AnalysisComponent.loadMinMaxDate: configuration loaded');
-            }
-            this.configurationLoaded = true;
-            this.session.set('configurationLoaded', true);
+      this.configurationLoadedSubscription = this.configurationService.getConfiguration().subscribe((configuration) => {
+        if (configuration) {
+          if (this.log) {
+            this.logger.debug('AnalysisComponent.loadMinMaxDate: configuration', configuration);
           }
-        })
-      ).subscribe();
+          /*
+          this.c++;
+          let date = new Date(configuration.toDate);
+          this.logger.debug('AnalysisComponent.loadMinMaxDate: c', this.c);
+          date.setDate(date.getDate() + this.c);
+          configuration.toDate = date.toString();
+          */
+          this.maxDate = new Date(configuration.toDate);
+          this.session.set('maxDate', this.maxDate);
+          this.minDate = new Date(configuration.fromDate);
+          this.session.set('minDate', this.minDate);
+  
+          if (this.log) {
+            this.logger.debug('AnalysisComponent.loadMinMaxDate: configuration loaded - maxDate', this.maxDate);
+          }
+          this.configurationLoaded = true;
+          this.session.set('configurationLoaded', true);
+          this.configurationLoadedSubscription.unsubscribe();
+        }
+      });
     }
   }
 
   loadConfiguration() {
     if (!this.configurationLoaded) {
-      this.configurationService.getConfiguration().pipe(
-        tap((configuration) => {
-          if (configuration) {
-            if (this.log) {
-              this.logger.debug('AnalysisComponent.loadConfiguration: configuration', configuration);
-            }
-            this.startDate = new Date(configuration.fromDate);
-            this.session.set('startDate', this.startDate);
-            this.endDate = new Date(configuration.toDate);
-            this.session.set('endDate', this.endDate);
-            this.maxDate = new Date(configuration.toDate);
-            this.session.set('maxDate', this.maxDate);
-            this.minDate = new Date(configuration.fromDate);
-            this.session.set('minDate', this.minDate);
-
-            // translation
-            configuration.graphTypes.forEach(gt => {
-              console.log(gt.key, this.getTranslation(gt.key))
-              gt.name = this.getTranslation(gt.key) || gt.name;
-              let graphicType: SBChoice = { id: gt.key, title: gt.name };
-              this.graphicTypes.push(graphicType);
-            });
-            this.session.set('graphicTypes', this.graphicTypes);
-
-            configuration.dataTypes.forEach(dt => {
-              dt.name = this.getTranslation(dt.key) || dt.name;
-              let dataType: RBChoice = { id: dt.key, title: dt.name };
-              this.dataTypes.push(dataType);
-            });
-            this.session.set('dataTypes', this.dataTypes);
-
-            configuration.dataCategories.forEach(dc => {
-              dc.name = this.getTranslation(dc.key) || dc.name;
-              let dataCategory: RBChoice = { id: dc.key, title: dc.name };
-              this.dataCategories.push(dataCategory);
-            });
-            this.session.set('dataCategories', this.dataCategories);
-
-            configuration.yaxisTypes.forEach(at => {
-              at.name = this.getTranslation(at.key) || at.name;
-              let axisType: RBChoice = { id: at.key, title: at.name };
-              this.yAxisTypes.push(axisType);
-            });
-            this.session.set('yAxisTypes', this.yAxisTypes);
-
-            if (this.log) {
-              this.logger.debug('AnalysisComponent.loadConfiguration: configuration loaded');
-            }
-            this.configurationLoaded = true;
-            this.session.set('configurationLoaded', true);
+      this.configurationLoadedSubscription = this.configurationService.getConfiguration().subscribe((configuration) => {
+        if (configuration) {
+          if (this.log) {
+            this.logger.debug('AnalysisComponent.loadConfiguration: configuration', configuration);
           }
-        })
-      ).subscribe();
+          this.startDate = new Date(configuration.fromDate);
+          this.session.set('startDate', this.startDate);
+          this.endDate = new Date(configuration.toDate);
+          this.session.set('endDate', this.endDate);
+          this.maxDate = new Date(configuration.toDate);
+          this.session.set('maxDate', this.maxDate);
+          this.minDate = new Date(configuration.fromDate);
+          this.session.set('minDate', this.minDate);
+  
+          // translation
+          configuration.graphTypes.forEach(gt => {
+            gt.name = this.getTranslation(gt.key) || gt.name;
+            let graphicType: SBChoice = { id: gt.key, title: gt.name };
+            this.graphicTypes.push(graphicType);
+          });
+          this.session.set('graphicTypes', this.graphicTypes);
+  
+          configuration.dataTypes.forEach(dt => {
+            dt.name = this.getTranslation(dt.key) || dt.name;
+            let dataType: RBChoice = { id: dt.key, title: dt.name };
+            this.dataTypes.push(dataType);
+          });
+          this.session.set('dataTypes', this.dataTypes);
+  
+          configuration.dataCategories.forEach(dc => {
+            dc.name = this.getTranslation(dc.key) || dc.name;
+            let dataCategory: RBChoice = { id: dc.key, title: dc.name };
+            this.dataCategories.push(dataCategory);
+          });
+          this.session.set('dataCategories', this.dataCategories);
+  
+          configuration.yaxisTypes.forEach(at => {
+            at.name = this.getTranslation(at.key) || at.name;
+            let axisType: RBChoice = { id: at.key, title: at.name };
+            this.yAxisTypes.push(axisType);
+          });
+          this.session.set('yAxisTypes', this.yAxisTypes);
+  
+          if (this.log) {
+            this.logger.debug('AnalysisComponent.loadConfiguration: configuration loaded');
+          }
+          this.configurationLoaded = true;
+          this.session.set('configurationLoaded', true);
+          this.configurationLoadedSubscription.unsubscribe();
+        }
+      });
     }
   }
 

@@ -17,7 +17,7 @@
                 <ef-selection-box class="graphic-type" [title]="getTranslation('label.graphType')"></ef-selection-box>
             </div>
             <div class="form-left" *ngIf="configurationLoaded">
-                <ef-time-range class="time-range" [title]="getTranslation('label.dateRange')" [startTitle]="getTranslation('label.from')" [endTitle]="getTranslation('label.to')" [start]="startDate" [end]="endDate" [min]="minDate" [max]="maxDate" (timeRangeChange)="changeTimeRange($event)"></ef-time-range>
+                <ef-time-range class="time-range" log="false" [title]="getTranslation('label.dateRange')" [startTitle]="getTranslation('label.from')" [endTitle]="getTranslation('label.to')" [start]="startDate" [end]="endDate" [min]="minDate" [max]="maxDate" (timeRangeChange)="changeTimeRange($event)"></ef-time-range>
                 <ef-selection-box class="graphic-type" [title]="getTranslation('label.graphType')" [choices]="graphicTypes" [selected]="selectedGraphicType" (onSelect)="selectGraphicType($event)"></ef-selection-box>
             </div>
             <div class="form-right" *ngIf="!configurationLoaded">
@@ -32,7 +32,7 @@
             </div>
 
             <div class="form-button">
-                <button type="submit" class="submit-button" [disabled]="!form.valid || !regionsSelected" mat-raised-button color="primary">{{getTranslation('label.update')}}</button>
+                <button type="submit" class="submit-button" [disabled]="!form.valid || !regionsSelected" mat-raised-button matTooltip="{{ 'analysis.tooltip.update' | translate }}" matTooltipPosition="below" color="primary">{{getTranslation('label.update')}}</button>
             </div>
         </form>
     </div>

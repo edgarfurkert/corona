@@ -2,6 +2,7 @@ import { Injectable, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs/internal/operators';
 import { Observable, BehaviorSubject } from 'rxjs';
+import { NGXLogger } from 'ngx-logger';
 
 import { Territory } from '../models/model.interfaces';
 import { SERVICE_LOG_ENABLED } from '../app.tokens';
@@ -35,7 +36,9 @@ export class TerritoryService {
 
   private territories$ = new BehaviorSubject<Territory[]>([]);
 
-  constructor(@Inject(SERVICE_LOG_ENABLED) private log: boolean, private http: HttpClient) { 
+  constructor(@Inject(SERVICE_LOG_ENABLED) private log: boolean, 
+              private logger: NGXLogger,
+              private http: HttpClient) { 
     /*
     TERRITORIES.forEach(t => {
       this.territoryMap.set(t.territoryId + '-' + t.parentId, t);
@@ -47,12 +50,12 @@ export class TerritoryService {
     this.http.get<Territory[]>(environment.webApiBaseUrl + '/territories').pipe(
       tap((territories) => {
         if (this.log) {
-          console.log('TerritoryService: territories', territories);
+          this.logger.debug('TerritoryService: territories', territories);
         }
         this.territories$.next(territories);
       })).subscribe();
     if (this.log) {
-      console.log('TerritoryService: territories$', this.territories$);
+      this.logger.debug('TerritoryService: territories$', this.territories$);
     }
 
     return this.territories$.asObservable();

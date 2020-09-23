@@ -19,7 +19,14 @@ export class RadioButtonGroupComponent implements OnInit, OnChanges {
   @Input() disabled: string[] = [];
   @Input() title: string;
   @Input() name: string;
-  @Input() log: boolean = false;
+  private _log: boolean = false;
+  @Input()
+  set log(value: string) {
+    this._log = value === 'true';
+  }
+  get log(): string {
+    return this._log.toString();
+  }
   @Output() onSelect = new EventEmitter();
 
   constructor() { }
@@ -28,19 +35,19 @@ export class RadioButtonGroupComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (this.log) {
+    if (this._log) {
       console.log('RadioButtonGroupComponent.ngOnChanges: changes', changes);
     }
     this.choices.forEach(c => {
       c.disabled = this.disabled ? this.disabled.includes(c.id) : false;
-      if (this.log) {
+      if (this._log) {
         console.log('RadioButtonGroupComponent.ngOnInit: disabled choice', c);
       }
     });
   }
 
   select(ev: MatRadioChange) {
-    if (this.log) {
+    if (this._log) {
       console.log('RadioButtonGroupComponent.select', ev);
     }
     this.onSelect.emit(ev.value);

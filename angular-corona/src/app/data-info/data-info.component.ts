@@ -12,7 +12,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { DataInfoService, DataInformation } from '../services/data-info.service';
 import { TranslationsService } from '../services/translations.service';
 import { SessionService } from '../services/session.service';
-import { Territory } from '../models/model.interfaces';
+import { Territory, Refreshable } from '../models/model.interfaces';
 import { DATAINFO_LOG_ENABLED } from '../app.tokens';
 
 class DataInfoTableItem {
@@ -25,7 +25,7 @@ class DataInfoTableItem {
   templateUrl: './data-info.component.html',
   styleUrls: ['./data-info.component.scss']
 })
-export class DataInfoComponent implements OnInit {
+export class DataInfoComponent implements OnInit, Refreshable {
 
   dataSourcesDisplayedColumns: string[] = ['url'];
   dataSourcesDS: MatTableDataSource<any> = new MatTableDataSource<any>([]);
@@ -39,7 +39,9 @@ export class DataInfoComponent implements OnInit {
   dataInformation: DataInformation = new DataInformation();
 
   dataSourcesLoaded: boolean = false;
+  dataSourcesSubscription: Subscription;
   dataInformationLoaded: boolean = false;
+  dataInformationSubscription: Subscription;
   allLoaded$: Observable<number> = timer(0, 100);
   allLoadedSubscription: Subscription;
 
@@ -82,7 +84,7 @@ export class DataInfoComponent implements OnInit {
     });
 
     if (!this.dataSourcesLoaded) {
-      this.dataInfoService.getDataSources().pipe(
+      this.dataSourcesSubscription = this.dataInfoService.getDataSources().pipe(
         tap(t => {
           if (t.length > 0) {
             if (this.log) {
@@ -94,7 +96,12 @@ export class DataInfoComponent implements OnInit {
             this.session.set('dataSourcesLoaded', this.dataSourcesLoaded);
           }
         })
-      ).subscribe();
+      ).subscribe(() => {
+        if (this.dataSourcesSubscription) {
+          this.dataSourcesSubscription.unsubscribe();
+          console.log('dataSourcesSubscription');
+        }
+      });
     } else {
       let dataSources = <any[]>this.session.get('dataSources');
       this.dataSourcesDS = new MatTableDataSource<any>(dataSources);
@@ -126,13 +133,25 @@ export class DataInfoComponent implements OnInit {
   ngAfterViewInit() {
   }
 
+  refresh() {
+    if (this.log) {
+      this.logger.debug('DataInfoComponent: refresh');
+    }
+    this.spinner.show();
+    this.dataSourcesLoaded = false;
+    this.session.set('dataInformationLoaded', this.dataSourcesLoaded);
+    this.dataInformationLoaded = false;
+    this.session.set('dataInformationLoaded', this.dataInformationLoaded);
+    this.ngOnInit();
+  }
+
   loadDataInformation() {
     if (this.session.get('dataInformationLoaded')) {
       this.dataInformation = <DataInformation>this.session.get('dataInformation');
       this.setDataInformationTopDS(this.dataInformation);
       this.setDataInformationTerritoriesDS(this.dataInformation.territories);
     } else {
-      this.dataInfoService.getInformation().pipe(
+      this.dataInformationSubscription = this.dataInfoService.getInformation().pipe(
         tap(di => {
           if (di !== null) {
             if (this.log) {
@@ -179,7 +198,12 @@ export class DataInfoComponent implements OnInit {
             this.session.set('dataInformationLoaded', this.dataInformationLoaded);
           }
         })
-      ).subscribe();
+      ).subscribe(() => {
+        if (this.dataInformationSubscription) {
+          this.dataInformationSubscription.unsubscribe();
+          console.log('dataInformationSubscription');
+        }
+      });
     }
   }
 

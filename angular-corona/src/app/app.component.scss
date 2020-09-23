@@ -29,6 +29,11 @@
     max-width: 350px;
 }
 
+.refresh {
+    position: absolute;
+    right: 20px;
+}
+
 @import "../theme";
 .active {
     font-weight: bold;

@@ -16,7 +16,14 @@ export class SelectionBoxComponent implements OnInit {
   @Input() choices: SBChoice[] = [];
   @Input() selected: string;
   @Input() title: string;
-  @Input() log: boolean = false;
+  private _log: boolean = false;
+  @Input()
+  set log(value: string) {
+    this._log = value === 'true';
+  }
+  get log(): string {
+    return this._log.toString();
+  }
   @Output() onSelect = new EventEmitter();
 
   constructor() { }
@@ -25,7 +32,7 @@ export class SelectionBoxComponent implements OnInit {
   }
 
   select(ev: MatSelectChange) {
-    if (this.log) {
+    if (this._log) {
       console.log('SelectionBoxComponent.select', ev);
     }
     this.onSelect.emit(ev.value);

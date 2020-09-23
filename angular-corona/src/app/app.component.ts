@@ -1,7 +1,8 @@
-import { Component, Inject, LOCALE_ID } from '@angular/core';
+import { Component, Inject, LOCALE_ID, ViewChildren, ViewChild } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { SessionService } from './services/session.service';
+import { Refreshable } from './models/model.interfaces';
 
 @Component({
   selector: 'ef-root',
@@ -10,7 +11,9 @@ import { SessionService } from './services/session.service';
 })
 export class AppComponent {
   title = 'angular-corona';
-  menuTitle: string = 'analysis';
+  menuSelection: string = 'analysis';
+
+  private routedComponent: Refreshable;
 
   constructor(@Inject(LOCALE_ID) private locale: string, 
               private translate: TranslateService, 
@@ -22,16 +25,24 @@ export class AppComponent {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd ) {
         if (event.url.includes('analysis')) {
-          this.menuTitle = 'analysis';
+          this.menuSelection = 'analysis';
         } else if (event.url.includes('datainfo')) {
-          this.menuTitle = 'information';
+          this.menuSelection = 'information';
         }
       }
     });
-
-    this.session.set('date', new Date());
   }
 
   ngOnInit() {
+  }
+
+  public setRoutedComponent(componentRef: Refreshable) {
+    this.routedComponent = componentRef;
+    //console.log('setRoutedComponent', this.routedComponent);
+  }
+
+  doRefresh() {
+    //console.log('AppComponent: refresh', this.routedComponent);
+    this.routedComponent.refresh();
   }
 }

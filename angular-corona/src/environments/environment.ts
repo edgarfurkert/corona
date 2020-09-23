@@ -1,13 +1,19 @@
 // This file can be replaced during build by using the `fileReplacements` array.
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
+import { NgxLoggerLevel } from 'ngx-logger';
 
 export const environment = {
   production: false,
   //webApiBaseUrl: 'http://localhost:8100/api',
   webApiBaseUrl: 'http://raspberrypi4:8100/api',
   //importApiBaseUrl: 'http://localhost:8101/api'
-  importApiBaseUrl: 'http://raspberrypi4:8101/api'
+  importApiBaseUrl: 'http://raspberrypi4:8101/api',
+  ngxLogLevel: NgxLoggerLevel.DEBUG,
+  consoleLogEnabled: false,
+  analysisLogEnabled: false,
+  datainfoLogEnabled: false,
+  serviceLogEnabled: true
 };
 
 /*

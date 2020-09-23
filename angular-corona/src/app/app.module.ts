@@ -22,6 +22,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatRadioModule } from '@angular/material/radio';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { registerLocaleData } from '@angular/common';
 import localeDe from '@angular/common/locales/de';
@@ -59,6 +60,7 @@ import { InfectionsAndGraphComponent } from './infections-and-graph/infections-a
 import { Top25GraphComponent } from './top25-graph/top25-graph.component';
 import { StartOfGraphComponent } from './start-of-graph/start-of-graph.component';
 import { DebugPipe } from './debug.pipe';
+import { environment } from 'src/environments/environment';
 
 const locale = (<any>document).locale;
 
@@ -85,7 +87,7 @@ const locale = (<any>document).locale;
     ReactiveFormsModule,
     AppRoutingModule,
     HttpClientModule,
-    LoggerModule.forRoot({ serverLoggingUrl: '/api/logs', level: NgxLoggerLevel.DEBUG, serverLogLevel: NgxLoggerLevel.ERROR }),
+    LoggerModule.forRoot({ serverLoggingUrl: '/api/logs', level: environment.ngxLogLevel, serverLogLevel: NgxLoggerLevel.ERROR }),
     TranslateModule.forRoot({
       defaultLanguage: 'en',
       loader: {
@@ -115,16 +117,17 @@ const locale = (<any>document).locale;
     MatDatepickerModule,
     MatNativeDateModule,
     MatRadioModule,
+    MatTooltipModule,
     HighchartsChartModule,
     StorageServiceModule
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [
     MatDatepickerModule,
-    { provide: CONSOLE_LOG_ENABLED, useValue: false },
-    { provide: ANALYSIS_LOG_ENABLED, useValue: false },
-    { provide: DATAINFO_LOG_ENABLED, useValue: false },
-    { provide: SERVICE_LOG_ENABLED, useValue: false },
+    { provide: CONSOLE_LOG_ENABLED, useValue: environment.consoleLogEnabled },
+    { provide: ANALYSIS_LOG_ENABLED, useValue: environment.analysisLogEnabled },
+    { provide: DATAINFO_LOG_ENABLED, useValue: environment.datainfoLogEnabled },
+    { provide: SERVICE_LOG_ENABLED, useValue: environment.serviceLogEnabled },
     { provide: LOCALE_ID, useValue: locale} 
   ],
   bootstrap: [AppComponent]

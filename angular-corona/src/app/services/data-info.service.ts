@@ -1,7 +1,8 @@
 import { Injectable, Inject } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs/internal/operators';
+import { NGXLogger } from 'ngx-logger';
 
 import { environment } from 'src/environments/environment';
 import { SERVICE_LOG_ENABLED } from '../app.tokens';
@@ -20,34 +21,40 @@ export class DataInfoService {
 
   private dataSources$ = new BehaviorSubject<any[]>([]);
   private dataInfo$ = new BehaviorSubject<DataInformation>(null);
+  private dataSourcesSubscription: Subscription;
+  private informationSubscription: Subscription;
 
-  constructor(@Inject(SERVICE_LOG_ENABLED) private log: boolean, private http: HttpClient) { }
+  constructor(@Inject(SERVICE_LOG_ENABLED) private log: boolean, 
+              private logger: NGXLogger, 
+              private http: HttpClient) { }
 
   getDataSources(): Observable<any[]> {
-    this.http.get<any[]>(environment.importApiBaseUrl + '/datasources').pipe(
+    this.dataSourcesSubscription= this.http.get<any[]>(environment.importApiBaseUrl + '/datasources').pipe(
       tap((dataSources) => {
         if (this.log) {
-          console.log('DataSourcesService: dataSources', dataSources);
+          this.logger.debug('DataSourcesService: dataSources', dataSources);
         }
         this.dataSources$.next(dataSources);
-      })).subscribe();
+        this.dataSources$.next([]);
+      })).subscribe(() => this.dataSourcesSubscription.unsubscribe());
     if (this.log) {
-      console.log('DataSourcesService: dataSources$', this.dataSources$);
+      this.logger.debug('DataSourcesService: dataSources$', this.dataSources$);
     }
 
     return this.dataSources$.asObservable();
   }
 
   getInformation(): Observable<DataInformation> {
-    this.http.get<DataInformation>(environment.importApiBaseUrl + '/datainfo').pipe(
+    this.informationSubscription = this.http.get<DataInformation>(environment.importApiBaseUrl + '/datainfo').pipe(
       tap((dataInfo) => {
         if (this.log) {
-          console.log('DataInfoService: dataInfo', dataInfo);
+          this.logger.debug('DataInfoService: dataInfo', dataInfo);
         }
         this.dataInfo$.next(dataInfo);
-      })).subscribe();
+        this.dataInfo$.next(null);
+      })).subscribe(() => this.informationSubscription.unsubscribe());
     if (this.log) {
-      console.log('DataInfoService: dataInfo$', this.dataInfo$);
+      this.logger.debug('DataInfoService: dataInfo$', this.dataInfo$);
     }
 
     return this.dataInfo$.asObservable();

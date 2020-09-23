@@ -3,11 +3,11 @@
         <mat-nav-list role="navigation">
             <a mat-list-item routerLink="analysis" routerLinkActive="active" (click)="sidenav.close()">
                 <mat-icon matListIcon>timeline</mat-icon>
-                {{ 'app.data-analysis' | translate }}
+                {{ 'app.menu.analysis' | translate }}
             </a>
             <a mat-list-item routerLink="datainfo" routerLinkActive="active" (click)="sidenav.close()">
                 <mat-icon matListIcon>info</mat-icon>
-                {{ 'app.data-information' | translate }}
+                {{ 'app.menu.information' | translate }}
             </a>
         </mat-nav-list>
     </mat-sidenav>
@@ -15,12 +15,15 @@
     <mat-sidenav-content class="sidenav-content">
         <mat-toolbar class="toolbar mat-elevation-z4" color="primary">
             <button mat-icon-button (click)="sidenav.toggle()">
-              <mat-icon>menu</mat-icon>
-            </button>&nbsp;{{ 'app.menu.' + menuTitle | translate }}
+                <mat-icon>menu</mat-icon>
+            </button>&nbsp;{{ menuSelection + '.title' | translate }}
+            <button class="refresh" matTooltip="{{ menuSelection + '.tooltip.refresh' | translate }}" matTooltipPosition="before" mat-icon-button (click)="doRefresh()">
+                <mat-icon>refresh</mat-icon>
+            </button>
         </mat-toolbar>
 
         <main class="content">
-            <router-outlet></router-outlet>
+            <router-outlet (activate)="setRoutedComponent($event)"></router-outlet>
         </main>
         <!-- footer -->
         <footer class="footer">

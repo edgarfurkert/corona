@@ -1,6 +1,10 @@
 import { CheckboxItem } from '../checkbox-list/checkbox-list.component';
 import { Optional } from '@angular/core';
 
+export interface Refreshable {
+    refresh: () => void;
+}
+
 export interface Territory {
     territoryId: string;
     territoryName?: string;

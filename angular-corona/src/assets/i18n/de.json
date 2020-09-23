@@ -1,11 +1,22 @@
 {
     "app": {
         "menu": {
-            "analysis": "Corona-Daten-Analyse",
-            "information": "Corona-Daten-Informationen"
-        },
-        "data-analysis": "Daten - Analyse",
-        "data-information": "Daten - Informationen"
+            "analysis": "Daten - Analyse",
+            "information": "Daten - Informationen"
+        }
+    },
+    "analysis": {
+        "title": "Corona-Daten-Analyse",
+        "tooltip": {
+            "refresh": "Datumsbereich aktualisieren",
+            "update": "Grafik aktualisieren"
+        }
+    },
+    "information": {
+        "title": "Corona-Daten-Informationen",
+        "tooltip": {
+            "refresh": "Daten aktualisieren"
+        }
     },
     "data-sources": {
         "title": "Daten - Quellen",
