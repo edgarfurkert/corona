@@ -16,7 +16,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -883,19 +882,20 @@ public class GraphDataService {
 		
 		List<CompletableFuture<Map<String,List<CoronaData>>>> asyncs = new ArrayList<>();
 		
-		int subListSize = (int)((cds.getSelectedTerritories().size() / 4.0) + 0.5);
-		//log.info("{}, {}", cds.getSelectedTerritories().size(), subListSize);
+		int subListSize = (int)(cds.getSelectedTerritories().size() / 4.0);
+		if (cds.getSelectedTerritories().size() % 4 > 0) {
+			subListSize += 1;
+		}
+		log.debug("getHistoricalData: size = {}, subListSize = {}", cds.getSelectedTerritories().size(), subListSize);
 		
 		int fromIndex = 0;
-		int toIndex = subListSize - 1;
-		for (int i = 0; i < 4; i++) {
-			//log.info("{}, {}", fromIndex, toIndex);
+		int toIndex = subListSize;
+		while  (fromIndex < toIndex) {
 			List<String> subList = cds.getSelectedTerritories().subList(fromIndex, toIndex);
+			log.debug("getHistoricalData: fromIndex = {}, toIndex = {}, subList = {}", fromIndex, toIndex, subList);
 			fromIndex += subListSize;
 			toIndex += subListSize;
-			if (toIndex > cds.getSelectedTerritories().size()-1) {
-				toIndex = cds.getSelectedTerritories().size()-1;
-			}
+			
 			LocalDate fromDate = cds.getFromDate();
 			int days = 0;
 			switch (cds.getSelectedDataCategory()) {
@@ -906,13 +906,17 @@ public class GraphDataService {
 				break;
 			}
 			asyncs.add(asyncService.getHistoricalDataAsync(subList, cds, LocalDate.from(fromDate)));
+			if (toIndex > cds.getSelectedTerritories().size()) {
+				toIndex = cds.getSelectedTerritories().size();
+			}
+			log.debug("getHistoricalData: fromIndex = {}, toIndex = {}", fromIndex, toIndex);
 		}
 		
 		asyncs.forEach(async -> {
 			try {
 				Map<String,List<CoronaData>> asyncMap = async.get();
 				territoryMap.putAll(asyncMap);
-				//log.info("getHistoricalData: {} added", asyncMap.keySet());
+				log.debug("getHistoricalData: {} added", asyncMap.keySet());
 			} catch (InterruptedException | ExecutionException e) {
 				log.error("getHistoricalData: Exception {}", e);
 			}

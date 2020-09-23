@@ -17,5 +17,5 @@ spring:
 
 logging:
   level:
-    de.edgar: INFO
+    de.edgar: DEBUG
     org.hibernate.type: INFO
