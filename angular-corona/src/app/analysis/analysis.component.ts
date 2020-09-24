@@ -114,9 +114,9 @@ export class AnalysisComponent implements OnInit, Refreshable {
         })
       ).subscribe((s) => {
         if (this.log) {
-          console.log('AnalysisComponent.ngOnInit: translationsLoadedSubscription', s);
+          this.logger.debug('AnalysisComponent.ngOnInit: translationsLoadedSubscription', s);
         }
-        //this.translationsLoadedSubscription.unsubscribe();
+        this.translationsLoadedSubscription.unsubscribe();
       });
     }
 
@@ -166,8 +166,8 @@ export class AnalysisComponent implements OnInit, Refreshable {
     // init session data
     this.session.set('territories', this.territories);
     this.session.set('regions', this.regions);
-    this.session.set('startDate', this.startDate);
-    this.session.set('endDate', this.endDate);
+    this.session.set('startDate', this.getLocaleDateString(this.startDate));
+    this.session.set('endDate', this.getLocaleDateString(this.endDate));
     this.session.set('graphicTypeSelected', this.selectedGraphicType);
     this.session.set('dataTypeSelected', this.selectedDataType);
     this.session.set('dataCategorySelected', this.selectedDataCategory);
@@ -184,10 +184,10 @@ export class AnalysisComponent implements OnInit, Refreshable {
     this.regions = <TerritoryItem[]>this.session.get('regions');
     this.selectedRegions = <TerritoryItem[]>this.session.get('selectedRegions');
 
-    this.startDate = <Date>this.session.get('startDate');
-    this.endDate = <Date>this.session.get('endDate');
-    this.minDate = <Date>this.session.get('minDate');
-    this.maxDate = <Date>this.session.get('maxDate');
+    this.startDate = new Date(this.session.get('startDate'));
+    this.endDate = new Date(this.session.get('endDate'));
+    this.minDate = new Date(this.session.get('minDate'));
+    this.maxDate = new Date(this.session.get('maxDate'));
 
     this.graphicTypes = <SBChoice[]>this.session.get('graphicTypes');
     this.yAxisTypes = <RBChoice[]>this.session.get('yAxisTypes');
@@ -290,17 +290,10 @@ export class AnalysisComponent implements OnInit, Refreshable {
           if (this.log) {
             this.logger.debug('AnalysisComponent.loadMinMaxDate: configuration', configuration);
           }
-          /*
-          this.c++;
-          let date = new Date(configuration.toDate);
-          this.logger.debug('AnalysisComponent.loadMinMaxDate: c', this.c);
-          date.setDate(date.getDate() + this.c);
-          configuration.toDate = date.toString();
-          */
           this.maxDate = new Date(configuration.toDate);
-          this.session.set('maxDate', this.maxDate);
+          this.session.set('maxDate', this.getLocaleDateString(this.maxDate));
           this.minDate = new Date(configuration.fromDate);
-          this.session.set('minDate', this.minDate);
+          this.session.set('minDate', this.getLocaleDateString(this.minDate));
   
           if (this.log) {
             this.logger.debug('AnalysisComponent.loadMinMaxDate: configuration loaded - maxDate', this.maxDate);
@@ -321,13 +314,13 @@ export class AnalysisComponent implements OnInit, Refreshable {
             this.logger.debug('AnalysisComponent.loadConfiguration: configuration', configuration);
           }
           this.startDate = new Date(configuration.fromDate);
-          this.session.set('startDate', this.startDate);
+          this.session.set('startDate', this.getLocaleDateString(this.startDate));
           this.endDate = new Date(configuration.toDate);
-          this.session.set('endDate', this.endDate);
+          this.session.set('endDate', this.getLocaleDateString(this.endDate));
           this.maxDate = new Date(configuration.toDate);
-          this.session.set('maxDate', this.maxDate);
+          this.session.set('maxDate', this.getLocaleDateString(this.maxDate));
           this.minDate = new Date(configuration.fromDate);
-          this.session.set('minDate', this.minDate);
+          this.session.set('minDate', this.getLocaleDateString(this.minDate));
   
           // translation
           configuration.graphTypes.forEach(gt => {
@@ -444,8 +437,16 @@ export class AnalysisComponent implements OnInit, Refreshable {
     if (this.log) {
       this.logger.debug('AnalysisComponent.changeTimeRange', timeRange);
     }
-    this.session.set('startDate', timeRange.startDate);
-    this.session.set('endDate', timeRange.endDate);
+    if (timeRange.startDate) {
+      this.session.set('startDate', this.getLocaleDateString(timeRange.startDate));
+    }
+    if (timeRange.endDate) {
+      this.session.set('endDate', this.getLocaleDateString(timeRange.endDate));
+    }
+  }
+
+  getLocaleDateString(date: Date): string {
+    return date ? date.toLocaleDateString("sv-SE") : null; // YYYY-MM-DD
   }
 
   selectGraphicType(selection) {

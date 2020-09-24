@@ -11,7 +11,7 @@ export const environment = {
   importApiBaseUrl: 'http://raspberrypi4:8101/api',
   ngxLogLevel: NgxLoggerLevel.DEBUG,
   consoleLogEnabled: false,
-  analysisLogEnabled: false,
+  analysisLogEnabled: true,
   datainfoLogEnabled: false,
   serviceLogEnabled: true
 };
