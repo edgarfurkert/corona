@@ -27,10 +27,13 @@
     "data-information": {
         "title": "Data Information",
         "numberOfRecords": "Number of Records",
-        "numberOfTerritories": "Number of supported regions",
+        "numberOfTerritories": "Number of supported Regions",
         "territories": {
             "territory": "Region",
             "parent": "Territory",
+            "population": "Population",
+            "casesPer100000": "Cases per\n100.000 Residents",
+            "deathsPer100000": "Deaths per\n100.000 Residents",
             "minDate": "Data available\nfrom",
             "maxDate": "Data availabel\nuntil",
             "filter": "Filter"

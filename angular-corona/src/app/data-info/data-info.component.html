@@ -44,21 +44,33 @@
                 </mat-form-field>
 
                 <div class="data-information-territories__table-container">
-                    <table class="data-information-territories__table mat-elevation-z8" mat-table [dataSource]="dataInformationTerritoriesTopDS">
+                    <table class="data-information-territories__table mat-elevation-z8" mat-table [dataSource]="dataInformationTerritoriesTopDS" matSort>
                         <ng-container matColumnDef="territoryName">
-                            <th class="data-information-territories__column" mat-header-cell *matHeaderCellDef>{{ 'data-information.territories.territory' | translate }}</th>
+                            <th class="data-information-territories__column" mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'data-information.territories.territory' | translate }}</th>
                             <td class="data-information-territories__column" mat-cell *matCellDef="let element"> {{element.territoryName}} </td>
                         </ng-container>
                         <ng-container matColumnDef="parentName">
-                            <th class="data-information-territories__column" mat-header-cell *matHeaderCellDef>{{ 'data-information.territories.parent' | translate }}</th>
+                            <th class="data-information-territories__column" mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'data-information.territories.parent' | translate }}</th>
                             <td class="data-information-territories__column" mat-cell *matCellDef="let element"> {{element.parentName}} </td>
                         </ng-container>
+                        <ng-container matColumnDef="population">
+                            <th class="data-information-territories__column" mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'data-information.territories.population' | translate }}</th>
+                            <td class="data-information-territories__column" mat-cell *matCellDef="let element" style="text-align: right; padding-right: 20px;"> {{element.population}} </td>
+                        </ng-container>
+                        <ng-container matColumnDef="casesPer100000">
+                            <th class="data-information-territories__column" mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'data-information.territories.casesPer100000' | translate }}</th>
+                            <td class="data-information-territories__column" mat-cell *matCellDef="let element" style="text-align: right; padding-right: 30px;"> {{element.casesPer100000 | number:'1.1-1'}} </td>
+                        </ng-container>
+                        <ng-container matColumnDef="deathsPer100000">
+                            <th class="data-information-territories__column" mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'data-information.territories.deathsPer100000' | translate }}</th>
+                            <td class="data-information-territories__column" mat-cell *matCellDef="let element" style="text-align: right; padding-right: 30px;"> {{element.deathsPer100000 | number:'1.1-1'}} </td>
+                        </ng-container>
                         <ng-container matColumnDef="minDate">
-                            <th class="data-information-territories__column" mat-header-cell *matHeaderCellDef>{{ 'data-information.territories.minDate' | translate }}</th>
+                            <th class="data-information-territories__column" mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'data-information.territories.minDate' | translate }}</th>
                             <td class="data-information-territories__column" mat-cell *matCellDef="let element"> {{element.minDate | date}} </td>
                         </ng-container>
                         <ng-container matColumnDef="maxDate">
-                            <th class="data-information-territories__column" mat-header-cell *matHeaderCellDef>{{ 'data-information.territories.maxDate' | translate }}</th>
+                            <th class="data-information-territories__column" mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'data-information.territories.maxDate' | translate }}</th>
                             <td class="data-information-territories__column" mat-cell *matCellDef="let element"> {{element.maxDate | date}} </td>
                         </ng-container>
 

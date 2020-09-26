@@ -1,13 +1,13 @@
-import { Component, OnInit, Inject, LOCALE_ID, ViewChildren, QueryList } from '@angular/core';
+import { Component, OnInit, Inject, LOCALE_ID, ViewChildren, QueryList, ViewChild } from '@angular/core';
 import { tap } from 'rxjs/internal/operators';
 import { Observable, timer, Subscription } from 'rxjs';
 
 import { MatTableDataSource } from '@angular/material/table';
 import { MatExpansionPanel } from '@angular/material/expansion';
+import { MatSort } from '@angular/material/sort';
 
 import { NgxSpinnerService } from 'ngx-spinner';
 import { NGXLogger } from 'ngx-logger';
-import { TranslateService } from '@ngx-translate/core';
 
 import { DataInfoService, DataInformation } from '../services/data-info.service';
 import { TranslationsService } from '../services/translations.service';
@@ -33,7 +33,7 @@ export class DataInfoComponent implements OnInit, Refreshable {
   dataInformationTopDisplayedColumns: string[] = ['name', 'value'];
   dataInformationTopDS: MatTableDataSource<any> = new MatTableDataSource<any>([]);
 
-  dataInformationTerritoriesDisplayedColumns: string[] = ['territoryName', 'parentName', 'minDate', 'maxDate'];
+  dataInformationTerritoriesDisplayedColumns: string[] = ['territoryName', 'parentName', 'population', 'casesPer100000', 'deathsPer100000', 'minDate', 'maxDate'];
   dataInformationTerritoriesTopDS: MatTableDataSource<Territory> = new MatTableDataSource<Territory>([]);
 
   dataInformation: DataInformation = new DataInformation();
@@ -47,7 +47,9 @@ export class DataInfoComponent implements OnInit, Refreshable {
 
   translationMap: Map<string, string> = new Map<string, string>();
 
-  @ViewChildren(MatExpansionPanel) panels: QueryList<MatExpansionPanel>;;
+  @ViewChildren(MatExpansionPanel) panels: QueryList<MatExpansionPanel>;
+  @ViewChild(MatSort) sort: MatSort;
+
 
   constructor(private spinner: NgxSpinnerService,
     @Inject(LOCALE_ID) private locale: string,
@@ -228,6 +230,7 @@ export class DataInfoComponent implements OnInit, Refreshable {
       this.logger.debug('DataInfoComponent.setDataInformationTerritoriesDS: territories', territories);
     }
     this.dataInformationTerritoriesTopDS = new MatTableDataSource<Territory>(territories);
+    this.dataInformationTerritoriesTopDS.sort = this.sort;
   }
 
   applyFilter(event: Event) {

@@ -31,6 +31,9 @@
         "territories": {
             "territory": "Region",
             "parent": "Gebiet",
+            "population": "Bevölkerung",
+            "casesPer100000": "Fälle pro\n100.000 Einwohner",
+            "deathsPer100000": "Tote pro\n100.000 Einwohner",
             "minDate": "Daten verfügbar\nab",
             "maxDate": "Daten verfügbar\nbis",
             "filter": "Filter"
