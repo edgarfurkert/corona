@@ -32,4 +32,7 @@ public interface CoronaDataJpaRepository extends CrudRepository<CoronaDataEntity
 	@Query("SELECT DISTINCT new CoronaDataEntity(c.territoryId, c.territory, c.territoryParent, c.orderId) FROM CoronaDataEntity c")
 	public List<CoronaDataEntity> getTerritories();
 	
+	public Optional<CoronaDataEntity> findTopByTerritoryIdAndTerritoryParentOrderByDateRep(String territoryId, String territoryParent);
+	public Optional<CoronaDataEntity> findTopByTerritoryIdAndTerritoryParentOrderByDateRepDesc(String territoryId, String territoryParent);
+	
 }

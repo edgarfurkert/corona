@@ -17,5 +17,8 @@ public class ApiTerritoryInfo {
 	private Long orderId;
 	private LocalDate minDate;
 	private LocalDate maxDate;
+	private Long population;
+	private Double casesPer100000;
+	private Double deathsPer100000;
 
 }

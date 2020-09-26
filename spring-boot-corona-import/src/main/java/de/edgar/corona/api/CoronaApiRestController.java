@@ -18,6 +18,7 @@ import de.edgar.corona.api.model.ApiDataInfo;
 import de.edgar.corona.api.model.ApiDataSource;
 import de.edgar.corona.api.model.ApiTerritoryInfo;
 import de.edgar.corona.config.DownloadProperties;
+import de.edgar.corona.jpa.CoronaDataEntity;
 import de.edgar.corona.jpa.CoronaDataJpaRepository;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
@@ -106,9 +107,9 @@ public class CoronaApiRestController {
 							   .flatMap(e -> Mono.just(e)
 									             .map(t -> {
 									            	//log.debug("flatMap: {} - {}", Thread.currentThread().getName(), t);
-									     			LocalDate minDate = repo.getMinDateRepByTerritoryIdAndTerritoryParent(t.getTerritoryId(), t.getTerritoryParent()).orElse(null);
-									    			LocalDate maxDate = repo.getMaxDateRepByTerritoryIdAndTerritoryParent(t.getTerritoryId(), t.getTerritoryParent()).orElse(null);									            	 
-								            	    return new ApiTerritoryInfo(t.getTerritoryId(), t.getTerritory(), t.getTerritoryParent(), t.getOrderId(), minDate, maxDate);
+									            	CoronaDataEntity minData = repo.findTopByTerritoryIdAndTerritoryParentOrderByDateRep(t.getTerritoryId(), t.getTerritoryParent()).orElse(null);
+									            	CoronaDataEntity maxData = repo.findTopByTerritoryIdAndTerritoryParentOrderByDateRepDesc(t.getTerritoryId(), t.getTerritoryParent()).orElse(null);
+								            	    return new ApiTerritoryInfo(t.getTerritoryId(), t.getTerritory(), t.getTerritoryParent(), t.getOrderId(), minData.getDateRep(), maxData.getDateRep(), maxData.getPopulation(), maxData.getCasesPer100000Pop(), maxData.getDeathsPer100000Pop());
 									             })
 									             .subscribeOn(Schedulers.parallel())
 						       )
