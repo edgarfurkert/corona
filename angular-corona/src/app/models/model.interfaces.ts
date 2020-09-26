@@ -13,7 +13,10 @@ export interface Territory {
     orderId?: number;
     regions?: Territory[];
     minDate?: Date,
-    maxDate?: Date
+    maxDate?: Date,
+    population?: number,
+    casesPer100000?: number,
+    deathsPer100000?: number
 }
 
 export class TerritoryItem implements CheckboxItem {

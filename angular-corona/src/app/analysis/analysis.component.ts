@@ -116,7 +116,9 @@ export class AnalysisComponent implements OnInit, Refreshable {
         if (this.log) {
           this.logger.debug('AnalysisComponent.ngOnInit: translationsLoadedSubscription', s);
         }
-        this.translationsLoadedSubscription.unsubscribe();
+        if (this.translationsLoadedSubscription) {
+          this.translationsLoadedSubscription.unsubscribe();
+        }
       });
     }
 
@@ -278,7 +280,9 @@ export class AnalysisComponent implements OnInit, Refreshable {
         if (this.log) {
           console.log('AnalysisComponent.loadTerritories: territoriesLoadedSubscription', s);
         }
-        //this.territoriesLoadedSubscription.unsubscribe();
+        if (this.territoriesLoadedSubscription) {
+          this.territoriesLoadedSubscription.unsubscribe();
+        }
       });
     }
   }

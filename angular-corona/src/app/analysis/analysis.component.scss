@@ -11,7 +11,6 @@
     display: flex;
     flex-direction: column;
     height: 100%;
-    width: 15%;
     position: fixed;
     top: 70px;
     left: 20px;
@@ -28,43 +27,35 @@
 .dataContainer {
     display: flex;
     flex-direction: column;
+    flex-wrap: wrap;
     position: fixed;
     top: 85px;
-    left: 340px;
-    width: calc(100% - 340px);
+    left: 285px;
+    width: calc(100% - 290px);
 }
 
 .formContainer {
     order: 0;
-    height: 150px;
 }
 
 .form {
-    display: flex;
-    flex-direction: row;
     margin: 0 auto;
     margin-bottom: 24px;
     //overflow: auto;
 }
 
 .form-left {
-    display: flex;
-    flex-direction: column;
-    order: 0;
+    float: left;
 }
 
-.form-right {
-    display: flex;
-    flex-direction: row;
-    order: 1;
-}
+.form-right {}
 
 .form-button {
-    align-self: flex-start;
+    float: left;
     max-width: 200px;
     padding-top: 25px;
+    padding-bottom: 15px;
     padding-right: 15px;
-    order: 2;
 }
 
 mat-form-field {
@@ -75,21 +66,24 @@ mat-form-field {
 
 .graphic-type {
     padding-top: 5px;
+    padding-right: 15px;
 }
 
 .data-type {
-    order: 0;
+    float: left;
+    padding-bottom: 15px;
 }
 
 .data-category {
-    padding-left: 15px;
-    order: 1;
+    float: left;
+    padding-right: 15px;
+    padding-bottom: 15px;
 }
 
 .y-axis-type {
-    padding-left: 15px;
+    float: left;
     padding-right: 15px;
-    order: 2;
+    padding-bottom: 15px;
 }
 
 // ::ng-deep (Shadow Piercing, Break of Style-Encapsulation), + * (Adjacent Sibling Combinator, Selektion des ersten Elements nach dem router-outlet)
