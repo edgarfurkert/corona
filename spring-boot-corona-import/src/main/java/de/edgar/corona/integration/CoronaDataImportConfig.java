@@ -34,6 +34,37 @@ import lombok.extern.slf4j.Slf4j;
 @Profile("!api")
 @Configuration
 @EnableIntegration
+/**
+ * Import process
+ * 
+ * InboundChannelAdapter(value = "csvFileInputChannel", poller = @Poller(fixedDelay = "${corona.data.import.poller}"))
+ * 	-> ServiceActivator(inputChannel= "csvFileInputChannel")
+ * 		-> MessageHandler: CoronaDataCsvImportMessageHandler
+ * 			-> MessagingGateway(defaultRequestChannel="csvFileRouteChannel"): CoronaDataCsvImportGateway
+ * 				-> Router(inputChannel="csvFileRouteChannel")
+ * 					-> worldChannel 
+ * 						-> ServiceActivator(inputChannel="worldChannel")
+ * 							-> CoronaWorldDataCsvImport
+ * 					-> germanyChannel
+ * 						-> ServiceActivator(inputChannel="germanyChannel")
+ * 							-> CoronaGermanyDataCsvImport
+ * 					-> germanyFederalStatesChannel
+ * 						-> ServiceActivator(inputChannel="germanyFederalStatesChannel")
+ * 							-> CoronaGermanyFederalStatesDataCsvImport
+ * 					-> worldApiChannel
+ * 						-> ServiceActivator(inputChannel="worldApiChannel")
+ * 							-> CoronaWorldDataCsvImport
+ * 					-> switzerlandCasesChannel
+ * 						-> ServiceActivator(inputChannel="switzerlandCasesChannel")
+ * 							-> CoronaSwitzerlandCantonCasesDataCsvImport
+ * 					-> switzerlandDeathsChannel
+ * 						-> ServiceActivator(inputChannel="switzerlandDeathsChannel")
+ * 							-> CoronaSwitzerlandCantonDeathsDataCsvImport
+ * 					-> unknownChannel
+ * 
+ * @author efurkert
+ *
+ */
 public class CoronaDataImportConfig {
 	
 	@Value( "${corona.data.import.path}" )
@@ -105,6 +136,11 @@ public class CoronaDataImportConfig {
 		return new DirectChannel();
 	}
 
+	/**
+	 * Read cyclic all csv files. If there are files, call corresponding message handler to process eath file.
+	 * 
+	 * @return FileReadingMessageSource
+	 */
 	@Bean
     @InboundChannelAdapter(value = "csvFileInputChannel", poller = @Poller(fixedDelay = "${corona.data.import.poller}"))
     public MessageSource<File> csvFileReadingMessageSource() {
@@ -115,6 +151,11 @@ public class CoronaDataImportConfig {
         return sourceReader;
     }
 
+	/**
+	 * Return message handler to handle csv files by the corresponding import gateway interface.
+	 * 
+	 * @return MessageHandler
+	 */
 	@Bean
     @ServiceActivator(inputChannel= "csvFileInputChannel")
     public MessageHandler csvFileReadingMessageHandler() {

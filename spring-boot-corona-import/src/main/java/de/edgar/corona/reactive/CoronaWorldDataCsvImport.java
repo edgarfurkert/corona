@@ -72,9 +72,8 @@ public class CoronaWorldDataCsvImport extends CoronaDataImport {
 							m.setDeathsPer100000Pop(0.0);
 						}
 						kummulativeDataMap.put(territoryId, m);
-								
-						// collect territory parent and world population data
-						String worldKey = "world";
+						
+						// handle territory parent
 						Territory territory = territoryProps.findByTerritoryId(territoryId);
 						// e.g. europe
 						String orgTerritoryParent = m.getTerritoryParent();
@@ -84,6 +83,9 @@ public class CoronaWorldDataCsvImport extends CoronaDataImport {
 						} else {
 							log.debug("No parent found in territoryProps: {}, using {}", territoryId, m.getTerritoryParent());
 						}
+						
+						// collect territory parent and world population data
+						String worldKey = "world";
 						
 						// e.g. europeWest
 						String territoryParentKey = m.getTerritoryParent();
@@ -175,6 +177,7 @@ public class CoronaWorldDataCsvImport extends CoronaDataImport {
 				  })
 				  .filter(d -> {
 					  if (filterDisabled.get()) {
+						  log.debug("do not filter: territoryId {}", d.getTerritoryId());
 						  return true; // do not filter
 					  }
 					  LocalDate latestDate = territoryLatestDateRepMap.get(d.getTerritoryId());
@@ -184,9 +187,11 @@ public class CoronaWorldDataCsvImport extends CoronaDataImport {
 							  latestDate = date.get();
 							  territoryLatestDateRepMap.put(d.getTerritoryId(), latestDate);
 						  } else {
+							  log.debug("do not filter: territoryId {}", d.getTerritoryId());
 							  return true; // do not filter
 						  }
 					  }
+					  log.debug("filter: territoryId {} - dateRep {} > latestDate {}", d.getTerritoryId(), d.getDateRep(), latestDate);
 					  return d.getDateRep().isAfter(latestDate);
 				  })
 				  .map(d -> { return new CoronaDataEntity(d); })
@@ -211,6 +216,9 @@ public class CoronaWorldDataCsvImport extends CoronaDataImport {
 		});
 		log.debug("Territory parent population: " + territoryParentPopulationMap.toString());
 		
+		/*
+		 * Process parent data
+		 */
 		kummulativeDataMap.clear();
 		territoryParentMap.keySet().forEach(territoryParentKey -> {
 			Map<String, CoronaWorldData> worldData = territoryParentMap.get(territoryParentKey);

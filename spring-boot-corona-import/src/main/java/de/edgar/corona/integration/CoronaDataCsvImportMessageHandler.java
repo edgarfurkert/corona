@@ -7,6 +7,12 @@ import org.springframework.messaging.Message;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Send message to the integration flow process.
+ * 
+ * @author efurkert
+ *
+ */
 @Slf4j
 @Profile("!api")
 public class CoronaDataCsvImportMessageHandler extends AbstractMessageHandler {
