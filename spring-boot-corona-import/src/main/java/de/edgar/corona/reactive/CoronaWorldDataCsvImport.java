@@ -180,6 +180,9 @@ public class CoronaWorldDataCsvImport extends CoronaDataImport {
 						  log.debug("do not filter: territoryId {}", d.getTerritoryId());
 						  return true; // do not filter
 					  }
+					  /*
+					   * Filter data that has already been imported. 
+					   */
 					  LocalDate latestDate = territoryLatestDateRepMap.get(d.getTerritoryId());
 					  if (latestDate == null) {
 						  Optional<LocalDate> date = repository.getMaxDateRepByTerritoryIdAndTerritoryParent(d.getTerritoryId(), d.getTerritoryParent());
@@ -199,7 +202,7 @@ public class CoronaWorldDataCsvImport extends CoronaDataImport {
 		
 		file.subscribe(data -> save(data));
 		
-		// set population of territories
+		// set population of parent territories
 		Map<String,AtomicLong> territoryParentPopulationMap = new HashMap<>();
 		territoryParentMap.keySet().forEach(territoryParentKey -> {
 			Map<String, CoronaWorldData> parentMap = territoryParentMap.get(territoryParentKey);
@@ -251,6 +254,9 @@ public class CoronaWorldDataCsvImport extends CoronaDataImport {
 						if (filterDisabled.get()) {
 							return true; // do not filter
 						}
+					    /*
+					     * Filter data that has already been imported. 
+					     */
 						LocalDate latestDate = territoryLatestDateRepMap.get(d.getTerritoryId());
 						if (latestDate == null) {
 							Optional<LocalDate> date = repository.getMaxDateRepByTerritoryIdAndTerritoryParent(d.getTerritoryId(), d.getTerritoryParent());
