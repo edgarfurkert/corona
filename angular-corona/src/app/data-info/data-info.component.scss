@@ -11,7 +11,8 @@ mat-panel-title {
 }
 
 .data-information-top__table {
-    width: 40vw;
+    width: 90vw;
+    max-width: 800px;
 }
 
 .data-information-territories {
@@ -25,12 +26,11 @@ mat-panel-title {
 .data-information-territories__table-container {
     overflow: auto;
     height: 44vh;
-    width: 40vw;
+    width: 90vw;
+    max-width: 800px;
 }
 
-.data-information-territories__table {
-    width: 40vw;
-}
+.data-information-territories__table {}
 
 .data-information-territories__mat-header-row {
     height: 48px !important;

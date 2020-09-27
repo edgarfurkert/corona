@@ -67,7 +67,7 @@
                         </ng-container>
                         <ng-container matColumnDef="minDate">
                             <th class="data-information-territories__column" mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'data-information.territories.minDate' | translate }}</th>
-                            <td class="data-information-territories__column" mat-cell *matCellDef="let element"> {{element.minDate | date}} </td>
+                            <td class="data-information-territories__column" mat-cell *matCellDef="let element" style="padding-right: 10px;"> {{element.minDate | date}} </td>
                         </ng-container>
                         <ng-container matColumnDef="maxDate">
                             <th class="data-information-territories__column" mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'data-information.territories.maxDate' | translate }}</th>
