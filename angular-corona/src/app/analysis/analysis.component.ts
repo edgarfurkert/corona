@@ -298,6 +298,8 @@ export class AnalysisComponent implements OnInit, Refreshable {
           this.session.set('maxDate', this.getLocaleDateString(this.maxDate));
           this.minDate = new Date(configuration.fromDate);
           this.session.set('minDate', this.getLocaleDateString(this.minDate));
+          this.endDate = this.maxDate;
+          this.session.set('endDate', this.getLocaleDateString(this.endDate));
   
           if (this.log) {
             this.logger.debug('AnalysisComponent.loadMinMaxDate: configuration loaded - maxDate', this.maxDate);
