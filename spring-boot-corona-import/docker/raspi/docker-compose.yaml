@@ -1,0 +1,20 @@
+# Use postgres/example user/password credentials
+version: '3.1'
+
+services:
+  springboot:
+    image: efurkert/spring-boot-corona-import
+    container_name: spring-boot-corona-import
+    volumes:
+      - /opt/spring-boot-corona/import/logs:/data/logs
+      - /opt/spring-boot-corona/import/downloads/:/data/downloads
+    restart: "no"
+    environment:
+      - "TZ=Europe/Berlin"
+    networks:
+      - default
+
+networks:
+  default:
+    external:
+      name: postgresql_default
