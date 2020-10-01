@@ -1,2 +1,2 @@
 # corona
-![corona1](examples/corona1 - 20201001.png)
+![corona1](https://github.com/edgarfurkert/corona/blob/master/examples/corona1%20-%2020201001.png)
