@@ -1,0 +1,6 @@
+#!/bin/bash
+docker stop spring-boot-corona-web-api
+docker rm spring-boot-corona-web-api
+cp ../*.jar .
+docker build -f Dockerfile-API -t efurkert/spring-boot-corona-web-api .
+docker-compose -p spring-boot-corona-web-api -f docker-compose-api.yaml up&

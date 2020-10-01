@@ -1,0 +1,19 @@
+# Use postgres/example user/password credentials
+version: '3.1'
+
+services:
+  springboot:
+    image: efurkert/spring-boot-corona-web
+    container_name: spring-boot-corona-web
+    volumes:
+      - /opt/spring-boot-corona/web/logs:/data/logs
+    ports:
+      - "8080:8080"
+    restart: "no"
+    networks:
+      - default
+
+networks:
+  default:
+    external:
+      name: postgresql_default

@@ -1,0 +1,3 @@
+#!/bin/bash
+cp ../*.jar .
+docker build -f Dockerfile-API -t efurkert/spring-boot-corona-web-api .
