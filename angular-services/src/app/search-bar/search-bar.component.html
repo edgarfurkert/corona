@@ -1,8 +1,0 @@
-<label>{{title}}-Searchbar-Suche </label>
-<input type="text" #query (keyup.enter)="search(query.value)"/>
-<button (click)="search(query.value)">Suchen</button>
-<table>
-    <tr *ngFor="let result of results">
-        <td>{{result}}</td>
-    </tr>
-</table>

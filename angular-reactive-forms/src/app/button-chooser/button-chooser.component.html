@@ -1,9 +1,0 @@
-<table>
-    <tr>
-        <td *ngFor="let choice of choices">
-            <button [ngClass]="{'active': value === choice}" (click)="changeValue(choice)" style="width: 200px">
-                {{choice}}
-            </button>
-        </td>
-    </tr>
-</table>
