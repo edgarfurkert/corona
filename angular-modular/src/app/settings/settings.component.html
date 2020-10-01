@@ -1,0 +1,14 @@
+<h1>Einstellungen</h1>
+<h2>Benutzereinstellungen</h2>
+<form>
+    <div class="form-group">
+        <label for="email">Name</label>
+        <input type="text" id="email" class="form-control" name="name" [(ngModel)]="user.name" />
+    </div>
+
+    <div class="form-group">
+        <label for="email">E-Mail-Adresse</label>
+        <input type="text" id="email" class="form-control" name="email" [(ngModel)]="user.email" emailValidator/>
+        <show-error path="email"></show-error>
+    </div>
+</form>

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>AngularInternational</title>
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <script>
+        var browserLanguage = (navigator.languages && navigator.languages[0]) ||
+            navigator.browserLanguage ||
+            navigator.userLanguage ||
+            navigator.systemLanguage;
+
+        var supportedLanguages = ['de', 'fr'];
+
+        if (supportedLanguages.includes(browserLanguage)) {
+            document.locale = browserLanguage;
+        } else {
+            document.locale = 'de';
+        }
+
+        console.log('browserLanguage', browserLanguage);
+        console.log('document.locale', document.locale);
+    </script>
+</head>
+
+<body>
+    <ef-root></ef-root>
+</body>
+
+</html>

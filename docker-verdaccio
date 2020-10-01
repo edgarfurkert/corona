@@ -1,0 +1,8 @@
+#docker pull verdaccio/verdaccio
+
+V_PATH=/opt/verdaccio; docker run -it --name verdaccio \
+  -p 4873:4873 \
+  -v $V_PATH/conf:/verdaccio/conf \
+  -v $V_PATH/storage:/verdaccio/storage \
+  -v $V_PATH/plugins:/verdaccio/plugins \
+  verdaccio/verdaccio

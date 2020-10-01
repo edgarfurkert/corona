@@ -1,0 +1,7 @@
+label {
+    display: block;
+}
+
+.ng-touched.ng-invalid {
+    border-color: red;
+}

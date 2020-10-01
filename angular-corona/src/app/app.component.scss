@@ -1,0 +1,54 @@
+.sidenav-content {
+    // Displays an element as a block-level flex container
+    display: flex;
+    // The flex-direction property specifies the direction of the flexible items.
+    flex-direction: column;
+    height: 100vh;
+}
+
+.toolbar {
+    position: relative;
+    // The z-index property specifies the stack order of an element.
+    z-index: 1;
+    // The flex-grow property specifies how much the item will grow relative to the rest of the flexible items inside the same container.
+    flex-grow: 0;
+    // The flex-shrink property specifies how the item will shrink relative to the rest of the flexible items inside the same container.
+    flex-shrink: 0;
+}
+
+.content {
+    flex-grow: 1;
+    flex-shrink: 1;
+    overflow: hidden;
+    padding: 24px;
+}
+
+.sidenav {
+    width: 65%;
+    min-width: 250px;
+    max-width: 350px;
+}
+
+.refresh {
+    position: absolute;
+    right: 20px;
+}
+
+@import "../theme";
+.active {
+    font-weight: bold;
+    color: $primary !important;
+    background-color: rgba($primary, .12) !important;
+}
+
+.stretch {
+    flex-grow: 1;
+}
+
+.footer {
+    align-self: flex-start;
+}
+
+.footer-title {
+    padding-left: 20px;
+}

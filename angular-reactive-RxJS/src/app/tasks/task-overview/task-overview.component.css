@@ -1,0 +1,12 @@
+.label-small {
+    font-size: 50%;
+    z-index: 10;
+}
+
+.overview {
+    border-left: thin solid lightgrey;
+    padding-left: 10px;
+    padding-top: 20px;
+    margin-left: 10px;
+    height: calc(100vh - 50px);
+}

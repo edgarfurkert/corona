@@ -1,0 +1,25 @@
+<div class="task-list">
+    <h1>Aufgaben durchsuchen</h1>
+    <div class="input-group search-bar">
+        <input type="text" #query class="form-control" id="searchField" (keyup.enter)="findTasks(query.value)" [formControl]="searchTerm">
+        <span class="input-group-btn">
+            <button class="btn btn-default" type="button" (click)="findTasks(query.value)">
+                Suchen
+            </button>
+        </span>
+    </div>
+
+    <div>
+        <p>Synchrones Ergebnis</p>
+        <ef-task-item *ngFor="let task of tasks" [task]="task" [selected]="task.id == selectedTaskId" (taskDelete)="deleteTask(task)" (taskSelected)="selectTask($event)">
+        </ef-task-item>
+        <p><br/>Asynchrones Ergebnis</p>
+        <ef-task-item *ngFor="let task of asyncTasks$ | async" [task]="task" [selected]="task.id == selectedTaskId" (taskDelete)="deleteTask(task)" (taskSelected)="selectTask($event)">
+        </ef-task-item>
+    </div>
+    <br>
+    <!--a routerLink='/tasks/new' class="btn btn-default"> Neue Aufgabe anlegen (absolute link) </a-->
+    <a routerLink='./new' class="pull-right btn btn-success">
+        Neue Aufgabe anlegen
+    </a>
+</div>

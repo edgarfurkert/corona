@@ -1,0 +1,89 @@
+<form novalidate [formGroup]="taskForm" (ngSubmit)="saveTask(taskForm.value)">
+    <div class="form-group">
+        <label>Titel *</label>
+        <input class="form-control" formControlName="title"/>
+    </div>
+    <ef-show-error text="Titel" path="title"></ef-show-error>
+    <div class="form-group">
+        <label>Beschreibung</label>
+        <textarea class="form-control" formControlName="description">
+        </textarea>
+    </div>
+    <ef-show-error text="Beschreibung" path="description"></ef-show-error>
+    <label>Tags</label>
+    <div formArrayName="tags">
+        <div *ngFor="let tag of tagsArray.controls; let i = index">
+            <div class="tag-controls" formGroupName="{{i}}">
+                <table>
+                    <tr>
+                        <td>
+                            <input class="form-control" formControlName="label"/>
+                        </td>
+                        <td>
+                            <button class="btn btn-danger" (click)="removeTag(i)">
+                                Tag entfernen
+                            </button>
+                        </td>
+                    </tr>
+                </table>
+                <ef-show-error text="Ein Tag" path="tags.{{i}}.label"></ef-show-error>
+            </div>
+        </div>
+        <div class="form-group">
+            <button class="btn btn-success" (click)="addTag()"> + </button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Status</label>
+        <select formControlName="state" class="form-control">
+            <option *ngFor="let state of model.states" [value]="state">
+              {{model.stateTexts[state]}}
+            </option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>
+            <input type="checkbox" formControlName="favorite">
+            Zu Favoriten hinzufügen
+        </label>
+    </div>
+
+    <h5>Zuständiger</h5>
+    <div formGroupName="assignee">
+        <div class="form-group">
+            <label>Name</label>
+            <input type="text" class="form-control" formControlName="name"/>
+            <p *ngIf="taskForm.get('assignee').get('name').pending">
+                Der Benutzer wird überprüft...
+            </p>
+            <ef-show-error path="assignee.name" text="Name"></ef-show-error>
+        </div>
+        <div class="form-group">
+            <label>E-Mail</label>
+            <input type="text" class="form-control" formControlName="email"/>
+            <ef-show-error path="assignee.email"></ef-show-error>
+        </div>
+    </div>
+
+    <div *ngIf="taskForm.hasError('assigneeRequired')"
+         class="alert alert-danger">
+      Der Task befindet sich nicht mehr im Backlog <br>
+      Bitte geben Sie einen Zuständigen an.
+    </div>
+
+    <button type="submit" class="btn btn-default" [disabled]="!taskForm.valid">
+        Aufgabe speichern
+    </button>
+</form>
+
+<hr>
+
+<button (click)="loadTask(1)"
+        class="btn btn-default">
+  Task 1 laden
+</button>
+<button (click)="loadTask(2)"
+        class="btn btn-default">
+  Task 2 laden
+</button>

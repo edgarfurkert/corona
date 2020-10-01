@@ -1,0 +1,6 @@
+<h2>Lifecycle-Demo</h2>
+<view-child [text]="text"></view-child><br/>
+<input type="text" [(ngModel)]="text"/>
+<view-child [greeting]="greeting"></view-child><br/>
+<input type="text" (input)="textChanged($event.target.value)"/>
+<ng-content></ng-content>

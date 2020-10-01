@@ -1,0 +1,11 @@
+/*.dialog {
+    width: 400px;
+    border: lightgrey solid 1px;
+    padding: 10px 20px;
+}
+*/
+.panel-default {
+    margin: 30px;
+    width: 600px;
+    overflow: hidden;
+}

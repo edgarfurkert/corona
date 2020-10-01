@@ -1,0 +1,10 @@
+<div class="tabs">
+    <!--unsorted list-->
+    <ul>
+        <!--list item with property class="active" (true) or class="" (false)-->
+        <li *ngFor="let tab of tabs" [class.active]="tab.active" (click)="activate(tab)">
+            <a>{{tab.title}}</a>
+        </li>
+    </ul>
+    <ng-content></ng-content>
+</div>

@@ -1,0 +1,101 @@
+<h1>Rx.js Demo</h1>
+<br>Time: {{currentTime$ | async | date:"HH:mm:ss"}}
+
+<h3>First Observable</h3>
+
+<ul>
+  <li *ngFor="let entry of outputFirstObservable">
+    >> {{entry}}
+  </li>
+</ul>
+
+<h3>Range</h3>
+
+<ul>
+  <li *ngFor="let entry of rangeObservable | async">
+    >> {{entry}}
+  </li>
+</ul>
+
+
+<h3>Interval</h3>
+<button (click)="startIntervalObservable()">Intervall starten</button>
+<ul>
+  <li *ngFor="let entry of intervalOutput">
+    >> {{entry}}
+  </li>
+</ul>
+
+<h3>Gefiltertes Intervall</h3>
+<button (click)="startFilteredIntervalObservable()">Intervall starten</button>
+<ul>
+  <li *ngFor="let entry of filteredIntervalOutput">
+    >> {{entry}}
+  </li>
+</ul>
+
+<h3>Gebuffertes Intervall</h3>
+<button (click)="startBufferedIntervalObservable()">Intervall starten</button>
+<ul>
+  <li *ngFor="let entry of bufferedIntervalOutput">
+    >> {{entry}}
+  </li>
+</ul>
+
+<h3>Nach Anzahl der Werte puffern</h3>
+<button (click)="startBufferedCountObservable()">Observable starten</button>
+<ul>
+  <li *ngFor="let entry of bufferedCountOutput">
+    >> {{entry}}
+  </li>
+</ul>
+
+<h2>Mouse-Move Observable</h2>
+
+<div id="square"></div>
+
+<div id="square2"></div>
+
+<h2>Subscriptions und Disposing-Functions</h2>
+
+<h3>Die unsubscribe-Funktion</h3>
+
+<div>Endloser Zähler: {{endlessCounter}}</div>
+<button (click)="startEndlessObservable()">Zähler starten</button>
+<button (click)="stopEndlessObservable()">Zähler beenden</button>
+
+<h3>Disposing functions</h3>
+
+<div>Zufälliger Wert: {{randomValue}}</div>
+<button (click)="startRandomValuesObservable()">Zufällige Werte starten</button>
+<button (click)="stopRandomValuesObservable()">Zufällige Werte beenden</button>
+
+<h2>Subjects</h2>
+<h3>Einfaches Subject</h3>
+<button (click)="registerTwoSubscribers()">
+  2 Subscriber anmelden
+</button> <br>
+<label>Neuen Wert über das Subject senden</label>
+<input #input (keyup.enter)="emitViaSubject(input.value)"/>
+
+<ul>
+  <li *ngFor="let entry of subjectOutput">
+    >> {{entry}}
+  </li>
+</ul>
+
+<h3>Behavior Subject</h3>
+<button (click)="registerNewSubscriber('subscriber1')">
+ Subscriber 1 anmelden
+</button>
+<button (click)="registerNewSubscriber('subscriber2')">
+  Subscriber 2 anmelden
+</button><br>
+<label>Neuen Wert über das BehaviorSubject senden</label>
+<input #input2 (keyup.enter)="emitViaBehaviorSubject(input2.value)"/>
+
+<ul>
+  <li *ngFor="let entry of behaviorSubjectOutput">
+    >> {{entry}}
+  </li>
+</ul>

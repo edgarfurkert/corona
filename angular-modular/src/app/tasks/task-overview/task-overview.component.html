@@ -1,0 +1,43 @@
+<div class="overview">
+  <h3>Task-Übersicht
+    <span *ngIf="showSuccessLabel"
+          class="label label-success pull-right label-small">
+        Erfolgreich gespeichert
+    </span>
+  </h3>
+  <div *ngIf="task">
+    <div class="row">
+      <div class="col-xs-12">
+        <form>
+          <div class="form-group">
+            <label for="title">Titel</label>
+            <input type="text" id="title" name="title" class="form-control"
+                   [(ngModel)]="task.title"
+                   (keyup.enter)="saveTask()"/>
+          </div>
+        </form>
+      </div>
+      <div class="col-xs-12">
+        <h4>Beschreibung</h4>
+        <textarea id="description" class="form-control" name="description" [(ngModel)]="task.description">
+                </textarea>
+      </div>
+      <div class="col-xs-12">
+        <h4>Status</h4>
+        <select class="form-control" name="state" [ngModel]="task.state" (ngModelChange)="task.state = $event; saveTask()" >
+          <optgroup *ngFor="let group of model.stateGroups" [label]="group.label">
+            <option *ngFor="let state of group.states" [value]="state">
+              {{model.stateTexts[state]}}
+            </option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="col-xs-12">
+        <h4>Zuständiger</h4>
+
+        <div>Name: {{task.assignee?.name}}</div>
+        <div>E-Mail: {{task.assignee?.email}}</div>
+      </div>
+    </div>
+  </div>
+</div>

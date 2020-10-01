@@ -1,0 +1,48 @@
+body {
+    background-color: grey;
+}
+
+.tabs {
+    width:100%;
+    display:inline-block;
+}
+
+.tabs > ul {
+    margin-bottom: 20px;
+    padding: 0px;
+    border-bottom: 1px solid #ddd;
+}
+
+.tabs > ul:after {
+    content:'';
+    display:block;
+    clear:both;
+}
+
+.tabs > ul  li {
+    margin-right: 5px;
+    float:left;
+    list-style:none;
+    margin-bottom: -1px;
+}
+
+.tabs > ul  a {
+    padding:8px 20px;
+    display:inline-block;
+    color: #337ab7;
+    text-decoration: none !important;
+    cursor: pointer;
+}
+
+.tabs > ul li.active a {
+    color: #555;
+}
+
+.tabs > ul > li.active  {
+    color: #555;
+    cursor: default;
+    background-color: #fff;
+    border: 1px solid #ddd;
+
+    border-bottom-color: transparent;
+}

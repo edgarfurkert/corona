@@ -1,0 +1,20 @@
+input[type=text].ng-touched.ng-invalid {
+    border-color: #a94442
+}
+
+input[type=text].ng-untouched {
+    border-color: blue
+}
+
+input[type=text].ng-pristine {
+    border-color: yellow
+}
+
+input[type=text].ng-valid {
+    border-color: green
+}
+
+input[type=text].ng-pending {
+    border-color: grey;
+    border-style: dashed;
+}

@@ -1,0 +1,17 @@
+input {
+    margin-bottom: 10px;
+}
+
+p {
+    margin-top: 10px;
+    padding: 15px;
+}
+
+ul {
+    list-style-type: none;
+}
+
+li {
+    padding: 3px;
+    font-size: larger;
+}

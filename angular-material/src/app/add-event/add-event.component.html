@@ -1,0 +1,20 @@
+<form class="form" #form="ngForm" (ngSubmit)="addEvent(form.value)">
+    <h1>Neues Babyevent</h1>
+
+    <mat-form-field>
+        <mat-select placeholder="Was ist passiert?" name="eventType" ngModel #eventTypeModel="ngModel" required>
+            <mat-option *ngFor="let event of getEventTypes()" [value]="event">
+                <mat-icon [svgIcon]="event.name"></mat-icon>
+                {{getBabyName()}} {{event.title}}
+            </mat-option>
+        </mat-select>
+        <mat-error *ngIf="eventTypeModel.hasError('required')">
+            Bitte wählen Sie ein Ereignis aus.
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field>
+        <input matInput placeholder="Kommentar" name="comment" ngModel/>
+    </mat-form-field>
+
+    <button type="submit" class="submit-button" [disabled]="!form.valid" mat-raised-button color="primary">Speichern</button>
+</form>
