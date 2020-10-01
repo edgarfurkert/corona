@@ -1,5 +1,2 @@
 # corona
-TODO:
-- add spring-boot-corona-import
-- add spring-boot-corona-web
-- add angular-corona
+![corona1](examples/corona1 - 20201001.png)
