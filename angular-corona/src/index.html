@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>AngularCorona</title>
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script>
+        var browserLanguage = (navigator.languages && navigator.languages[0]) ||
+            navigator.browserLanguage ||
+            navigator.userLanguage ||
+            navigator.systemLanguage;
+
+        var supportedLanguages = ['de', 'en'];
+        var locale = 'en';
+        if (supportedLanguages.includes(browserLanguage)) {
+            locale = browserLanguage
+        }
+        document.locale = locale;
+        //document.write('<meta http-equiv=Refresh content="0;url=/' + locale + '/">');
+    </script>
+</head>
+
+<body class="mat-typography">
+    <ef-root></ef-root>
+</body>
+
+</html>
