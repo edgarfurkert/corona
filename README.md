@@ -4,6 +4,8 @@
 # spring-boot-corona-web
 - show corona data in thymeleaf UI
 
+![corona web](https://github.com/edgarfurkert/corona/blob/master/examples/corona%20web%20-%2020201001.png)
+
 # angular-corona
 ![corona1](https://github.com/edgarfurkert/corona/blob/master/examples/corona1%20-%2020201001.png)
 ![corona2](https://github.com/edgarfurkert/corona/blob/master/examples/corona2%20-%2020201001.png)
