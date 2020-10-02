@@ -1,6 +1,6 @@
 # introduction
 These projects were created during the Corona phase to get to know Spring, Spring Boot, Docker, Angular and Highcharts better.
-Inspiriert von den Auswertungen des Roylab Stats Youtube Kanals (Coronavirus Live Streaming) habe ich auf Basis mehrerer Datenquellen meine eigene (private) Datenauswertung entwickelt, um die Entwicklung der Infektionen und Todeszahlen lokal (Baden-Württemberg), in Deutschland, Europa und auf der ganzen Welt zu verfolgen.
+Inspired by the analysis of the Roylab Stats Youtube channel (Coronavirus Live Streaming) I developed my own (private) data analysis based on several data sources to follow the development of infections and death rates locally (Baden-Württemberg), in Germany, Europe and all over the world.
 
 # spring-boot-corona-import
 - download Corona data from multiple data sources:
