@@ -1,6 +1,5 @@
 package de.edgar.corona.api;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -26,6 +25,15 @@ import reactor.core.publisher.Mono;
 import reactor.core.publisher.SignalType;
 import reactor.core.scheduler.Schedulers;
 
+/**
+ * REST controller to deliver information of supported data sources and data volume.
+ * 
+ * GET /datasources
+ * GET /datainfo
+ * 
+ * @author efurkert
+ *
+ */
 @Slf4j
 @Profile("api")
 @RestController
