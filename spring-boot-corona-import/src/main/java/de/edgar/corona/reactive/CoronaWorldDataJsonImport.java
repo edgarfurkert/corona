@@ -31,6 +31,12 @@ import de.edgar.corona.model.Territory;
 import de.edgar.corona.service.DateService;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Import corona data of the countries in the world. 
+ * 
+ * @author efurkert
+ *
+ */
 @Slf4j
 @Component
 public class CoronaWorldDataJsonImport extends CoronaDataImport {

@@ -24,6 +24,12 @@ import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Service to convert a XLS file to an CSV file.
+ * 
+ * @author efurkert
+ *
+ */
 @Slf4j
 @Service
 public class ExcelService {
