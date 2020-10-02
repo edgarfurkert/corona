@@ -178,6 +178,12 @@ public class CoronaDataImportConfig {
         return new CoronaDataJsonImportMessageHandler();
     }
 
+	/**
+	 * Route File object depending on the file name to the defined channel.
+	 * 
+	 * @param file
+	 * @return channel
+	 */
 	@Router(inputChannel="csvFileRouteChannel")
 	public String csvFileRouter(File file) {
 		log.info("Router: file {}...", file.getName());
@@ -193,6 +199,14 @@ public class CoronaDataImportConfig {
 		return channel;
 	}
     
+	/**
+	 * Route File object to channel "worldApiChannel" or "doNothingChannel" depending
+	 * on the existence of the import files defined by the "afterChannels".
+	 * (see application.yml) 
+	 * 
+	 * @param file
+	 * @return channel
+	 */
 	@Router(inputChannel="jsonFileRouteChannel")
 	public String jsonFileRouter(File file) {
 		log.info("Router: file {}...", file.getName());
@@ -224,6 +238,11 @@ public class CoronaDataImportConfig {
 		return channel;
 	}
     
+	/**
+	 * Start import process.
+	 * 
+	 * @return MessageHandler
+	 */
 	@Bean
     @ServiceActivator(inputChannel="worldApiChannel")
     public MessageHandler worldApiData() {
@@ -239,6 +258,11 @@ public class CoronaDataImportConfig {
     	};
     }
     
+	/**
+	 * Start import process.
+	 * 
+	 * @return MessageHandler
+	 */
 	@Bean
     @ServiceActivator(inputChannel="worldChannel")
     public MessageHandler worldData() {
@@ -254,6 +278,11 @@ public class CoronaDataImportConfig {
     	};
     }
     
+	/**
+	 * Start import process.
+	 * 
+	 * @return MessageHandler
+	 */
 	@Bean
     @ServiceActivator(inputChannel="germanyChannel")
     public MessageHandler germanyData() {
@@ -268,6 +297,11 @@ public class CoronaDataImportConfig {
     	};
     }
     
+	/**
+	 * Start import process.
+	 * 
+	 * @return MessageHandler
+	 */
 	@Bean
     @ServiceActivator(inputChannel="germanyFederalStatesChannel")
     public MessageHandler germanyFederalStatesData() {
@@ -282,6 +316,11 @@ public class CoronaDataImportConfig {
     	};
     }
     
+	/**
+	 * Start import process.
+	 * 
+	 * @return MessageHandler
+	 */
 	@Bean
     @ServiceActivator(inputChannel="switzerlandCasesChannel")
     public MessageHandler switzerlandCasesData() {
@@ -296,6 +335,11 @@ public class CoronaDataImportConfig {
     	};
     }
     
+	/**
+	 * Start import process.
+	 * 
+	 * @return MessageHandler
+	 */
 	@Bean
     @ServiceActivator(inputChannel="switzerlandDeathsChannel")
     public MessageHandler switzerlandDeathsData() {

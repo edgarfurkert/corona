@@ -11,6 +11,12 @@ import de.edgar.corona.jpa.CoronaDataJpaRepository;
 import de.edgar.corona.service.UpdateCheckService;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Save/overwrite data in den corona database.
+ * 
+ * @author efurkert
+ *
+ */
 @Slf4j
 public class CoronaDataImport {
 	
@@ -22,6 +28,11 @@ public class CoronaDataImport {
 
 	protected CoronaDataJpaRepository repository;
 	
+	/**
+	 * Save/overwrite data.
+	 * 
+	 * @param entity
+	 */
 	protected void save(CoronaDataEntity entity) {
 		log.debug("{}", entity);
 		Optional<CoronaDataEntity> d = repository.findByTerritoryIdAndDateRep(entity.getTerritoryId(), entity.getDateRep());
@@ -35,6 +46,12 @@ public class CoronaDataImport {
 		repository.save(entity);
 	}
 	
+	/**
+	 * Overwrite defined data (cases, cumulated cases,...) 
+	 * 
+	 * @param entity
+	 * @param columns
+	 */
 	protected void save(CoronaDataEntity entity, String[] columns) {
 		log.debug("{}", entity);
 		Optional<CoronaDataEntity> d = repository.findByTerritoryIdAndDateRep(entity.getTerritoryId(), entity.getDateRep());

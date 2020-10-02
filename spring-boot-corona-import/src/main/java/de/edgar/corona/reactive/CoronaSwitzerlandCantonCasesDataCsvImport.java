@@ -20,6 +20,12 @@ import de.edgar.corona.model.CoronaSwitzerlandCasesData;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 
+/**
+ * Import corona cases data of the cantons in switzland. 
+ * 
+ * @author efurkert
+ *
+ */
 @Slf4j
 @Component
 public class CoronaSwitzerlandCantonCasesDataCsvImport extends CoronaDataImport {

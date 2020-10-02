@@ -42,6 +42,21 @@ import de.edgar.corona.service.ExcelService;
 import de.edgar.corona.service.UpdateCheckService;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Download corona data from multiple data sources (see application.yml):
+ * - https://opendata.ecdc.europa.eu/covid19/casedistribution/csv
+ * - https://covid19publicdata.blob.core.windows.net/rki/covid19-germany-federalstates.csv
+ * - https://covid19publicdata.blob.core.windows.net/rki/covid19-germany-counties.csv
+ * - https://api.covid19tracking.narrativa.com/api
+ * - https://raw.githubusercontent.com/daenuprobst/covid19-cases-switzerland/master/covid19_cases_switzerland_openzh.csv
+ * - https://raw.githubusercontent.com/daenuprobst/covid19-cases-switzerland/master/covid19_fatalities_switzerland_openzh.csv
+ * 
+ * Check if download is already done. If not, download data and check if there are new data.
+ * If new data is available, create a file for the import process (-> CoronaDataImportConfig).
+ * 
+ * @author efurkert
+ *
+ */
 @Slf4j
 @Profile("!api")
 @Configuration

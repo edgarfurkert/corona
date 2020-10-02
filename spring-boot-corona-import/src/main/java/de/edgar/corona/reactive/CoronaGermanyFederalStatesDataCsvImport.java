@@ -19,6 +19,12 @@ import de.edgar.corona.model.CoronaGermanyFederalStateData;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 
+/**
+ * Import corona data of the counties in germany.
+ * 
+ * @author efurkert
+ *
+ */
 @Slf4j
 @Component
 public class CoronaGermanyFederalStatesDataCsvImport extends CoronaDataImport {
