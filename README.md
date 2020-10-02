@@ -32,4 +32,5 @@ Inspired by the analysis of the Roylab Stats Youtube channel (Coronavirus Live S
 
 # Raspberry Pi 4
 I have built a docker environment on a Raspberry Pi 4, in which the individual services (database, data import, visualization, API) run.
+
 ![portainer](https://github.com/edgarfurkert/corona/blob/master/examples/raspi-portainer.png)
