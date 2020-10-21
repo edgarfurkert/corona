@@ -145,6 +145,18 @@ public class GraphDataAsyncService {
 		return getDouble(d.getPopulation()) > 0L ? (getDouble(d.getCasesDaysKum()) * (double)daysToKumPop / d.getPopulation()) : 0.0;
 	}
 
+	private double getDeathsPerDaysAnd100000(CoronaData d) {
+		return getDouble(d.getPopulation()) > 0L ? (getDouble(d.getDeathsDaysKum()) * (double)daysToKumPop / d.getPopulation()) : 0.0;
+	}
+
+	private double getRecoveredPerDaysAnd100000(CoronaData d) {
+		return getDouble(d.getPopulation()) > 0L ? (getDouble(d.getRecoveredDaysKum()) * (double)daysToKumPop / d.getPopulation()) : 0.0;
+	}
+
+	private double getActivePerDaysAnd100000(CoronaData d) {
+		return getDouble(d.getPopulation()) > 0L ? (getDouble(d.getActiveDaysKum()) * (double)daysToKumPop / d.getPopulation()) : 0.0;
+	}
+
 	private void calcDaysPer100000(CoronaDataSession cds, Map<String,List<CoronaData>> territoryMap) {
 		AtomicInteger days = new AtomicInteger();
 		switch (cds.getSelectedDataCategory()) {
@@ -159,13 +171,48 @@ public class GraphDataAsyncService {
 		territoryMap.keySet().forEach(t -> {
 			List<CoronaData> cdList = territoryMap.get(t);
 			cdList.forEach(cd -> {
-				Long value = cd.getCases();
-				log.debug("cases: {} - {}", cd.getDateRep(), value);
-				if (valueList.size() == days.get()) {
-					cd.setCasesDaysKum(sum.get());
-					cd.setCasesDaysPer100000Pop(getCasesPerDaysAnd100000(cd));
-					log.debug("cases: {} - {}, {}, {}", cd.getDateRep(), cd.getCasesDaysKum(), cd.getCasesDaysPer100000Pop(), cd.getPopulation());
-					sum.addAndGet(valueList.remove(0) * -1l);
+				Long value = null;
+				switch (cds.getSelectedDataType()) {
+				case "infections":
+					value = cd.getCases();
+					log.debug("cases: {} {} - {}", cd.getTerritoryId(), cd.getDateRep(), value);
+					if (valueList.size() == days.get()) {
+						cd.setCasesDaysKum(sum.get());
+						cd.setCasesDaysPer100000Pop(getCasesPerDaysAnd100000(cd));
+						log.debug("cases: {} - {}, {}, {}", cd.getDateRep(), cd.getCasesDaysKum(), cd.getCasesDaysPer100000Pop(), cd.getPopulation());
+						sum.addAndGet(valueList.remove(0) * -1l);
+					}
+					break;
+				case "deaths": 
+					value = cd.getDeaths();
+					log.debug("deaths: {} {} - {}", cd.getTerritoryId(), cd.getDateRep(), value);
+					if (valueList.size() == days.get()) {
+						cd.setDeathsDaysKum(sum.get());
+						cd.setDeathsDaysPer100000Pop(getDeathsPerDaysAnd100000(cd));
+						log.debug("deaths: {} - {}, {}, {}", cd.getDateRep(), cd.getDeathsDaysKum(), cd.getDeathsDaysPer100000Pop(), cd.getPopulation());
+						sum.addAndGet(valueList.remove(0) * -1l);
+					}
+					break;
+				case "recovered": 
+					value = cd.getRecovered();
+					log.debug("recovered: {} {} - {}", cd.getTerritoryId(), cd.getDateRep(), value);
+					if (valueList.size() == days.get()) {
+						cd.setRecoveredDaysKum(sum.get());
+						cd.setRecoveredDaysPer100000Pop(getRecoveredPerDaysAnd100000(cd));
+						log.debug("recovered: {} - {}, {}, {}", cd.getDateRep(), cd.getRecoveredDaysKum(), cd.getRecoveredDaysPer100000Pop(), cd.getPopulation());
+						sum.addAndGet(valueList.remove(0) * -1l);
+					}
+					break;
+				case "active": 
+					value = cd.getActive();
+					log.debug("active: {} {} - {}", cd.getTerritoryId(), cd.getDateRep(), value);
+					if (valueList.size() == days.get()) {
+						cd.setActiveDaysKum(sum.get());
+						cd.setActiveDaysPer100000Pop(getActivePerDaysAnd100000(cd));
+						log.debug("active: {} - {}, {}, {}", cd.getDateRep(), cd.getActiveDaysKum(), cd.getActiveDaysPer100000Pop(), cd.getPopulation());
+						sum.addAndGet(valueList.remove(0) * -1l);
+					}
+					break;
 				}
 				sum.addAndGet(value);
 				valueList.add(value);

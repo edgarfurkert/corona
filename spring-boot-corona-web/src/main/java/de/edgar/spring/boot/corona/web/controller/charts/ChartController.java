@@ -17,8 +17,10 @@ import de.edgar.spring.boot.corona.web.service.GraphDataService;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * User: gardiary
- * Date: 12/11/17, 21:31
+ * REST controller to return Highcharts data.
+ * 
+ * @author efurkert
+ *
  */
 @Slf4j
 @Profile("!api")
