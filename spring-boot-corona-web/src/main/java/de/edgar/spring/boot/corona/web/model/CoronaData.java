@@ -28,13 +28,19 @@ public class CoronaData {
 	private Long casesKum;
 	private Long casesDaysKum;
 	private Long deathsKum;
+	private Long deathsDaysKum;
 	private Long recoveredKum;
+	private Long recoveredDaysKum;
 	private Long activeKum;
+	private Long activeDaysKum;
 	private Double casesPer100000Pop;
 	private Double casesDaysPer100000Pop;
 	private Double deathsPer100000Pop;
+	private Double deathsDaysPer100000Pop;
 	private Double recoveredPer100000Pop;
+	private Double recoveredDaysPer100000Pop;
 	private Double activePer100000Pop;
+	private Double activeDaysPer100000Pop;
 	private Long orderId;
 	
 }
