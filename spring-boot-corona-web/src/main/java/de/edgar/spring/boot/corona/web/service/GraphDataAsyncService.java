@@ -158,21 +158,27 @@ public class GraphDataAsyncService {
 	}
 
 	private void calcDaysPer100000(CoronaDataSession cds, Map<String,List<CoronaData>> territoryMap) {
-		AtomicInteger days = new AtomicInteger();
-		switch (cds.getSelectedDataCategory()) {
-		case "perDaysAnd100000":
-			days.set(7);
-			break;
-		default:
+		if (!"perDaysAnd100000".equals(cds.getSelectedDataCategory())) {
 			return;
 		}
+		
+		if ("infectionsAnd".equals(cds.getSelectedGraphType()) && !"infections".equals(cds.getSelectedDataType())) {
+			calcDaysPer100000("infections", territoryMap);
+		}
+		
+		calcDaysPer100000(cds.getSelectedDataType(), territoryMap);
+	}
+	
+	private void calcDaysPer100000(String dataType, Map<String,List<CoronaData>> territoryMap) {
+		AtomicInteger days = new AtomicInteger();
+		days.set(daysToKum);
 		List<Long> valueList = new ArrayList<Long>();
 		AtomicLong sum = new AtomicLong();
 		territoryMap.keySet().forEach(t -> {
 			List<CoronaData> cdList = territoryMap.get(t);
 			cdList.forEach(cd -> {
 				Long value = null;
-				switch (cds.getSelectedDataType()) {
+				switch (dataType) {
 				case "infections":
 					value = cd.getCases();
 					log.debug("cases: {} {} - {}", cd.getTerritoryId(), cd.getDateRep(), value);
