@@ -885,7 +885,7 @@ public class GraphDataService {
 			title = messageSourceService.getMessage("chart.deathsPer100000", cds.getLocale());
 			break;
 		case "deaths-perDaysAnd100000":
-			title = messageSourceService.getMessage("chart.deathsPerDaysAnd100000", cds.getLocale());
+			title = messageSourceService.getMessage("chart.deathsPerDaysAnd100000", cds.getLocale(), daysToKum);
 			break;
 		case "recovered-cumulated":
 			title = messageSourceService.getMessage("chart.recovered", cds.getLocale());
@@ -897,7 +897,7 @@ public class GraphDataService {
 			title = messageSourceService.getMessage("chart.recoveredPer100000", cds.getLocale());
 			break;
 		case "recovered-perDaysAnd100000":
-			title = messageSourceService.getMessage("chart.recoveredPerDaysAnd100000", cds.getLocale());
+			title = messageSourceService.getMessage("chart.recoveredPerDaysAnd100000", cds.getLocale(), daysToKum);
 			break;
 		case "active-cumulated":
 			title = messageSourceService.getMessage("chart.active", cds.getLocale());
@@ -909,7 +909,7 @@ public class GraphDataService {
 			title = messageSourceService.getMessage("chart.activePer100000", cds.getLocale());
 			break;
 		case "active-perDaysAnd100000":
-			title = messageSourceService.getMessage("chart.activePerDaysAnd100000", cds.getLocale());
+			title = messageSourceService.getMessage("chart.activePerDaysAnd100000", cds.getLocale(), daysToKum);
 			break;
 		}
 		return title;
