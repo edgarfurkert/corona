@@ -1,4 +1,7 @@
-# introduction
+# Architecture
+![corona web](https://github.com/edgarfurkert/corona/blob/master/examples/corona%20-%20architecture.png)
+
+# Introduction
 These projects were created during the Corona phase to get to know Spring 5, Spring Boot 2, Docker, Angular 7+ and Highcharts (https://www.highcharts.com/) better.
 Inspired by the analysis of the Roylab Stats Youtube channel (Coronavirus Live Streaming) I developed my own (private) data analysis based on several data sources to follow the evolution of infections and death rates locally (Baden-Württemberg), in Germany, Europe and all over the world.
 
