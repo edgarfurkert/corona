@@ -40,6 +40,54 @@ public class CoronaDataImport {
 			log.info("Overwritting data: " + entity);
 			entity.setId(d.get().getId());
 			entity.setTimestamp(LocalDateTime.now());
+			if (entity.getActive() == null) {
+				entity.setActive(d.get().getActive());
+			}
+			if (entity.getActiveKum() == null) {
+				entity.setActiveKum(d.get().getActiveKum());
+			}
+			if (entity.getActivePer100000Pop() == null) {
+				entity.setActivePer100000Pop(d.get().getActivePer100000Pop());
+			}			
+			if (entity.getPopulation() == null) {
+				entity.setPopulation(d.get().getPopulation());
+			}			
+			if (entity.getCases() == null) {
+				entity.setCases(d.get().getCases());
+			}			
+			if (entity.getCasesDaysKum() == null) {
+				entity.setCasesDaysKum(d.get().getCasesDaysKum());
+			}			
+			if (entity.getCasesPer100000Pop() == null) {
+				entity.setCasesPer100000Pop(d.get().getCasesPer100000Pop());
+			}			
+			if (entity.getCasesPer100000Pop() == null) {
+				entity.setCasesPer100000Pop(d.get().getCasesPer100000Pop());
+			}			
+			if (entity.getDeaths() == null) {
+				entity.setDeaths(d.get().getDeaths());
+			}			
+			if (entity.getDeathsKum() == null) {
+				entity.setDeathsKum(d.get().getDeathsKum());
+			}			
+			if (entity.getDeathsPer100000Pop() == null) {
+				entity.setDeathsPer100000Pop(d.get().getDeathsPer100000Pop());
+			}			
+			if (entity.getRecovered() == null) {
+				entity.setRecovered(d.get().getRecovered());
+			}			
+			if (entity.getRecoveredKum() == null) {
+				entity.setRecoveredKum(d.get().getRecoveredKum());
+			}			
+			if (entity.getRecoveredPer100000Pop() == null) {
+				entity.setRecoveredPer100000Pop(d.get().getRecoveredPer100000Pop());
+			}			
+			if (entity.getGeoId() == null) {
+				entity.setGeoId(d.get().getGeoId());
+			}			
+			if (entity.getTerritoryCode() == null) {
+				entity.setTerritoryCode(d.get().getTerritoryCode());
+			}			
 		} else {
 			log.info("Saving data: " + entity);
 		}
