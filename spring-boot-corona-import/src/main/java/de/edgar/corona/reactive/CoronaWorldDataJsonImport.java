@@ -353,7 +353,7 @@ public class CoronaWorldDataJsonImport extends CoronaDataImport {
 		
 		data.setActive(node.get("today_new_open_cases") != null ? node.get("today_new_open_cases").asLong() : 0L);
 		data.setActiveKum(node.get("today_open_cases") != null ? node.get("today_open_cases").asLong() : 0L);
-		data.setCases(node.get("today_open_cases") != null ? node.get("today_new_confirmed").asLong() : 0L);
+		data.setCases(node.get("today_new_confirmed") != null ? node.get("today_new_confirmed").asLong() : 0L);
 		data.setCasesKum(node.get("today_confirmed") != null ? node.get("today_confirmed").asLong() : 0L);
 		data.setDateRep(node.get("date") != null ? LocalDate.parse(node.get("date").asText(), dateService.getDateTimeFormatter()).plusDays(1) : null);
 		data.setDay(data.getDateRep() != null ? data.getDateRep().getDayOfMonth() : null);
