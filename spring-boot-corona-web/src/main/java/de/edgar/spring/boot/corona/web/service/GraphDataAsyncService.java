@@ -73,9 +73,9 @@ public class GraphDataAsyncService {
 			LocalDate lastDate;
 			if (coronaDataList == null) {
 				coronaDataList = new ArrayList<>();
-				if (d.getDateRep().isAfter(cds.getFromDate())) {
+				if (d.getDateRep().isAfter(fromDate)) {
 					CoronaData cd;
-			        for (LocalDate date = cds.getFromDate(); date.isBefore(d.getDateRep()); date=date.plusDays(1)) {
+			        for (LocalDate date = fromDate; date.isBefore(d.getDateRep()); date=date.plusDays(1)) {
 			        	cd = new CoronaData();
 			        	cd.setDateRep(date);
 			        	cd.setTerritoryId(d.getTerritoryId());
