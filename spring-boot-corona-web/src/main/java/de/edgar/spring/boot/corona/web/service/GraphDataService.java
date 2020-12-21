@@ -1,5 +1,6 @@
 package de.edgar.spring.boot.corona.web.service;
 
+import java.awt.Color;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -567,15 +568,19 @@ public class GraphDataService {
     	XAxis xAxis = getXAxisWithDates(cds);
     	data.setXAxis(xAxis);
     	
-    	Iterator<ColorProperty> colorIterator = colorProps.getColors().iterator();
+    	Iterator<ColorProperty> colorIterator = colorProps.getDarkColors().iterator();
     	
     	List<Series> series = new ArrayList<>();
 		territoryMap.keySet().forEach(tk -> {
-			String color = colorIterator.hasNext() ? colorIterator.next().getHexRGB() : "";
+			ColorProperty darkColorProp = colorIterator.hasNext() ? colorIterator.next() : colorProps.getDarkColors().iterator().next();
+			String darkColor = darkColorProp.getHexRGB();
+			Color dc = Color.decode(darkColor);
+			Color bc = this.brighten(dc, 0.5);
+			String brightenColor = String.format("#%02X%02X%02X", bc.getRed(), bc.getGreen(), bc.getBlue());
 			
 	    	Series i = new Series();
 	    	i.setName(cache.getTerritoryName(tk, cds.getLocale()) + " - " + messageSourceService.getMessage("chart.infections", cds.getLocale()));
-	    	i.setColor(color);
+	    	i.setColor(darkColor);
 	    	i.setData(new ArrayList<>());
 	    	
 	    	Series d = new Series();
@@ -583,7 +588,7 @@ public class GraphDataService {
 	    	d.setName(cache.getTerritoryName(tk, cds.getLocale()) + " - " + namePostfix);
 	    	d.setYAxis(1);
 	    	d.setDashStyle("ShortDash");
-	    	d.setColor(color);
+	    	d.setColor(brightenColor);
 	    	d.setData(new ArrayList<>());
 	    	
 	    	Map<String, Double> lastMap = new HashMap<>();
@@ -673,13 +678,14 @@ public class GraphDataService {
 				d.getData().add(dValue);
 	    		
 		    	if ("linear".equals(yAxis.getType())) {
-		    		yAxis.setMin(0.0);
+		    		yAxis.setMin1(0.0);
+		    		yAxis.setMin2(0.0);
 		    	} else {
 		    		if (yAxis.getMin1() == null) {
-		    			yAxis.setMin1(1.0);
+		    			yAxis.setMin1(0.01);
 		    		}
 		    		if (yAxis.getMin2() == null) {
-		    			yAxis.setMin2(1.0);
+		    			yAxis.setMin2(0.01);
 		    		}
 		    		
 		    		if (yAxis.getMin1() > iValue && iValue > 0.0) {
@@ -1004,5 +1010,24 @@ public class GraphDataService {
 	private double getCasesPerDaysAnd100000(CoronaData d) {
 		return getDouble(d.getPopulation()) > 0L ? (getDouble(d.getCasesDaysKum()) * (double)daysToKumPop / d.getPopulation()) : 0.0;
 	}
+
+	/**
+     * Make a color brighten.
+     *
+     * @param color Color to make brighten.
+     * @param fraction Darkness fraction.
+     * @return Lighter color.
+     */
+    private Color brighten(Color color, double fraction) {
+
+        int red = (int) Math.round(Math.min(255, color.getRed() + 255 * fraction));
+        int green = (int) Math.round(Math.min(255, color.getGreen() + 255 * fraction));
+        int blue = (int) Math.round(Math.min(255, color.getBlue() + 255 * fraction));
+
+        int alpha = color.getAlpha();
+
+        return new Color(red, green, blue, alpha);
+
+    }
 
 }
