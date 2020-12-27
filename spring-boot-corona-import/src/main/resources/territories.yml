@@ -241,6 +241,8 @@ territories:
     territoryParent: americaNorth
   - territoryId: unitedStatesOfAmerica
     territoryParent: americaNorth
+  - territoryId: unitedStates
+    territoryParent: americaNorth
   - territoryId: anguilla
     territoryParent: americaCaribbean
   - territoryId: antiguaAndBarbuda
