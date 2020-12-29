@@ -242,7 +242,8 @@ public class DownloadConfig {
 				String territoryParent = null;
 				switch (channel) {
 				case "worldChannel":
-					cd = new CoronaWorldData(firstDataLine);
+					//cd = new CoronaWorldData(firstDataLine);
+					cd = new CoronaWorldData(lastDataLine);
 					Territory t = territoryProps.findByTerritoryId(cd.getTerritoryId());
 					if (t != null) {
 						cd.setTerritoryParent(t.getTerritoryParent());
