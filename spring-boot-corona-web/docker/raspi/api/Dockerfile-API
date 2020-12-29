@@ -1,0 +1,7 @@
+FROM hypriot/rpi-java
+ARG JAR_FILE=spring-boot-corona-web-0.0.1-SNAPSHOT.jar
+ENV SPRING_PROFILES_ACTIVE raspi,api
+VOLUME ["/data/logs"]
+COPY ${JAR_FILE} spring-boot-corona-web-api.jar
+ENTRYPOINT ["java","-jar","spring-boot-corona-web-api.jar"]
+
