@@ -1,0 +1,5 @@
+#!/bin/bash
+docker stop spring-boot-corona-import
+docker rm spring-boot-corona-import
+docker build -t efurkert/spring-boot-corona-import .
+docker-compose up &

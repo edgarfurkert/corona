@@ -1,0 +1,3 @@
+#!/bin/bash
+cp ../*.jar .
+docker build -t efurkert/spring-boot-corona-import-api .

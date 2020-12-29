@@ -1,0 +1,2 @@
+#!/bin/bash
+java -jar -Dspring.profiles.active=default spring-boot-corona-web-0.0.1-SNAPSHOT.jar&
