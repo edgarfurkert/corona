@@ -40,7 +40,7 @@ public class CoronaGermanyFederalStateData extends CoronaData {
 		setCasesPer100000Pop(p > 0 ? getCasesKum() * 100000.0 / p : 0.0);
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		LocalDate date = LocalDate.parse((a[11]), formatter);
-		setDateRep(date);
+		setDateRep(date.minusDays(1));
 		setDay(getDateRep().getDayOfMonth());
 		setDeaths(getLong(a[13]));
 		setDeathsKum(getLong(a[8]));
