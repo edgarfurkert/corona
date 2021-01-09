@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -41,13 +40,13 @@ public class CoronaGermanyFederalStatesDataCsvImport extends CoronaDataImport {
 		
 		Map<String, LocalDate> territoryLatestDateRepMap = Collections.synchronizedMap(new HashMap<>());
 		Map<String, Long> territoryDateRepDaysMap = Collections.synchronizedMap(new HashMap<>());
+		Map<String, CoronaGermanyFederalStateData> territoryLatestDataMap = Collections.synchronizedMap(new HashMap<>());
 
 		Path path = Paths.get(fileName);
 		
 		// check update file
 		fileName = path.getFileName().toString();
-		AtomicBoolean filterDisabled = new AtomicBoolean(
-				updateCheckService.checkUpdateFile(path.getParent().toString(), fileName, true));
+		boolean filterDisabled = updateCheckService.checkUpdateFile(path.getParent().toString(), fileName, true);
 		LocalDate now = LocalDate.now();
 
 		Flux<CoronaDataEntity> coronaData = 
@@ -57,9 +56,24 @@ public class CoronaGermanyFederalStatesDataCsvImport extends CoronaDataImport {
 						  .filter(d -> { return d.getDateRep().isBefore(now); })
 						  .sort((c1, c2) -> c1.getDateRep().compareTo(c2.getDateRep()))
 						  .doOnNext(d -> {
+							  String key = d.getTerritoryId() + "-" + d.getTerritoryParent();
+							  CoronaGermanyFederalStateData latestData = territoryLatestDataMap.get(key);
+							  if (latestData != null) {
+								  Long diff = d.getCasesKum() - latestData.getCasesKum();
+								  if (!diff.equals(d.getCases())) {
+									  log.info("Wrong cases: {} - {} ({})", d.getTerritoryId(), d.getCases(), diff);
+									  d.setCases(diff);
+								  }
+								  diff = d.getDeathsKum() - latestData.getDeathsKum();
+								  if (!diff.equals(d.getDeaths())) {
+									  log.info("Wrong deaths: {} - {} ({})", d.getTerritoryId(), d.getDeaths(), diff);
+									  d.setDeaths(diff);
+								  }
+							  }
+							  territoryLatestDataMap.put(key, d);
+							  
 							  LocalDate date = d.getDateRep();
 							  Long daysSum;
-							  String key;
 							  for (int i = 0; i < (daysToSum == null ? 0 : daysToSum); i++) {
 								  key = d.getTerritoryId() + date;
 								  daysSum = territoryDateRepDaysMap.get(key);
@@ -68,7 +82,7 @@ public class CoronaGermanyFederalStatesDataCsvImport extends CoronaDataImport {
 							  }
 						  })
 						  .filter(d -> {
-							  if (filterDisabled.get()) {
+							  if (filterDisabled) {
 								  return true; // do not filter
 							  }
 							  LocalDate latestDate = territoryLatestDateRepMap.get(d.getTerritoryId());

@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -47,8 +46,7 @@ public class CoronaSwitzerlandCantonDeathsDataCsvImport extends CoronaDataImport
 		
 		// check update file
 		fileName = path.getFileName().toString();
-		AtomicBoolean filterDisabled = new AtomicBoolean(
-				updateCheckService.checkUpdateFile(path.getParent().toString(), fileName, true));
+		boolean filterDisabled = updateCheckService.checkUpdateFile(path.getParent().toString(), fileName, true);
 		LocalDate now = LocalDate.now();
 		
 		Flux<CoronaDataEntity> coronaData = 
@@ -72,7 +70,7 @@ public class CoronaSwitzerlandCantonDeathsDataCsvImport extends CoronaDataImport
 							  territoryLastDeathsMap.put(d.getTerritoryId(), d);
 						  })
 						  .filter(d -> {
-							  if (filterDisabled.get()) {
+							  if (filterDisabled) {
 								  return true; // do not filter
 							  }
 							  LocalDate latestDate = territoryLatestDateRepMap.get(d.getTerritoryId());

@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,8 +48,7 @@ public class CoronaWorldDataCsvImport extends CoronaDataImport {
 		
 		// check update file
 		fileName = path.getFileName().toString();
-		AtomicBoolean filterDisabled = new AtomicBoolean(
-				updateCheckService.checkUpdateFile(path.getParent().toString(), fileName, true));
+		boolean filterDisabled = updateCheckService.checkUpdateFile(path.getParent().toString(), fileName, true);
 		LocalDate now = LocalDate.now();
 		
 		Flux<CoronaDataEntity> file = 
@@ -182,7 +180,7 @@ public class CoronaWorldDataCsvImport extends CoronaDataImport {
 						log.debug(c.getTerritoryParent() + ": " + c.toString());
 				  })
 				  .filter(d -> {
-					  if (filterDisabled.get()) {
+					  if (filterDisabled) {
 						  log.debug("do not filter: territoryId {}", d.getTerritoryId());
 						  return true; // do not filter
 					  }
@@ -257,7 +255,7 @@ public class CoronaWorldDataCsvImport extends CoronaDataImport {
 						kummulativeDataMap.put(territoryKey, m);
 					})
 					.filter(d -> {
-						if (filterDisabled.get()) {
+						if (filterDisabled) {
 							return true; // do not filter
 						}
 					    /*
