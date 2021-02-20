@@ -1,20 +1,28 @@
 package de.edgar.corona.api;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import de.edgar.corona.api.model.ApiDataInfo;
 import de.edgar.corona.api.model.ApiDataSource;
+import de.edgar.corona.api.model.ApiInfo;
 import de.edgar.corona.api.model.ApiTerritoryInfo;
 import de.edgar.corona.config.DownloadProperties;
 import de.edgar.corona.jpa.CoronaDataEntity;
@@ -139,4 +147,101 @@ public class CoronaApiRestController {
 		
 		return dataInfo;
 	}
+
+	
+	@GetMapping(path = "/check", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ApiInfo check(@RequestParam(name = "save", required = false) boolean save,
+			             @RequestParam(name = "onlyNoData", required = false) boolean onlyNoData,
+			             @RequestParam(name = "onlyWrongData", required = false) boolean onlyWrongData) {
+		log.debug("CoronaApiRestController: GET check");
+		
+		ApiInfo info = new ApiInfo();
+		
+		List<CoronaDataEntity> territories = repo.getTerritories();
+		
+		long numberOfTerritories = territories.size();
+		
+		AtomicLong counter = new AtomicLong();
+		territories.forEach(t -> {
+			String i = "Analysing territory '" + t.getTerritoryId() + "'... (" + (counter.get()+1) + " von " + numberOfTerritories + ", " + ((counter.get() * 100) / numberOfTerritories + "%)");
+			info.getInfo().add(i);
+			log.info(i);
+			Optional<LocalDate> minDate = repo.getMinDateRepByTerritoryIdAndTerritoryParent(t.getTerritoryId(), t.getTerritoryParent());
+			Optional<LocalDate> maxDate = repo.getMaxDateRepByTerritoryIdAndTerritoryParent(t.getTerritoryId(), t.getTerritoryParent());
+			if (minDate.isPresent() && maxDate.isPresent()) {
+				List<CoronaDataEntity> entities = repo.findByTerritoryIdAndTerritoryParentAndDateRepBetweenOrderByDateRep(t.getTerritoryId(), t.getTerritoryParent(), minDate.get(), maxDate.get());
+				Map<LocalDate, CoronaDataEntity> entityMap = new HashMap<>();
+				entities.forEach(e -> {
+					entityMap.put(e.getDateRep(), e);
+				});
+				CoronaDataEntity e, lastEntity = null;
+				for (LocalDate d = minDate.get(); d.isBefore(maxDate.get()); d = d.plusDays(1)) {
+					e = entityMap.get(d);
+					if (e == null) {
+						if (!onlyWrongData) {
+							i = "No data for territory '" + t.getTerritoryId() + "' at " + d + ".";
+							info.getInfo().add(i);
+							log.info(i);
+						}
+					} else {
+						if (lastEntity != null) {
+							// check data
+							boolean changes = false;
+							Long lastCases = lastEntity.getCases();
+							Long lastCasesKum = lastEntity.getCasesKum();
+							Long cases = e.getCasesKum() - lastCasesKum;
+							if (e.getCases() == null) {
+								if (!onlyWrongData) {
+									i = "No cases for territory '" + t.getTerritoryId() + "' at " + d + ": " + e.getCasesKum() + " != " + lastCasesKum + " + " + e.getCases() + "(" + lastEntity.getDateRep() + ")";
+									info.getInfo().add(i);
+									log.info(i);
+								}
+							} else if (!cases.equals(e.getCases())) {
+								if (!onlyNoData) {
+									i = "Wrong cases for territory '" + t.getTerritoryId() + "' at " + d + ": " + e.getCasesKum() + " != " + lastCasesKum + " + " + e.getCases() + "(" + lastEntity.getDateRep() + ")";
+									info.getInfo().add(i);
+									log.info(i);
+								}
+								
+								e.setCases(cases);
+								changes = true;
+							}
+							Long lastDeaths = lastEntity.getDeaths();
+							Long lastDeathsKum = lastEntity.getDeathsKum();
+							Long deaths = e.getDeathsKum() - lastDeathsKum;
+							if (e.getDeaths() == null) {
+								if (!onlyWrongData) {
+									i = "No deaths for territory '" + t.getTerritoryId() + "' at " + d + ": " + e.getDeathsKum() + " != " + lastDeathsKum + " + " + e.getDeaths() + "(" + lastEntity.getDateRep() + ")";
+									info.getInfo().add(i);
+									log.info(i);
+								}
+							} else if (!deaths.equals(e.getDeaths())) {
+								if (!onlyNoData) {
+									i = "Wrong deaths for territory '" + t.getTerritoryId() + "' at " + d + ": " + e.getDeathsKum() + " != " + lastDeathsKum + " + " + e.getDeaths() + "(" + lastEntity.getDateRep() + ")";
+									info.getInfo().add(i);
+									log.info(i);
+								}
+								
+								e.setDeaths(deaths);
+								changes = true;
+							}
+							
+							if (save && changes) {
+								repo.save(e);
+								log.info("Save: {}", e);
+							}
+						}
+						lastEntity = e;
+					}
+				}
+			}
+			
+			counter.incrementAndGet();
+		});
+		
+		log.info("Analysis completed.");
+		
+		return info;
+	}
+
 }

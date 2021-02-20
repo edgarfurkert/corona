@@ -24,6 +24,7 @@ import de.edgar.corona.config.DownloadProperties;
 import de.edgar.corona.config.DownloadUrlProperty;
 import de.edgar.corona.reactive.CoronaGermanyDataCsvImport;
 import de.edgar.corona.reactive.CoronaGermanyFederalStatesDataCsvImport;
+import de.edgar.corona.reactive.CoronaGermanyRkiDataCsvImport;
 import de.edgar.corona.reactive.CoronaSwitzerlandCantonCasesDataCsvImport;
 import de.edgar.corona.reactive.CoronaSwitzerlandCantonDeathsDataCsvImport;
 import de.edgar.corona.reactive.CoronaWorldDataCsvImport;
@@ -78,6 +79,9 @@ public class CoronaDataImportConfig {
 
 	@Autowired
 	private CoronaWorldDataCsvImport csvImportWorldData;
+	
+	@Autowired
+	private CoronaGermanyRkiDataCsvImport csvImportGermanyRkiData;
 	
 	@Autowired
 	private CoronaGermanyDataCsvImport csvImportGermanyData;
@@ -274,6 +278,25 @@ public class CoronaDataImportConfig {
         		csvImportWorldData.importData(inFile.getAbsolutePath());
     		} else {
     			log.error("worldChannel: Cannot rename file {}", file.getAbsolutePath());
+    		}
+    	};
+    }
+    
+	/**
+	 * Start import process.
+	 * 
+	 * @return MessageHandler
+	 */
+	@Bean
+    @ServiceActivator(inputChannel="germanyRkiChannel")
+    public MessageHandler germanyRkiData() {
+    	return message -> {
+    		File file = (File)message.getPayload();
+    		File inFile = new File(file.getAbsolutePath() + ".in");
+    		if (file.renameTo(inFile)) {
+        		csvImportGermanyRkiData.importData(inFile.getAbsolutePath());
+    		} else {
+    			log.error("germanyRkiChannel: Cannot rename file {}", file.getAbsolutePath());
     		}
     	};
     }

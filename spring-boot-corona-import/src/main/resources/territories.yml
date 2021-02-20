@@ -37,6 +37,8 @@ territories:
     territoryParent: europeSouth
   - territoryId: gibraltar
     territoryParent: europeSouth
+  - territoryId: vatican
+    territoryParent: europeSouth
   - territoryId: bulgaria
     territoryParent: europeEast
   - territoryId: czechia
@@ -151,7 +153,7 @@ territories:
     territoryParent: africaSouth
   - territoryId: southSudan
     territoryParent: africaEast
-  - territoryId: unitedRepublicOfTanzania
+  - territoryId: tanzania
     territoryParent: africaEast
   - territoryId: uganda
     territoryParent: africaEast
@@ -165,7 +167,7 @@ territories:
     territoryParent: africaCentral
   - territoryId: congo
     territoryParent: africaCentral
-  - territoryId: democraticRepublicOfTheCongo
+  - territoryId: democraticRepublicOfCongo
     territoryParent: africaCentral
   - territoryId: equatorialGuinea
     territoryParent: africaCentral
@@ -191,7 +193,7 @@ territories:
     territoryParent: africaWest
   - territoryId: capeVerde
     territoryParent: africaWest
-  - territoryId: coteDivoire
+  - territoryId: coteDIvoire
     territoryParent: africaWest
   - territoryId: gambia
     territoryParent: africaWest
@@ -351,7 +353,7 @@ territories:
     territoryParent: asiaCentral
   - territoryId: tajikistan
     territoryParent: asiaCentral
-  - territoryId: bruneiDarussalam
+  - territoryId: brunei
     territoryParent: asiaSoutheast
   - territoryId: cambodia
     territoryParent: asiaSoutheast
@@ -369,9 +371,11 @@ territories:
     territoryParent: asiaSoutheast
   - territoryId: thailand
     territoryParent: asiaSoutheast
-  - territoryId: timorLeste
+  - territoryId: timor
     territoryParent: asiaSoutheast
   - territoryId: vietnam
+    territoryParent: asiaSoutheast
+  - territoryId: hongKong
     territoryParent: asiaSoutheast
   - territoryId: bahrain
     territoryParent: asiaWest
@@ -410,6 +414,16 @@ territories:
   - territoryId: papuaNewGuinea
     territoryParent: oceania
   - territoryId: australia
+    territoryParent: oceania
+  - territoryId: samoa
+    territoryParent: oceania
+  - territoryId: vanuatu
+    territoryParent: oceania
+  - territoryId: solomonIslands
+    territoryParent: oceania
+  - territoryId: micronesiaCountry
+    territoryParent: oceania
+  - territoryId: marshallIslands
     territoryParent: oceania
   - territoryId: asiaNortheast
     territoryParent: asia

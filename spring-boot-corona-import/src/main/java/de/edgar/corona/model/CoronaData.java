@@ -70,7 +70,7 @@ public class CoronaData implements Cloneable {
 		return i;
 	}
 	
-	public String getKey(String value) {
+	public static String getKey(String value) {
 		if (value == null) {
 			return null;
 		}

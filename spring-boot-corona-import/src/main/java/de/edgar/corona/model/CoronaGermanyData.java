@@ -32,7 +32,7 @@ public class CoronaGermanyData extends CoronaData {
 		String c = a[2];
 		if (fs != null) {
 			p = fs.getPopulation();
-			t = fs.getName();
+			t = fs.getOrgName();
 			c = fs.getCode();
 		} else {
 			log.error("CoronaGermanyData: federal state {} not found.", a[2]);
@@ -42,7 +42,7 @@ public class CoronaGermanyData extends CoronaData {
 		setCasesPer100000Pop(p > 0 ? getCasesKum() * 100000.0 / p : 0.0);
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		LocalDate date = LocalDate.parse((a[5]), formatter);
-		setDateRep(date.minusDays(1));
+		setDateRep(date);
 		setDay(getDateRep().getDayOfMonth());
 		setDeaths(getLong(a[7]));
 		setDeathsKum(getLong(a[4]));

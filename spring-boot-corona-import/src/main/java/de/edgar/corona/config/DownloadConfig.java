@@ -33,6 +33,7 @@ import de.edgar.corona.jpa.CoronaDataJpaRepository;
 import de.edgar.corona.model.CoronaData;
 import de.edgar.corona.model.CoronaGermanyData;
 import de.edgar.corona.model.CoronaGermanyFederalStateData;
+import de.edgar.corona.model.CoronaGermanyRkiData;
 import de.edgar.corona.model.CoronaSwitzerlandCantonData;
 import de.edgar.corona.model.CoronaSwitzerlandCasesData;
 import de.edgar.corona.model.CoronaSwitzerlandDeathsData;
@@ -150,6 +151,10 @@ public class DownloadConfig {
 		int CONNECT_TIMEOUT = props.getConnectTimeout();
 		int READ_TIMEOUT = props.getReadTimeout();
 		try {
+			if (StringUtils.isEmpty(downloadUrlProperty.getUrl())) {
+				log.info("No download with channel {} because url is empty.", downloadUrlProperty.getChannel());
+				return;
+			}
 		    log.info("Download file from url {}...", downloadUrlProperty.getUrl());
 		    String fileName = importPath + "/" + getFileName(downloadUrlProperty.getFileName()) + ".download";
 		    File downloadFile = new File(fileName);
@@ -255,6 +260,9 @@ public class DownloadConfig {
 						handleDownloadFile(downloadFile, new Exception("No new data in file " + fileName));
 						return;
 					}
+					break;
+				case "germanyRkiChannel":
+					// do nothing
 					break;
 				case "germanyChannel":
 					cd = new CoronaGermanyData(lastDataLine, federalStateProps);

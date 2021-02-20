@@ -9,7 +9,7 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface CoronaDataJpaRepository extends CrudRepository<CoronaDataEntity, Long> {
 
-	public Optional<CoronaDataEntity> findByGeoIdAndDateRep(String territory, LocalDate dateRep);
+	public Optional<CoronaDataEntity> findByGeoIdAndDateRep(String geoId, LocalDate dateRep);
 	
 	@Query("SELECT MAX(c.dateRep) FROM CoronaDataEntity c WHERE c.territoryId = ?1 AND c.territoryParent = ?2")
 	public Optional<LocalDate> getMaxDateRepByTerritoryIdAndTerritoryParent(String territoryId, String territoryParent);
@@ -35,4 +35,8 @@ public interface CoronaDataJpaRepository extends CrudRepository<CoronaDataEntity
 	public Optional<CoronaDataEntity> findTopByTerritoryIdAndTerritoryParentOrderByDateRep(String territoryId, String territoryParent);
 	public Optional<CoronaDataEntity> findTopByTerritoryIdAndTerritoryParentOrderByDateRepDesc(String territoryId, String territoryParent);
 	
+	public List<CoronaDataEntity> findByTerritoryIdAndTerritoryParentAndDateRepBetweenOrderByDateRep(String territoryId, String territoryParent, LocalDate from, LocalDate to);
+	
+	public Optional<CoronaDataEntity> findTopByTerritoryIdAndPopulationGreaterThan(String territoryId, Long population);
+
 }

@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -55,7 +56,8 @@ public class CoronaWorldDataCsvImport extends CoronaDataImport {
 				FluxFileReader.fromPath(path)
 					.skip(1) // skip header
 					.map(l -> { return new CoronaWorldData(l); })
-					.filter(d -> { return d.getDateRep().isBefore(now); })
+					.filter(d -> d.getDateRep().isBefore(now))
+					.filter(d -> !StringUtils.isEmpty(d.getTerritoryParent()))
 					.sort((d1, d2) -> d1.getDateRep().compareTo(d2.getDateRep()))
 					.doOnNext(m -> {
 						// e.g. germany
@@ -91,6 +93,13 @@ public class CoronaWorldDataCsvImport extends CoronaDataImport {
 						// collect territory parent and world population data
 						String worldKey = "world";
 						
+						Territory territoryParent = territoryProps.findByTerritoryId(m.getTerritoryParent());
+						if (territoryParent != null) {
+							orgTerritoryParent = territoryParent.getTerritoryParent();
+						} else {
+							log.debug("No parent found in territoryProps: {}, using {}", m.getTerritoryParent(), worldKey);
+						}
+						
 						// e.g. europeWest
 						String territoryParentKey = m.getTerritoryParent();
 						Map<String, CoronaWorldData> territoryParentPopulationMap = territoryParentMap.get(territoryParentKey);
@@ -109,7 +118,7 @@ public class CoronaWorldDataCsvImport extends CoronaDataImport {
 								c.setTerritoryId(m.getTerritoryParent());
 								c.setTerritory(m.getTerritoryParent()); // e.g. europeWest
 								c.setTerritoryCode(m.getTerritoryParent());
-								c.setTerritoryParent(territory != null ? orgTerritoryParent : worldKey);
+								c.setTerritoryParent(territoryParent != null ? orgTerritoryParent : worldKey);
 								c.setOrderId(OrderIdEnum.TERRITORY.getOrderId());
 								territoryParentPopulationMap.put(dateRepKey, c);
 							} catch (CloneNotSupportedException e) {
