@@ -23,6 +23,9 @@ public class CoronaData implements Cloneable {
 	private Long deaths;
 	private Long recovered;
 	private Long active;
+	private Long totalVaccinations;
+	private Long firstVaccinations;
+	private Long fullVaccinations;
 	private String territoryId;
 	private String territory;
 	private String territoryCode;
@@ -34,10 +37,16 @@ public class CoronaData implements Cloneable {
 	private Long deathsKum;
 	private Long recoveredKum;
 	private Long activeKum;
+	private Long firstVaccinationsKum;
+	private Long fullVaccinationsKum;
+	private Long totalVaccinationsKum;
 	private Double casesPer100000Pop;
 	private Double deathsPer100000Pop;
 	private Double recoveredPer100000Pop;
 	private Double activePer100000Pop;
+	private Double firstVaccinationsPer100000Pop;
+	private Double fullVaccinationsPer100000Pop;
+	private Double totalVaccinationsPer100000Pop;
 	private Long orderId;
 	
 	protected Long getLong(String v) {
@@ -70,7 +79,7 @@ public class CoronaData implements Cloneable {
 		return i;
 	}
 	
-	public String getKey(String value) {
+	public static String getKey(String value) {
 		if (value == null) {
 			return null;
 		}

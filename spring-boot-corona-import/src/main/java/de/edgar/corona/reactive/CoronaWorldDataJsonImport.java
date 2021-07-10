@@ -277,20 +277,24 @@ public class CoronaWorldDataJsonImport extends CoronaDataImport {
 			entity.setRecovered(data.getRecovered());
 			entity.setRecoveredKum(data.getRecoveredKum());
 			entity.setRecoveredPer100000Pop(entity.getPopulation() != null ? entity.getRecoveredKum() * 100000.0 / entity.getPopulation() : 0L);
-			Long active = entity.getCases() - entity.getDeaths() - entity.getRecovered();
-			entity.setActive(active);
-			Long activeKum = entity.getCasesKum() - entity.getDeathsKum() - entity.getRecoveredKum();
-			entity.setActiveKum(activeKum);
-			entity.setActivePer100000Pop(entity.getPopulation() != null ? entity.getActiveKum() * 100000.0 / entity.getPopulation() : 0L);
+			if (entity.getCases() != null && entity.getDeaths() != null && entity.getRecovered() != null) {
+				Long active = entity.getCases() - entity.getDeaths() - entity.getRecovered();
+				entity.setActive(active);
+			}
+			if (entity.getCasesKum() != null && entity.getDeathsKum() != null && entity.getRecoveredKum() != null) {
+				Long activeKum = entity.getCasesKum() - entity.getDeathsKum() - entity.getRecoveredKum();
+				entity.setActiveKum(activeKum);
+				entity.setActivePer100000Pop(entity.getPopulation() != null ? entity.getActiveKum() * 100000.0 / entity.getPopulation() : 0L);
+				if (log.isDebugEnabled() && activeKum.longValue() != data.getActiveKum().longValue()) {
+					log.debug("ACTIVE KUM DIFF: {} - {} vs {}", entity.getTerritoryId(), data.getActiveKum(), activeKum);
+				}
+			}
 			entity.setTimestamp(LocalDateTime.now());
 			log.info("Overwritting data: {} - {}", entity.getTerritoryId(), entity);
-			if (log.isDebugEnabled() && activeKum.longValue() != data.getActiveKum().longValue()) {
-				log.debug("ACTIVE KUM DIFF: {} - {} vs {}", entity.getTerritoryId(), data.getActiveKum(), activeKum);
-			}
-			if (log.isDebugEnabled() && data.getCasesKum().longValue() != entity.getCasesKum().longValue()) {
+			if (log.isDebugEnabled() && (data.getCasesKum() != null ? data.getCasesKum().longValue() : 0L) != (entity.getCasesKum() != null ? entity.getCasesKum().longValue() : 0L)) {
 				log.debug("CASES DIFF     : {} - {} vs {}", entity.getTerritoryId(), data.getCasesKum(), entity.getCasesKum());
 			}
-			if (log.isDebugEnabled() && data.getDeathsKum().longValue() != entity.getDeathsKum().longValue()) {
+			if (log.isDebugEnabled() && (data.getDeathsKum() != null ? data.getDeathsKum().longValue() : 0L) != (entity.getDeathsKum() != null ? entity.getDeathsKum().longValue() : 0L)) {
 				log.debug("DEATHS DIFF    : {} - {} vs {}", entity.getTerritoryId(), data.getDeathsKum(), entity.getDeathsKum());
 			}
 		} else {
@@ -305,9 +309,11 @@ public class CoronaWorldDataJsonImport extends CoronaDataImport {
 			entity.setActivePer100000Pop(entity.getPopulation() != null ? entity.getActiveKum() * 100000.0 / entity.getPopulation() : 0L);
 			log.info("Saving data: {} - {}", entity.getTerritoryId(), entity);
 		}
-		Long checkActiveKum = entity.getCasesKum() - entity.getDeathsKum() - entity.getRecoveredKum();
-		if (log.isDebugEnabled() && checkActiveKum.longValue() != entity.getActiveKum().longValue()) {
-			log.debug("ACTIVE KUM MISMATCH: {} - {} vs {}", entity.getTerritoryId(), checkActiveKum, entity.getActiveKum());
+		if (entity.getCasesKum() != null && entity.getDeathsKum() != null && entity.getRecoveredKum() != null) {
+			Long checkActiveKum = entity.getCasesKum() - entity.getDeathsKum() - entity.getRecoveredKum();
+			if (log.isDebugEnabled() && checkActiveKum.longValue() != entity.getActiveKum().longValue()) {
+				log.debug("ACTIVE KUM MISMATCH: {} - {} vs {}", entity.getTerritoryId(), checkActiveKum, entity.getActiveKum());
+			}
 		}
 		repository.save(entity);
 	}
@@ -368,6 +374,41 @@ public class CoronaWorldDataJsonImport extends CoronaDataImport {
 		data.setTerritoryCode(node.get("id") != null ? node.get("id").asText() : null);
 		data.setTerritoryParent(territoryParent);
 		data.setYear(data.getDateRep() != null ? data.getDateRep().getYear() : null);
+
+		if (OrderIdEnum.FEDERALSTATE.equals(orderId)) {
+			switch (data.getTerritoryCode()) {
+			case "baden-wuerttemberg":
+				data.setTerritory("Baden-Württemberg"); 
+				break;
+			case "faroe_islands":
+				data.setTerritory("Faeroe Islands"); 
+				break;
+			case "macau":
+				data.setTerritory("Macao");
+				break;
+			case "guyane":
+				data.setTerritory("Guyana");
+				break;
+			}
+			switch (data.getTerritoryCode()) {
+			case "bermuda":
+			case "cayman_islands":
+			case "faroe_islands":
+			case "greenland":
+			case "macau":
+			case "montserrat":
+			case "guyane":
+			case "gibraltar":
+			case "hongKong":
+			case "isleOfMan":
+				Territory t = territoryProps.findByTerritoryId(CoronaData.getKey(data.getTerritory()));
+				if (t != null) {
+					data.setTerritoryParent(t.getTerritoryParent());
+					data.setOrderId(OrderIdEnum.COUNTRY.getOrderId());
+				}
+				break;
+			}
+		}
 		
 		return data;
 	}

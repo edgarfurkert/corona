@@ -1,5 +1,6 @@
 package de.edgar.corona.service;
 
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.regex.Pattern;
 
@@ -17,5 +18,9 @@ public class DateService {
 
 	public DateTimeFormatter getDateTimeFormatter() {
 		return DateTimeFormatter.ofPattern(DATE_FORMAT);
+	}
+	
+	public static String getDateString(LocalDate date) {
+		return date.format(DateTimeFormatter.ofPattern(DATE_FORMAT));
 	}
 }

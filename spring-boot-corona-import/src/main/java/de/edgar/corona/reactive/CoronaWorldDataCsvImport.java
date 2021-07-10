@@ -7,9 +7,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -49,33 +49,27 @@ public class CoronaWorldDataCsvImport extends CoronaDataImport {
 		
 		// check update file
 		fileName = path.getFileName().toString();
-		AtomicBoolean filterDisabled = new AtomicBoolean(
-				updateCheckService.checkUpdateFile(path.getParent().toString(), fileName, true));
+		boolean filterDisabled = updateCheckService.checkUpdateFile(path.getParent().toString(), fileName, true);
 		LocalDate now = LocalDate.now();
 		
 		Flux<CoronaDataEntity> file = 
 				FluxFileReader.fromPath(path)
 					.skip(1) // skip header
 					.map(l -> { return new CoronaWorldData(l); })
-					.filter(d -> { return d.getDateRep().isBefore(now); })
+					.filter(d -> d.getDateRep().isBefore(now))
+					.filter(d -> !StringUtils.isEmpty(d.getTerritoryParent()))
 					.sort((d1, d2) -> d1.getDateRep().compareTo(d2.getDateRep()))
 					.doOnNext(m -> {
 						// e.g. germany
 						String territoryId = m.getTerritoryId();
 						CoronaWorldData c = kummulativeDataMap.get(territoryId);
 						if (c != null) {
-							m.setCasesKum(m.getCases() + (c.getCasesKum() != null ? c.getCasesKum() : 0L));
-							m.setDeathsKum(m.getDeaths() + (c.getDeathsKum() != null ? c.getDeathsKum() : 0L));
-						} else {
-							m.setCasesKum(m.getCases());
-							m.setDeathsKum(m.getDeaths());
-						}
-						if (m.getPopulation() > 0) {
-							m.setCasesPer100000Pop((m.getCasesKum() * 100000.0) / m.getPopulation().doubleValue());
-							m.setDeathsPer100000Pop((m.getDeathsKum() * 100000.0) / m.getPopulation().doubleValue());
-						} else {
-							m.setCasesPer100000Pop(0.0);
-							m.setDeathsPer100000Pop(0.0);
+							if (c.getFirstVaccinationsKum() != null) {
+								m.setFirstVaccinations(m.getFirstVaccinationsKum() - c.getFirstVaccinationsKum());
+							}
+							if (c.getFullVaccinationsKum() != null) {
+								m.setFullVaccinations(m.getFullVaccinationsKum() - c.getFullVaccinationsKum());
+							}
 						}
 						kummulativeDataMap.put(territoryId, m);
 						
@@ -92,6 +86,13 @@ public class CoronaWorldDataCsvImport extends CoronaDataImport {
 						
 						// collect territory parent and world population data
 						String worldKey = "world";
+						
+						Territory territoryParent = territoryProps.findByTerritoryId(m.getTerritoryParent());
+						if (territoryParent != null) {
+							orgTerritoryParent = territoryParent.getTerritoryParent();
+						} else {
+							log.debug("No parent found in territoryProps: {}, using {}", m.getTerritoryParent(), worldKey);
+						}
 						
 						// e.g. europeWest
 						String territoryParentKey = m.getTerritoryParent();
@@ -111,7 +112,7 @@ public class CoronaWorldDataCsvImport extends CoronaDataImport {
 								c.setTerritoryId(m.getTerritoryParent());
 								c.setTerritory(m.getTerritoryParent()); // e.g. europeWest
 								c.setTerritoryCode(m.getTerritoryParent());
-								c.setTerritoryParent(territory != null ? orgTerritoryParent : worldKey);
+								c.setTerritoryParent(territoryParent != null ? orgTerritoryParent : worldKey);
 								c.setOrderId(OrderIdEnum.TERRITORY.getOrderId());
 								territoryParentPopulationMap.put(dateRepKey, c);
 							} catch (CloneNotSupportedException e) {
@@ -182,7 +183,7 @@ public class CoronaWorldDataCsvImport extends CoronaDataImport {
 						log.debug(c.getTerritoryParent() + ": " + c.toString());
 				  })
 				  .filter(d -> {
-					  if (filterDisabled.get()) {
+					  if (filterDisabled) {
 						  log.debug("do not filter: territoryId {}", d.getTerritoryId());
 						  return true; // do not filter
 					  }
@@ -257,7 +258,7 @@ public class CoronaWorldDataCsvImport extends CoronaDataImport {
 						kummulativeDataMap.put(territoryKey, m);
 					})
 					.filter(d -> {
-						if (filterDisabled.get()) {
+						if (filterDisabled) {
 							return true; // do not filter
 						}
 					    /*

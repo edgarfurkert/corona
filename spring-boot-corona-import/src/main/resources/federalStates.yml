@@ -1,80 +1,96 @@
 federalstates:
   - key: badenWu00FCrttemberg
+    orgName: Baden-Württemberg
     name: Baden-Württemberg
     code: DE-BW
     population: 11069533
     parent: germany
   - key: bavaria
+    orgName: Bavaria
     name: Bayern
     code: DE-BY
     population: 13076721
     parent: germany
   - key: berlin
+    orgName: Berlin
     name: Berlin
     code: DE-BE
     population: 3644826
     parent: germany
   - key: brandenburg
+    orgName: Brandenburg
     name: Brandenburg
     code: DE-BB
     population: 2511917
     parent: germany
   - key: bremen
+    orgName: Bremen
     name: Bremen
     code: DE-HB
     population: 682986
     parent: germany
   - key: hamburg
+    orgName: Hamburg
     name: Hamburg
     code: DE-HH
     population: 1841179
     parent: germany
   - key: hesse
+    orgName: Hesse
     name: Hessen
     code: DE-HE
     population: 6265809
     parent: germany
   - key: lowerSaxony
+    orgName: Lower Saxony
     name: Niedersachsen
     code: DE-NI
     population: 7982448
     parent: germany
   - key: mecklenburgWesternPomerania
+    orgName: Mecklenburg-Western Pomerania
     name: Mecklenburg-Vorpommern
     code: DE-MV
     population: 1609675
     parent: germany
   - key: northRhineWestphalia
+    orgName: North Rhine-Westphalia
     name: Nordrhein-Westfalen
     code: DE-NW
     population: 17932651
     parent: germany
   - key: rhinelandPalatinate
+    orgName: Rhineland-Palatinate
     name: Rheinland-Pfalz
     code: DE-RP
     population: 4084844
     parent: germany
   - key: saarland
+    orgName: Saarland
     name: Saarland
     code: DE-SL
     population: 990509
     parent: germany
   - key: saxony
+    orgName: Saxony
     name: Sachsen
     code: DE-SN
     population: 4077937
     parent: germany
   - key: saxonyAnhalt
+    orgName: Saxony-Anhalt
     name: Sachsen-Anhalt
     code: DE-ST
     population: 2208321
     parent: germany
   - key: schleswigHolstein
+    orgName: Schleswig-Holstein
     name: Schleswig-Holstein
     code: DE-SH
     population: 2896712
     parent: germany
   - key: thuringia
+    orgName: Thuringia
     name: Thüringen
     code: DE-TH
     population: 2143145

@@ -5,6 +5,8 @@ territories:
     territoryParent: europeEast
   - territoryId: faroeIslands
     territoryParent: europeNorth
+  - territoryId: faeroeIslands
+    territoryParent: europeNorth
   - territoryId: finland
     territoryParent: europeNorth
   - territoryId: iceland
@@ -36,6 +38,8 @@ territories:
   - territoryId: spain
     territoryParent: europeSouth
   - territoryId: gibraltar
+    territoryParent: europeSouth
+  - territoryId: vatican
     territoryParent: europeSouth
   - territoryId: bulgaria
     territoryParent: europeEast
@@ -151,7 +155,7 @@ territories:
     territoryParent: africaSouth
   - territoryId: southSudan
     territoryParent: africaEast
-  - territoryId: unitedRepublicOfTanzania
+  - territoryId: tanzania
     territoryParent: africaEast
   - territoryId: uganda
     territoryParent: africaEast
@@ -165,7 +169,7 @@ territories:
     territoryParent: africaCentral
   - territoryId: congo
     territoryParent: africaCentral
-  - territoryId: democraticRepublicOfTheCongo
+  - territoryId: democraticRepublicOfCongo
     territoryParent: africaCentral
   - territoryId: equatorialGuinea
     territoryParent: africaCentral
@@ -191,7 +195,7 @@ territories:
     territoryParent: africaWest
   - territoryId: capeVerde
     territoryParent: africaWest
-  - territoryId: coteDivoire
+  - territoryId: coteDIvoire
     territoryParent: africaWest
   - territoryId: gambia
     territoryParent: africaWest
@@ -217,6 +221,8 @@ territories:
     territoryParent: africaWest
   - territoryId: togo
     territoryParent: africaWest
+  - territoryId: saintHelena
+    territoryParent: africaWest
   - territoryId: belize
     territoryParent: americaNorth
   - territoryId: bermuda
@@ -238,8 +244,6 @@ territories:
   - territoryId: mexico
     territoryParent: americaNorth
   - territoryId: panama
-    territoryParent: americaNorth
-  - territoryId: unitedStatesOfAmerica
     territoryParent: americaNorth
   - territoryId: unitedStates
     territoryParent: americaNorth
@@ -305,6 +309,8 @@ territories:
     territoryParent: americaSouth
   - territoryId: falklandIslandsMalvinas
     territoryParent: americaSouth
+  - territoryId: falklandIslands
+    territoryParent: americaSouth
   - territoryId: guyana
     territoryParent: americaSouth
   - territoryId: paraguay
@@ -351,7 +357,7 @@ territories:
     territoryParent: asiaCentral
   - territoryId: tajikistan
     territoryParent: asiaCentral
-  - territoryId: bruneiDarussalam
+  - territoryId: brunei
     territoryParent: asiaSoutheast
   - territoryId: cambodia
     territoryParent: asiaSoutheast
@@ -369,9 +375,13 @@ territories:
     territoryParent: asiaSoutheast
   - territoryId: thailand
     territoryParent: asiaSoutheast
-  - territoryId: timorLeste
+  - territoryId: timor
     territoryParent: asiaSoutheast
   - territoryId: vietnam
+    territoryParent: asiaSoutheast
+  - territoryId: hongKong
+    territoryParent: asiaSoutheast
+  - territoryId: macao
     territoryParent: asiaSoutheast
   - territoryId: bahrain
     territoryParent: asiaWest
@@ -410,6 +420,16 @@ territories:
   - territoryId: papuaNewGuinea
     territoryParent: oceania
   - territoryId: australia
+    territoryParent: oceania
+  - territoryId: samoa
+    territoryParent: oceania
+  - territoryId: vanuatu
+    territoryParent: oceania
+  - territoryId: solomonIslands
+    territoryParent: oceania
+  - territoryId: micronesiaCountry
+    territoryParent: oceania
+  - territoryId: marshallIslands
     territoryParent: oceania
   - territoryId: asiaNortheast
     territoryParent: asia

@@ -12,5 +12,8 @@ public class YAxis {
 	private Double min;
 	private Double min1;
 	private Double min2;
+	private Double max;
+	private Double max1;
+	private Double max2;
 	
 }

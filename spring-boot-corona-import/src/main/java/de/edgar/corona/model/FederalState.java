@@ -6,6 +6,7 @@ import lombok.Data;
 public class FederalState {
 
 	private String key;
+	private String orgName;
 	private String name;
 	private String code;
 	private Long population;

@@ -8,6 +8,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
+import de.edgar.corona.model.CoronaData;
 import de.edgar.corona.model.FederalState;
 import lombok.Data;
 
@@ -20,7 +21,15 @@ public class FederalStatesProperties {
 	private List<FederalState> federalStates;
 	
 	private Map<String, FederalState> federalStateKeyMap;
+	private Map<String, FederalState> federalStateNameMap;
 	private Map<String, FederalState> federalStateCodeMap;
+	
+	public void addFederalState(FederalState fs) {
+		this.federalStates.add(fs);
+		this.federalStateCodeMap = null;
+		this.federalStateKeyMap = null;
+		this.federalStateNameMap = null;
+	}
 	
 	public FederalState findByKeyAndParent(String key, String parent) {
 		if (federalStateKeyMap == null) {
@@ -31,6 +40,17 @@ public class FederalStatesProperties {
 		}
 		
 		return federalStateKeyMap.get(key + "-" + parent);
+	}
+	
+	public FederalState findByNameAndParent(String name, String parent) {
+		if (federalStateNameMap == null) {
+			federalStateNameMap = new HashMap<>();
+			federalStates.forEach(fs -> {
+				federalStateNameMap.put(CoronaData.getKey(fs.getName()) + "-" + fs.getParent(), fs);
+			});
+		}
+		
+		return federalStateNameMap.get(name + "-" + parent);
 	}
 	
 	public FederalState findByCode(String code) {

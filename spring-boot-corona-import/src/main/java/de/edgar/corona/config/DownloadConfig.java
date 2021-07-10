@@ -33,6 +33,7 @@ import de.edgar.corona.jpa.CoronaDataJpaRepository;
 import de.edgar.corona.model.CoronaData;
 import de.edgar.corona.model.CoronaGermanyData;
 import de.edgar.corona.model.CoronaGermanyFederalStateData;
+import de.edgar.corona.model.CoronaGermanyVaccinationData;
 import de.edgar.corona.model.CoronaSwitzerlandCantonData;
 import de.edgar.corona.model.CoronaSwitzerlandCasesData;
 import de.edgar.corona.model.CoronaSwitzerlandDeathsData;
@@ -111,7 +112,7 @@ public class DownloadConfig {
 			String fileName = getFileName(u.getFileName());
 			List<String> listFiles = Files.list(path)
 				    .map(p -> p.getFileName().toString())
-				    .filter(s -> s.startsWith(fileName))
+				    .filter(s -> s.startsWith(fileName) && !s.endsWith(".download"))
 				    .collect(Collectors.toList());
 			
 			if (listFiles.isEmpty()) {
@@ -150,6 +151,10 @@ public class DownloadConfig {
 		int CONNECT_TIMEOUT = props.getConnectTimeout();
 		int READ_TIMEOUT = props.getReadTimeout();
 		try {
+			if (StringUtils.isEmpty(downloadUrlProperty.getUrl())) {
+				log.info("No download with channel {} because url is empty.", downloadUrlProperty.getChannel());
+				return;
+			}
 		    log.info("Download file from url {}...", downloadUrlProperty.getUrl());
 		    String fileName = importPath + "/" + getFileName(downloadUrlProperty.getFileName()) + ".download";
 		    File downloadFile = new File(fileName);
@@ -256,6 +261,9 @@ public class DownloadConfig {
 						return;
 					}
 					break;
+				case "germanyRkiChannel":
+					// do nothing
+					break;
 				case "germanyChannel":
 					cd = new CoronaGermanyData(lastDataLine, federalStateProps);
 					territoryParent = cd.getTerritoryParent();
@@ -268,6 +276,16 @@ public class DownloadConfig {
 					break;
 				case "germanyFederalStatesChannel":
 					cd = new CoronaGermanyFederalStateData(lastDataLine, federalStateProps);
+					territoryParent = cd.getTerritoryParent();
+					lastDate = repository.getMaxDateRepByTerritoryIdAndTerritoryParent(cd.getTerritoryId(), territoryParent);
+					if (lastDate.isPresent() && !lastDate.get().isBefore(cd.getDateRep())) {
+						// there are no new data -> delete file
+						handleDownloadFile(downloadFile, new Exception("No new data in file " + fileName));
+						return;
+					}
+					break;
+				case "germanyVaccinationChannel":
+					cd = new CoronaGermanyVaccinationData(lastDataLine, federalStateProps);
 					territoryParent = cd.getTerritoryParent();
 					lastDate = repository.getMaxDateRepByTerritoryIdAndTerritoryParent(cd.getTerritoryId(), territoryParent);
 					if (lastDate.isPresent() && !lastDate.get().isBefore(cd.getDateRep())) {

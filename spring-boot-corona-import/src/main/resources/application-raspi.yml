@@ -22,7 +22,10 @@ corona:
   data:
     import:
       path: ./downloads
-      poller: 3600000
+      csv:      
+        poller: 3600000
+      json:
+        poller: 60000
     download:
       # 1 hour
       poller: 3600000

@@ -14,25 +14,25 @@ import org.springframework.stereotype.Component;
 import de.edgar.corona.config.FederalStatesProperties;
 import de.edgar.corona.jpa.CoronaDataEntity;
 import de.edgar.corona.jpa.CoronaDataJpaRepository;
-import de.edgar.corona.model.CoronaData;
-import de.edgar.corona.model.CoronaSwitzerlandCasesData;
+import de.edgar.corona.model.CoronaGermanyVaccinationData;
+import de.edgar.corona.model.FederalState;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 
 /**
- * Import corona cases data of the cantons in switzland. 
+ * Import corona vaccation data of the federal states in germany.
  * 
  * @author efurkert
  *
  */
 @Slf4j
 @Component
-public class CoronaSwitzerlandCantonCasesDataCsvImport extends CoronaDataImport {
+public class CoronaGermanyVaccinationDataCsvImport extends CoronaDataImport {
 
 	@Autowired
 	private FederalStatesProperties props;
 	
-	public CoronaSwitzerlandCantonCasesDataCsvImport(CoronaDataJpaRepository repository) {
+	public CoronaGermanyVaccinationDataCsvImport(CoronaDataJpaRepository repository) {
 		this.repository = repository;
 	}
 
@@ -40,35 +40,32 @@ public class CoronaSwitzerlandCantonCasesDataCsvImport extends CoronaDataImport 
 		log.info("Importing file " + fileName);
 		
 		Map<String, LocalDate> territoryLatestDateRepMap = Collections.synchronizedMap(new HashMap<>());
-		Map<String, CoronaData> territoryLastCasesRepMap = Collections.synchronizedMap(new HashMap<>());
-
+		
 		Path path = Paths.get(fileName);
 		
 		// check update file
 		fileName = path.getFileName().toString();
 		boolean filterDisabled = updateCheckService.checkUpdateFile(path.getParent().toString(), fileName, true);
 		LocalDate now = LocalDate.now();
+		
+		Optional<CoronaDataEntity> germanyEntity = this.repository.findTopByTerritoryIdAndPopulationGreaterThan("germany", 0L);
+		if (germanyEntity.isPresent()) {
+			FederalState germany = new FederalState();
+			germany.setCode(germanyEntity.get().getTerritoryCode());
+			germany.setKey(germanyEntity.get().getTerritoryId());
+			germany.setName(germanyEntity.get().getTerritory());
+			germany.setOrgName(germanyEntity.get().getTerritory());
+			germany.setParent(germanyEntity.get().getTerritoryParent());
+			germany.setPopulation(germanyEntity.get().getPopulation());
+			props.addFederalState(germany);
+		}
 
 		Flux<CoronaDataEntity> coronaData = 
 				FluxFileReader.fromPath(path)
 						  .skip(1)
-						  .map(l -> { return new CoronaSwitzerlandCasesData(l, props); })
+						  .map(l -> { return new CoronaGermanyVaccinationData(l, props); })
 						  .filter(d -> { return d.getDateRep().isBefore(now); })
 						  .sort((c1, c2) -> c1.getDateRep().compareTo(c2.getDateRep()))
-						  .flatMapIterable(s -> s.getCantonData() )
-						  .doOnNext(d -> {
-							  CoronaData cd = territoryLastCasesRepMap.get(d.getTerritoryId());
-							  if (cd != null) {
-								  if (d.getCasesKum() > 0L) {
-									  d.setCases(d.getCasesKum() - cd.getCasesKum());
-								  } else {
-									  d.setCases(0L);
-									  d.setCasesKum(cd.getCasesKum());
-									  d.setCasesPer100000Pop(cd.getCasesPer100000Pop());
-								  }
-							  }
-							  territoryLastCasesRepMap.put(d.getTerritoryId(), d);
-						  })
 						  .filter(d -> {
 							  if (filterDisabled) {
 								  return true; // do not filter
@@ -78,9 +75,6 @@ public class CoronaSwitzerlandCantonCasesDataCsvImport extends CoronaDataImport 
 								  Optional<LocalDate> date = repository.getMaxDateRepByTerritoryIdAndTerritoryParent(d.getTerritoryId(), d.getTerritoryParent());
 								  if (date.isPresent()) {
 									  latestDate = date.get();
-									  if (latestDate.isAfter(now.minusDays(2))) {
-										  latestDate = now.minusDays(2);
-									  }
 									  territoryLatestDateRepMap.put(d.getTerritoryId(), latestDate);
 								  } else {
 									  return true; // do not filter
@@ -92,8 +86,18 @@ public class CoronaSwitzerlandCantonCasesDataCsvImport extends CoronaDataImport 
 						  ;//.log();
 
 		coronaData.subscribe(data -> {
-			String[] columns = { "cases", "casesKum", "casesPer100000Pop" };
-			save(data, columns);
+			String[] columns = {
+				"firstVaccinations",
+				"firstVaccinationsKum",
+				"firstVaccinationsPer100000Pop",
+				"fullVaccinations",
+				"fullVaccinationsKum",
+				"fullVaccinationsPer100000Pop",
+				"totalVaccinations",
+				"totalVaccinationsKum",
+				"totalVaccinationsPer100000Pop"
+			};
+			save(data, columns, true);
 		});
 		
 	}

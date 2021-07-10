@@ -9,6 +9,7 @@ spring:
     initialization-mode: always
     platform: postgres
     url: jdbc:postgresql://localhost:5432/corona
+    #url: jdbc:postgresql://raspberrypi4:5432/corona
     username: corona
     password: corona
     
@@ -29,9 +30,12 @@ logging:
 corona:
   data:
     import:
-      path: /home/efurkert/Downloads
-      poller: 5000
+      path: /home/efurkert/Downloads/corona
       daysToSum: 7
+      csv:
+        poller: 5000
+      json:
+        poller: 5000
     download:
       poller: 60000
       connectTimeout: 5000
@@ -39,7 +43,7 @@ corona:
       urls:
         - url: https://covid.ourworldindata.org/data/owid-covid-data.csv
           fileName: covid19-world
-          header: iso_code,continent,location,date,total_cases,new_cases,new_cases_smoothed,total_deaths,new_deaths,new_deaths_smoothed,total_cases_per_million,new_cases_per_million,new_cases_smoothed_per_million,total_deaths_per_million,new_deaths_per_million,new_deaths_smoothed_per_million,reproduction_rate,icu_patients,icu_patients_per_million,hosp_patients,hosp_patients_per_million,weekly_icu_admissions,weekly_icu_admissions_per_million,weekly_hosp_admissions,weekly_hosp_admissions_per_million,new_tests,total_tests,total_tests_per_thousand,new_tests_per_thousand,new_tests_smoothed,new_tests_smoothed_per_thousand,positive_rate,tests_per_case,tests_units,total_vaccinations,total_vaccinations_per_hundred,stringency_index,population,population_density,median_age,aged_65_older,aged_70_older,gdp_per_capita,extreme_poverty,cardiovasc_death_rate,diabetes_prevalence,female_smokers,male_smokers,handwashing_facilities,hospital_beds_per_thousand,life_expectancy,human_development_index
+          header: iso_code,continent,location,date,total_cases,new_cases,new_cases_smoothed,total_deaths,new_deaths,new_deaths_smoothed,total_cases_per_million,new_cases_per_million,new_cases_smoothed_per_million,total_deaths_per_million,new_deaths_per_million,new_deaths_smoothed_per_million,reproduction_rate,icu_patients,icu_patients_per_million,hosp_patients,hosp_patients_per_million,weekly_icu_admissions,weekly_icu_admissions_per_million,weekly_hosp_admissions,weekly_hosp_admissions_per_million,new_tests,total_tests,total_tests_per_thousand,new_tests_per_thousand,new_tests_smoothed,new_tests_smoothed_per_thousand,positive_rate,tests_per_case,tests_units,total_vaccinations,people_vaccinated,people_fully_vaccinated,new_vaccinations,new_vaccinations_smoothed,total_vaccinations_per_hundred,people_vaccinated_per_hundred,people_fully_vaccinated_per_hundred,new_vaccinations_smoothed_per_million,stringency_index,population,population_density,median_age,aged_65_older,aged_70_older,gdp_per_capita,extreme_poverty,cardiovasc_death_rate,diabetes_prevalence,female_smokers,male_smokers,handwashing_facilities,hospital_beds_per_thousand,life_expectancy,human_development_index,excess_mortality
           channel: worldChannel
         #  header: dateRep,year_week,cases_weekly,deaths_weekly,countriesAndTerritories,geoId,countryterritoryCode,popData2019,continentExp,notification_rate_per_100000_population_14-days
         #- url: https://opendata.ecdc.europa.eu/covid19/casedistribution/csv
@@ -51,14 +55,37 @@ corona:
         #  fileName: covid19-world-xlsx
         #  header: dateRep,day,month,year,cases,deaths,countriesAndTerritories,geoId,countryterritoryCode,popData[0-9]{4},continentExp[.]*
         #  channel: worldChannel
-        - url: https://covid19publicdata.blob.core.windows.net/rki/covid19-germany-federalstates.csv
+        - url: https://www.arcgis.com/sharing/rest/content/items/f10774f1c63e40168479a1feb6c7ca74/data
+          fileName: covid19-germany-rki
+          header: FID,IdBundesland,Bundesland,Landkreis,Altersgruppe,Geschlecht,AnzahlFall,AnzahlTodesfall,Meldedatum,IdLandkreis,Datenstand,NeuerFall,NeuerTodesfall,Refdatum,NeuGenesen,AnzahlGenesen,IstErkrankungsbeginn,Altersgruppe2
+          channel: germanyRkiChannel        
+        - url: 
           fileName: covid19-germany-federalstates
           header: id,Country/Region,federalstate,infections,deaths,date,newinfections,newdeaths
           channel: germanyChannel
-        - url: https://covid19publicdata.blob.core.windows.net/rki/covid19-germany-counties.csv
+          afterChannel: 
+            - germanyRkiChannel
+        - url: 
           fileName: covid19-germany-counties
           header: id,Country/Region,county,countyname,type,federalstate,population,infections,deaths,shapearea,shapelength,date,newinfections,newdeaths,infectionrate,deathrate
           channel: germanyFederalStatesChannel
+          afterChannel: 
+            - germanyRkiChannel
+        - url: https://www.rainer-gerhards.de/tools/exp-rki-impfungen.php
+          fileName: covid19-germany-vaccination
+          header: Tag;idBundesland;gesamt;gesamt1;gesamt2;biontech;biontech2;moderna;moderna2;astrazeneca;astrazeneca2;janssen;gesamt_pro1000;gesamt_pro1000_2;delta_vortag;delta_vortag1;delta_vortag2;a_gesamt1;a_gesamt2;a_biontech1;a_biontech2;a_moderna1;a_moderna2;a_astrazeneca1;a_astrazeneca2;a_janssen;a_deltavortag1;a_deltavortag2;lebensalter;beruflich;medizinisch;heim;lebensalter2;beruflich2;medizinisch2;heim2
+          channel: germanyVaccinationChannel
+          afterChannel:
+            - worldChannel
+            - germanyChannel
+        #- url: https://covid19publicdata.blob.core.windows.net/rki/covid19-germany-federalstates.csv
+        # fileName: covid19-germany-federalstates
+        # header: id,Country/Region,federalstate,infections,deaths,date,newinfections,newdeaths
+        # channel: germanyChannel
+        #- url: https://covid19publicdata.blob.core.windows.net/rki/covid19-germany-counties.csv
+        #  fileName: covid19-germany-counties
+        #  header: id,Country/Region,county,countyname,type,federalstate,population,infections,deaths,shapearea,shapelength,date,newinfections,newdeaths,infectionrate,deathrate
+        #  channel: germanyFederalStatesChannel
         - url: https://api.covid19tracking.narrativa.com/api
           fileName: covid19-world-api
           header: 

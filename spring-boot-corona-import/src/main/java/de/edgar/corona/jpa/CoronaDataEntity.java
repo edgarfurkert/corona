@@ -44,6 +44,15 @@ public class CoronaDataEntity {
 		this.setActive(data.getActive());
 		this.setActiveKum(data.getActiveKum());
 		this.setActivePer100000Pop(data.getActivePer100000Pop());
+		this.setFirstVaccinations(data.getFirstVaccinations());
+		this.setFirstVaccinationsKum(data.getFirstVaccinationsKum());
+		this.setFirstVaccinationsPer100000Pop(data.getFirstVaccinationsPer100000Pop());
+		this.setFullVaccinations(data.getFullVaccinations());
+		this.setFullVaccinationsKum(data.getFullVaccinationsKum());
+		this.setFullVaccinationsPer100000Pop(data.getFullVaccinationsPer100000Pop());
+		this.setTotalVaccinations(data.getTotalVaccinations());
+		this.setTotalVaccinationsKum(data.getTotalVaccinationsKum());
+		this.setTotalVaccinationsPer100000Pop(data.getTotalVaccinationsPer100000Pop());		
 		this.setGeoId(data.getGeoId());
 		this.setMonth(data.getMonth());
 		this.setPopulation(data.getPopulation());
@@ -68,6 +77,9 @@ public class CoronaDataEntity {
 	private Long deaths;
 	private Long recovered;
 	private Long active;
+	private Long firstVaccinations;
+	private Long fullVaccinations;
+	private Long totalVaccinations;
 	private String territoryId;
 	private String territory;
 	private String territoryCode;
@@ -79,10 +91,16 @@ public class CoronaDataEntity {
 	private Long deathsKum;
 	private Long recoveredKum;
 	private Long activeKum;
+	private Long firstVaccinationsKum;
+	private Long fullVaccinationsKum;
+	private Long totalVaccinationsKum;
 	private Double casesPer100000Pop;
 	private Double deathsPer100000Pop;
 	private Double recoveredPer100000Pop;
 	private Double activePer100000Pop;
+	private Double firstVaccinationsPer100000Pop;
+	private Double fullVaccinationsPer100000Pop;
+	private Double totalVaccinationsPer100000Pop;
 	private Long orderId;
 	private LocalDateTime timestamp;
 	
@@ -108,6 +126,15 @@ public class CoronaDataEntity {
 		c.setRecovered(recovered);
 		c.setRecoveredKum(recoveredKum);
 		c.setRecoveredPer100000Pop(recoveredPer100000Pop);
+		c.setFirstVaccinations(firstVaccinations);
+		c.setFirstVaccinationsKum(firstVaccinationsKum);
+		c.setFirstVaccinationsPer100000Pop(firstVaccinationsPer100000Pop);
+		c.setFullVaccinations(fullVaccinations);
+		c.setFullVaccinationsKum(fullVaccinationsKum);
+		c.setFullVaccinationsPer100000Pop(fullVaccinationsPer100000Pop);
+		c.setTotalVaccinations(totalVaccinations);
+		c.setTotalVaccinationsKum(totalVaccinationsKum);
+		c.setTotalVaccinationsPer100000Pop(totalVaccinationsPer100000Pop);		
 		c.setTerritory(territory);
 		c.setTerritoryCode(territoryCode);
 		c.setTerritoryId(territoryId);
