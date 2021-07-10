@@ -64,18 +64,12 @@ public class CoronaWorldDataCsvImport extends CoronaDataImport {
 						String territoryId = m.getTerritoryId();
 						CoronaWorldData c = kummulativeDataMap.get(territoryId);
 						if (c != null) {
-							m.setCasesKum(m.getCases() + (c.getCasesKum() != null ? c.getCasesKum() : 0L));
-							m.setDeathsKum(m.getDeaths() + (c.getDeathsKum() != null ? c.getDeathsKum() : 0L));
-						} else {
-							m.setCasesKum(m.getCases());
-							m.setDeathsKum(m.getDeaths());
-						}
-						if (m.getPopulation() > 0) {
-							m.setCasesPer100000Pop((m.getCasesKum() * 100000.0) / m.getPopulation().doubleValue());
-							m.setDeathsPer100000Pop((m.getDeathsKum() * 100000.0) / m.getPopulation().doubleValue());
-						} else {
-							m.setCasesPer100000Pop(0.0);
-							m.setDeathsPer100000Pop(0.0);
+							if (c.getFirstVaccinationsKum() != null) {
+								m.setFirstVaccinations(m.getFirstVaccinationsKum() - c.getFirstVaccinationsKum());
+							}
+							if (c.getFullVaccinationsKum() != null) {
+								m.setFullVaccinations(m.getFullVaccinationsKum() - c.getFullVaccinationsKum());
+							}
 						}
 						kummulativeDataMap.put(territoryId, m);
 						

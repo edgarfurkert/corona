@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -52,6 +53,9 @@ public class SessionConfig {
 		dataTypes.add(new DataType("deaths", messageSourceService.getMessage("deaths", locale)));
 		dataTypes.add(new DataType("recovered", messageSourceService.getMessage("recovered", locale)));
 		dataTypes.add(new DataType("active", messageSourceService.getMessage("active", locale)));
+		dataTypes.add(new DataType("vaccinationFirst", messageSourceService.getMessage("vaccinationFirst", locale)));
+		dataTypes.add(new DataType("vaccinationFull", messageSourceService.getMessage("vaccinationFull", locale)));
+		dataTypes.add(new DataType("vaccinationTotal", messageSourceService.getMessage("vaccinationTotal", locale)));
 		return dataTypes;
 	}
 	
@@ -68,6 +72,7 @@ public class SessionConfig {
 		List<AxisType> axisTypes = new ArrayList<>();
 		axisTypes.add(new AxisType("linear", messageSourceService.getMessage("linear", locale)));
 		axisTypes.add(new AxisType("logarithmic", messageSourceService.getMessage("logarithmic", locale)));
+		axisTypes.add(new AxisType("percentage", messageSourceService.getMessage("percentage", locale)));
 		return axisTypes;
 	}
 	
@@ -100,7 +105,9 @@ public class SessionConfig {
 				messageSourceService.getMessage(code, cds.getLocale());
 			}
 			*/
-			parents.add(new Territory(k, k, orderId));
+			if (StringUtils.isNotEmpty(k)) {
+				parents.add(new Territory(k, k, orderId));
+			}
 		});
 		parents.sort(Comparator.comparing(Territory::getOrderId).thenComparing(Territory::getName));
 		

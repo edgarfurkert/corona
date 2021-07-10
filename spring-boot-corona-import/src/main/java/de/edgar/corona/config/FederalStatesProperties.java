@@ -24,6 +24,13 @@ public class FederalStatesProperties {
 	private Map<String, FederalState> federalStateNameMap;
 	private Map<String, FederalState> federalStateCodeMap;
 	
+	public void addFederalState(FederalState fs) {
+		this.federalStates.add(fs);
+		this.federalStateCodeMap = null;
+		this.federalStateKeyMap = null;
+		this.federalStateNameMap = null;
+	}
+	
 	public FederalState findByKeyAndParent(String key, String parent) {
 		if (federalStateKeyMap == null) {
 			federalStateKeyMap = new HashMap<>();

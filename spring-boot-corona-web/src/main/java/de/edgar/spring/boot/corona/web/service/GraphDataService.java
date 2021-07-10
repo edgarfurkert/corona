@@ -267,7 +267,47 @@ public class GraphDataService {
 					y = getDouble(d.getActiveDaysPer100000Pop());
 					z = getDouble(d.getActive());
 					break;
+				case "vaccinationFirst-cumulated":
+					y = getDouble(d.getFirstVaccinationsKum());
+					z = getDouble(d.getFirstVaccinations());
+					break;
+				case "vaccinationFirst-perDay":
+					y = getDouble(d.getFirstVaccinations());
+					z = getDouble(d.getFirstVaccinations());
+					break;
+				case "vaccinationFirst-per100000":
+					y = getDouble(d.getFirstVaccinationsPer100000Pop());
+					z = getDouble(d.getFirstVaccinations());
+					break;
+				case "vaccinationFull-cumulated":
+					y = getDouble(d.getFullVaccinationsKum());
+					z = getDouble(d.getFullVaccinations());
+					break;
+				case "vaccinationFull-perDay":
+					y = getDouble(d.getFullVaccinations());
+					z = getDouble(d.getFullVaccinations());
+					break;
+				case "vaccinationFull-per100000":
+					y = getDouble(d.getFullVaccinationsPer100000Pop());
+					z = getDouble(d.getFullVaccinations());
+					break;
+				case "vaccinationTotal-cumulated":
+					y = getDouble(d.getTotalVaccinationsKum());
+					z = getDouble(d.getTotalVaccinations());
+					break;
+				case "vaccinationTotal-perDay":
+					y = getDouble(d.getTotalVaccinations());
+					z = getDouble(d.getTotalVaccinations());
+					break;
+				case "vaccinationTotal-per100000":
+					y = getDouble(d.getTotalVaccinationsPer100000Pop());
+					z = getDouble(d.getTotalVaccinations());
+					break;
 				}
+	    		if ("percentage".equals(cds.getSelectedYAxisType())) {
+	    			y = y * 100.0 / d.getPopulation();
+	    			z = z * 100.0 / d.getPopulation();
+	    		}
 				if (y < 0.0) {
 					y = 0.0;
 				}
@@ -278,7 +318,7 @@ public class GraphDataService {
 				s.getData().add(bubble);
 				x.incrementAndGet();
 	    		
-		    	if ("linear".equals(yAxis.getType())) {
+		    	if ("linear".equals(yAxis.getType()) || "percentage".equals(yAxis.getType())) {
 		    		yAxis.setMin(0.0);
 		    	} else {
 		    		if (yAxis.getMin() == null) {
@@ -407,6 +447,66 @@ public class GraphDataService {
 			title = messageSourceService.getMessage("chart.activePerDaysAnd100000", cds.getLocale(), daysToKum);
 			coronaData.sort(Comparator.comparing(CoronaData::getActiveDaysPer100000Pop).reversed());
 			break;
+		case "vaccinationFirst-cumulated":
+			title = messageSourceService.getMessage("chart.vaccinationFirst", cds.getLocale());
+			if ("percentage".equals(cds.getSelectedYAxisType())) {
+				coronaData.sort(Comparator.comparing(CoronaData::getFirstVaccinationsKumPercentage).reversed());
+			} else {
+				coronaData.sort(Comparator.comparing(CoronaData::getFirstVaccinationsKum).reversed());
+			}
+			break;
+		case "vaccinationFirst-perDay":
+			title = messageSourceService.getMessage("chart.vaccinationFirstPerDay", cds.getLocale());
+			if ("percentage".equals(cds.getSelectedYAxisType())) {
+				coronaData.sort(Comparator.comparing(CoronaData::getFirstVaccinationsPercentage).reversed());
+			} else {
+				coronaData.sort(Comparator.comparing(CoronaData::getFirstVaccinations).reversed());
+			}
+			break;
+		case "vaccinationFirst-per100000":
+			title = messageSourceService.getMessage("chart.vaccinationFirstPer100000", cds.getLocale());
+			coronaData.sort(Comparator.comparing(CoronaData::getFirstVaccinationsPer100000Pop).reversed());
+			break;
+		case "vaccinationFull-cumulated":
+			title = messageSourceService.getMessage("chart.vaccinationFull", cds.getLocale());
+			if ("percentage".equals(cds.getSelectedYAxisType())) {
+				coronaData.sort(Comparator.comparing(CoronaData::getFullVaccinationsKumPercentage).reversed());
+			} else {
+				coronaData.sort(Comparator.comparing(CoronaData::getFullVaccinationsKum).reversed());
+			}
+			break;
+		case "vaccinationFull-perDay":
+			title = messageSourceService.getMessage("chart.vaccinationFullPerDay", cds.getLocale());
+			if ("percentage".equals(cds.getSelectedYAxisType())) {
+				coronaData.sort(Comparator.comparing(CoronaData::getFullVaccinationsPercentage).reversed());
+			} else {
+				coronaData.sort(Comparator.comparing(CoronaData::getFullVaccinations).reversed());
+			}
+			break;
+		case "vaccinationFull-per100000":
+			title = messageSourceService.getMessage("chart.vaccinationFullPer100000", cds.getLocale());
+			coronaData.sort(Comparator.comparing(CoronaData::getFullVaccinationsPer100000Pop).reversed());
+			break;
+		case "vaccinationTotal-cumulated":
+			title = messageSourceService.getMessage("chart.vaccinationTotal", cds.getLocale());
+			if ("percentage".equals(cds.getSelectedYAxisType())) {
+				coronaData.sort(Comparator.comparing(CoronaData::getTotalVaccinationsKumPercentage).reversed());
+			} else {
+				coronaData.sort(Comparator.comparing(CoronaData::getTotalVaccinationsKum).reversed());
+			}
+			break;
+		case "vaccinationTotal-perDay":
+			title = messageSourceService.getMessage("chart.vaccinationTotalPerDay", cds.getLocale());
+			if ("percentage".equals(cds.getSelectedYAxisType())) {
+				coronaData.sort(Comparator.comparing(CoronaData::getTotalVaccinationsPercentage).reversed());
+			} else {
+				coronaData.sort(Comparator.comparing(CoronaData::getTotalVaccinations).reversed());
+			}
+			break;
+		case "vaccinationTotal-per100000":
+			title = messageSourceService.getMessage("chart.vaccinationTotalPer100000", cds.getLocale());
+			coronaData.sort(Comparator.comparing(CoronaData::getTotalVaccinationsPer100000Pop).reversed());
+			break;
 		}
 				
     	data.setTitle(messageSourceService.getMessage("chart.top25", cds.getLocale()));
@@ -451,8 +551,20 @@ public class GraphDataService {
     		case "active-perDay": value = getDouble(d.getActive()); break;
     		case "active-per100000": value = getDouble(d.getActivePer100000Pop()); break;
     		case "active-perDaysAnd100000": value = getDouble(d.getActiveDaysPer100000Pop()); break;
+    		case "vaccinationFirst-cumulated": value = getDouble(d.getFirstVaccinationsKum()); break;
+    		case "vaccinationFirst-perDay": value = getDouble(d.getFirstVaccinations()); break;
+    		case "vaccinationFirst-per100000": value = getDouble(d.getFirstVaccinationsPer100000Pop()); break;
+    		case "vaccinationFull-cumulated": value = getDouble(d.getFullVaccinationsKum()); break;
+    		case "vaccinationFull-perDay": value = getDouble(d.getFullVaccinations()); break;
+    		case "vaccinationFull-per100000": value = getDouble(d.getFullVaccinationsPer100000Pop()); break;
+    		case "vaccinationTotal-cumulated": value = getDouble(d.getTotalVaccinationsKum()); break;
+    		case "vaccinationTotal-perDay": value = getDouble(d.getTotalVaccinations()); break;
+    		case "vaccinationTotal-per100000": value = getDouble(d.getTotalVaccinationsPer100000Pop()); break;
     		default: value = 0.0; break;
     		}
+			if ("percentage".equals(cds.getSelectedYAxisType())) {
+				value = value * 100.0 / d.getPopulation();
+			}
         	barData.add(value);
         	series.getData().add(barData);
     	});
@@ -549,6 +661,51 @@ public class GraphDataService {
 			title1 = messageSourceService.getMessage("chart.infectionsPerDaysAnd100000", cds.getLocale(), daysToKum);
 			title2 = messageSourceService.getMessage("chart.activePerDaysAnd100000", cds.getLocale(), daysToKum);
 			break;
+		case "vaccinationFirst-cumulated":
+			title = messageSourceService.getMessage("chart.infectionsAndVaccinationFirst", cds.getLocale());
+			title1 = messageSourceService.getMessage("chart.infections", cds.getLocale());
+			title2 = messageSourceService.getMessage("chart.vaccinationFirst", cds.getLocale());
+			break;
+		case "vaccinationFirst-perDay":
+			title = messageSourceService.getMessage("chart.infectionsAndVaccinationFirstPerDay", cds.getLocale());
+			title1 = messageSourceService.getMessage("chart.infectionsPerDay", cds.getLocale());
+			title2 = messageSourceService.getMessage("chart.vaccinationFirstPerDay", cds.getLocale());
+			break;
+		case "vaccinationFirst-per100000":
+			title = messageSourceService.getMessage("chart.infectionsAndVaccinationFirstPer100000", cds.getLocale());
+			title1 = messageSourceService.getMessage("chart.infectionsPer100000", cds.getLocale());
+			title2 = messageSourceService.getMessage("chart.vaccinationFirstPer100000", cds.getLocale());
+			break;
+		case "vaccinationFull-cumulated":
+			title = messageSourceService.getMessage("chart.infectionsAndVaccinationFull", cds.getLocale());
+			title1 = messageSourceService.getMessage("chart.infections", cds.getLocale());
+			title2 = messageSourceService.getMessage("chart.vaccinationFull", cds.getLocale());
+			break;
+		case "vaccinationFull-perDay":
+			title = messageSourceService.getMessage("chart.infectionsAndVaccinationFullPerDay", cds.getLocale());
+			title1 = messageSourceService.getMessage("chart.infectionsPerDay", cds.getLocale());
+			title2 = messageSourceService.getMessage("chart.vaccinationFullPerDay", cds.getLocale());
+			break;
+		case "vaccinationFull-per100000":
+			title = messageSourceService.getMessage("chart.infectionsAndVaccinationFullPer100000", cds.getLocale());
+			title1 = messageSourceService.getMessage("chart.infectionsPer100000", cds.getLocale());
+			title2 = messageSourceService.getMessage("chart.vaccinationFullPer100000", cds.getLocale());
+			break;
+		case "vaccinationTotal-cumulated":
+			title = messageSourceService.getMessage("chart.infectionsAndVaccinationTotal", cds.getLocale());
+			title1 = messageSourceService.getMessage("chart.infections", cds.getLocale());
+			title2 = messageSourceService.getMessage("chart.vaccinationTotal", cds.getLocale());
+			break;
+		case "vaccinationTotal-perDay":
+			title = messageSourceService.getMessage("chart.infectionsAndVaccinationTotalPerDay", cds.getLocale());
+			title1 = messageSourceService.getMessage("chart.infectionsPerDay", cds.getLocale());
+			title2 = messageSourceService.getMessage("chart.vaccinationTotalPerDay", cds.getLocale());
+			break;
+		case "vaccinationTotal-per100000":
+			title = messageSourceService.getMessage("chart.infectionsAndVaccinationTotalPer100000", cds.getLocale());
+			title1 = messageSourceService.getMessage("chart.infectionsPer100000", cds.getLocale());
+			title2 = messageSourceService.getMessage("chart.vaccinationTotalPer100000", cds.getLocale());
+			break;
 		}
     	
     	data.setTitle(messageSourceService.getMessage("chart.historical", cds.getLocale()));
@@ -570,6 +727,8 @@ public class GraphDataService {
     	
     	Iterator<ColorProperty> colorIterator = colorProps.getDarkColors().iterator();
     	
+    	Double[] max2Array = new Double[1];
+    	max2Array[0] = 0.0;
     	List<Series> series = new ArrayList<>();
 		territoryMap.keySet().forEach(tk -> {
 			ColorProperty darkColorProp = colorIterator.hasNext() ? colorIterator.next() : colorProps.getDarkColors().iterator().next();
@@ -663,6 +822,46 @@ public class GraphDataService {
 					iValue = getDouble(t.getCasesDaysPer100000Pop());
 					dValue = getDouble(t.getActiveDaysPer100000Pop());
 					break;
+				case "vaccinationFirst-cumulated":
+					iValue = getDouble(t.getCasesKum());
+					dValue = getDouble(t.getFirstVaccinationsKum());
+					break;
+				case "vaccinationFirst-perDay":
+					iValue = getDouble(t.getCases());
+					dValue = getDouble(t.getFirstVaccinations());
+					break;
+				case "vaccinationFirst-per100000":
+					iValue = getDouble(t.getCasesPer100000Pop());
+					dValue = getDouble(t.getFirstVaccinationsPer100000Pop());
+					break;
+				case "vaccinationFull-cumulated":
+					iValue = getDouble(t.getCasesKum());
+					dValue = getDouble(t.getFullVaccinationsKum());
+					break;
+				case "vaccinationFull-perDay":
+					iValue = getDouble(t.getCases());
+					dValue = getDouble(t.getFullVaccinations());
+					break;
+				case "vaccinationFull-per100000":
+					iValue = getDouble(t.getCasesPer100000Pop());
+					dValue = getDouble(t.getFullVaccinationsPer100000Pop());
+					break;
+				case "vaccinationTotal-cumulated":
+					iValue = getDouble(t.getCasesKum());
+					dValue = getDouble(t.getTotalVaccinationsKum());
+					break;
+				case "vaccinationTotal-perDay":
+					iValue = getDouble(t.getCases());
+					dValue = getDouble(t.getTotalVaccinations());
+					break;
+				case "vaccinationTotal-per100000":
+					iValue = getDouble(t.getCasesPer100000Pop());
+					dValue = getDouble(t.getTotalVaccinationsPer100000Pop());
+					break;
+	    		}
+	    		if ("percentage".equals(cds.getSelectedYAxisType())) {
+	    			iValue = iValue * 100.0 / t.getPopulation();
+	    			dValue = dValue * 100.0 / t.getPopulation();
 	    		}
 	    		if (iValue < 0.0) {
 	    			iValue = 0.0;
@@ -677,7 +876,7 @@ public class GraphDataService {
 				i.getData().add(iValue);
 				d.getData().add(dValue);
 	    		
-		    	if ("linear".equals(yAxis.getType())) {
+		    	if ("linear".equals(yAxis.getType()) || "percentage".equals(yAxis.getType())) {
 		    		yAxis.setMin1(0.0);
 		    		yAxis.setMin2(0.0);
 		    	} else {
@@ -695,7 +894,13 @@ public class GraphDataService {
 		    			yAxis.setMin2(dValue);
 		    		}
 		    	}
+		    	
+		    	if (max2Array[0] < dValue) {
+		    		max2Array[0] = dValue;
+		    	}
 	    	});
+	    	//double max2 = ((long)((max2Array[0] * 6) + 10.0) * 10.0) / 10.0;
+	    	//yAxis.setMax2(max2);
 	    	series.add(i);
 	    	series.add(d);
 		});
@@ -747,12 +952,15 @@ public class GraphDataService {
 			    		valueMap.put("last", value);
 			    	}
 	    		}
+	    		if ("percentage".equals(cds.getSelectedYAxisType())) {
+	    			value = value * 100.0 / d.getPopulation();
+	    		}
 		    	if ("logarithmic".equals(yAxis.getType()) && value < 0.0001) {
 		    		value = 0.1;
 		    	}
 	    		series.getData().add(value);
 	    		
-		    	if ("linear".equals(yAxis.getType())) {
+		    	if ("linear".equals(yAxis.getType()) || "percentage".equals(yAxis.getType())) {
 		    		yAxis.setMin(0.0);
 		    	} else {
 		    		if (yAxis.getMin() == null) {
@@ -791,6 +999,15 @@ public class GraphDataService {
 				case "active":
 					entity = repo.getFirstByTerritoryIdAndActiveKumGreaterThanOrderByActiveKumAscDateRepAsc(t, 0L);
 					break;
+				case "vaccinationFirst":
+					entity = repo.getFirstByTerritoryIdAndFirstVaccinationsKumGreaterThanOrderByFirstVaccinationsKumAscDateRepAsc(t, 0L);
+					break;
+				case "vaccinationFull":
+					entity = repo.getFirstByTerritoryIdAndFullVaccinationsKumGreaterThanOrderByFullVaccinationsKumAscDateRepAsc(t, 0L);
+					break;
+				case "vaccinationTotal":
+					entity = repo.getFirstByTerritoryIdAndTotalVaccinationsKumGreaterThanOrderByTotalVaccinationsKumAscDateRepAsc(t, 0L);
+					break;
 				}
 				if (entity.isPresent()) {
 					CoronaDataEntity e = entity.get();
@@ -821,6 +1038,18 @@ public class GraphDataService {
 		case "active":
 			title = messageSourceService.getMessage("chart.startOfActive", cds.getLocale());
 			yAxisTitle = messageSourceService.getMessage("chart.active", cds.getLocale());
+			break;
+		case "vaccinationFirst":
+			title = messageSourceService.getMessage("chart.startOfVaccinationFirst", cds.getLocale());
+			yAxisTitle = messageSourceService.getMessage("chart.vaccinationFirst", cds.getLocale());
+			break;
+		case "vaccinationFull":
+			title = messageSourceService.getMessage("chart.startOfVaccinationFull", cds.getLocale());
+			yAxisTitle = messageSourceService.getMessage("chart.vaccinationFull", cds.getLocale());
+			break;
+		case "vaccinationTotal":
+			title = messageSourceService.getMessage("chart.startOfVaccinationTotal", cds.getLocale());
+			yAxisTitle = messageSourceService.getMessage("chart.vaccinationTotal", cds.getLocale());
 			break;
 		}
     	data.setTitle(title);
@@ -853,6 +1082,9 @@ public class GraphDataService {
         			case "deaths": series.getData().add(getDouble(cd.getDeaths())); break;
         			case "recovered": series.getData().add(getDouble(cd.getRecovered())); break;
         			case "active": series.getData().add(getDouble(cd.getActive())); break;
+        			case "vaccinationFirst": series.getData().add(getDouble(cd.getFirstVaccinationsKum())); break;
+        			case "vaccinationFull": series.getData().add(getDouble(cd.getFullVaccinationsKum())); break;
+        			case "vaccinationTotal": series.getData().add(getDouble(cd.getTotalVaccinationsKum())); break;
         			default: series.getData().add(0.0); break;
         			}
         		} else {
@@ -917,6 +1149,33 @@ public class GraphDataService {
 		case "active-perDaysAnd100000":
 			title = messageSourceService.getMessage("chart.activePerDaysAnd100000", cds.getLocale(), daysToKum);
 			break;
+		case "vaccinationFirst-cumulated":
+			title = messageSourceService.getMessage("chart.vaccinationFirst", cds.getLocale());
+			break;
+		case "vaccinationFirst-perDay":
+			title = messageSourceService.getMessage("chart.vaccinationFirstPerDay", cds.getLocale());
+			break;
+		case "vaccinationFirst-per100000":
+			title = messageSourceService.getMessage("chart.vaccinationFirstPer100000", cds.getLocale());
+			break;
+		case "vaccinationFull-cumulated":
+			title = messageSourceService.getMessage("chart.vaccinationFull", cds.getLocale());
+			break;
+		case "vaccinationFull-perDay":
+			title = messageSourceService.getMessage("chart.vaccinationFullPerDay", cds.getLocale());
+			break;
+		case "vaccinationFull-per100000":
+			title = messageSourceService.getMessage("chart.vaccinationFullPer100000", cds.getLocale());
+			break;
+		case "vaccinationTotal-cumulated":
+			title = messageSourceService.getMessage("chart.vaccinationTotal", cds.getLocale());
+			break;
+		case "vaccinationTotal-perDay":
+			title = messageSourceService.getMessage("chart.vaccinationTotalPerDay", cds.getLocale());
+			break;
+		case "vaccinationTotal-per100000":
+			title = messageSourceService.getMessage("chart.vaccinationTotalPer100000", cds.getLocale());
+			break;
 		}
 		return title;
 	}
@@ -941,9 +1200,21 @@ public class GraphDataService {
 		case "active-perDay": value = getDouble(d.getActive()); break;
 		case "active-per100000": value = getDouble(d.getActivePer100000Pop()); break;
 		case "active-perDaysAnd100000": value = getDouble(d.getActiveDaysPer100000Pop()); break;
+		case "vaccinationFirst-cumulated": value = getDouble(d.getFirstVaccinationsKum()); break;
+		case "vaccinationFirst-perDay": value = getDouble(d.getFirstVaccinations()); break;
+		case "vaccinationFirst-per100000": value = getDouble(d.getFirstVaccinationsPer100000Pop()); break;
+		case "vaccinationFull-cumulated": value = getDouble(d.getFullVaccinationsKum()); break;
+		case "vaccinationFull-perDay": value = getDouble(d.getFullVaccinations()); break;
+		case "vaccinationFull-per100000": value = getDouble(d.getFullVaccinationsPer100000Pop()); break;
+		case "vaccinationTotal-cumulated": value = getDouble(d.getTotalVaccinationsKum()); break;
+		case "vaccinationTotal-perDay": value = getDouble(d.getTotalVaccinations()); break;
+		case "vaccinationTotal-per100000": value = getDouble(d.getTotalVaccinationsPer100000Pop()); break;
 		}
 		if (value < 0.0) {
 			value = 0.0;
+		}
+		if ("percentage".equals(cds.getSelectedYAxisType())) {
+			value = value * 100.0 / d.getPopulation();
 		}
 		return value;
 	}

@@ -25,6 +25,7 @@ import de.edgar.corona.config.DownloadUrlProperty;
 import de.edgar.corona.reactive.CoronaGermanyDataCsvImport;
 import de.edgar.corona.reactive.CoronaGermanyFederalStatesDataCsvImport;
 import de.edgar.corona.reactive.CoronaGermanyRkiDataCsvImport;
+import de.edgar.corona.reactive.CoronaGermanyVaccinationDataCsvImport;
 import de.edgar.corona.reactive.CoronaSwitzerlandCantonCasesDataCsvImport;
 import de.edgar.corona.reactive.CoronaSwitzerlandCantonDeathsDataCsvImport;
 import de.edgar.corona.reactive.CoronaWorldDataCsvImport;
@@ -52,6 +53,9 @@ import lombok.extern.slf4j.Slf4j;
  * 					-> germanyFederalStatesChannel
  * 						-> ServiceActivator(inputChannel="germanyFederalStatesChannel")
  * 							-> CoronaGermanyFederalStatesDataCsvImport
+ * 					-> germanyVaccinationChannel
+ * 						-> ServiceActivator(inputChannel="germanyVaccinationChannel")
+ * 							-> CoronaGermanyVaccinationDataCsvImport
  * 					-> worldApiChannel
  * 						-> ServiceActivator(inputChannel="worldApiChannel")
  * 							-> CoronaWorldDataCsvImport
@@ -90,6 +94,9 @@ public class CoronaDataImportConfig {
 	private CoronaGermanyFederalStatesDataCsvImport csvImportGermanyFederalStatesData;
 	
 	@Autowired
+	private CoronaGermanyVaccinationDataCsvImport csvImportGermanyVaccinationData;
+	
+	@Autowired
 	private CoronaSwitzerlandCantonCasesDataCsvImport csvImportSwitzerlandCantonCasesData;
 	
 	@Autowired
@@ -126,6 +133,11 @@ public class CoronaDataImportConfig {
 	}
 
 	@Bean
+	public MessageChannel germanyVaccinationChannel() {
+		return new DirectChannel();
+	}
+
+	@Bean
 	public MessageChannel unknownChannel() {
 		return new DirectChannel();
 	}
@@ -146,7 +158,7 @@ public class CoronaDataImportConfig {
 	 * @return FileReadingMessageSource
 	 */
 	@Bean
-    @InboundChannelAdapter(value = "csvFileInputChannel", poller = @Poller(fixedDelay = "${corona.data.import.poller}"))
+    @InboundChannelAdapter(value = "csvFileInputChannel", poller = @Poller(fixedDelay = "${corona.data.import.csv.poller}"))
     public MessageSource<File> csvFileReadingMessageSource() {
     	log.info("Reading csv-files in path: {}", importPath);
         FileReadingMessageSource sourceReader = new FileReadingMessageSource();
@@ -167,7 +179,7 @@ public class CoronaDataImportConfig {
     }
 
 	@Bean
-    @InboundChannelAdapter(value = "jsonFileInputChannel", poller = @Poller(fixedDelay = "${corona.data.import.poller}"))
+    @InboundChannelAdapter(value = "jsonFileInputChannel", poller = @Poller(fixedDelay = "${corona.data.import.json.poller}"))
     public MessageSource<File> jsonFileReadingMessageSource() {
     	log.info("Reading csv-files in path: {}", importPath);
         FileReadingMessageSource sourceReader = new FileReadingMessageSource();
@@ -316,6 +328,25 @@ public class CoronaDataImportConfig {
         		csvImportGermanyData.importData(inFile.getAbsolutePath());
     		} else {
     			log.error("germanyChannel: Cannot rename file {}", file.getAbsolutePath());
+    		}
+    	};
+    }
+    
+	/**
+	 * Start import process.
+	 * 
+	 * @return MessageHandler
+	 */
+	@Bean
+    @ServiceActivator(inputChannel="germanyVaccinationChannel")
+    public MessageHandler germanyVaccinationData() {
+    	return message -> {
+    		File file = (File)message.getPayload();
+    		File inFile = new File(file.getAbsolutePath() + ".in");
+    		if (file.renameTo(inFile)) {
+        		csvImportGermanyVaccinationData.importData(inFile.getAbsolutePath());
+    		} else {
+    			log.error("germanyVaccinationChannel: Cannot rename file {}", file.getAbsolutePath());
     		}
     	};
     }

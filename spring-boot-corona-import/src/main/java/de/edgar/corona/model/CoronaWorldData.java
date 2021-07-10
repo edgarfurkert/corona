@@ -73,6 +73,7 @@ public class CoronaWorldData extends CoronaData {
      * 56. hospital_beds_per_thousand,
      * 57. life_expectancy,
      * 58. human_development_index
+     * 59: excess_mortality
      * 
 	 * @param line
 	 */
@@ -114,6 +115,20 @@ public class CoronaWorldData extends CoronaData {
 		setPopulation(getLong(a[44]));
 		setTerritoryParent(getKey(a[1]));
 		setOrderId(OrderIdEnum.COUNTRY.getOrderId());
+		
+		//this.setFirstVaccinations(firstVaccinations);
+		this.setTotalVaccinations(getLong(a[37]));
+		//this.setFullVaccinations(fullVaccinations);
+		this.setFirstVaccinationsKum(getLong(a[35]));
+		this.setFullVaccinationsKum(getLong(a[36]));
+		this.setTotalVaccinationsKum(getLong(a[34]));
+		if (this.getPopulation() != null && this.getPopulation() > 0L) {
+			this.setCasesPer100000Pop(this.getCases() * 100000.0 / this.getPopulation());
+			this.setDeathsPer100000Pop(this.getDeaths() * 100000.0 / this.getPopulation());
+			this.setFirstVaccinationsPer100000Pop(this.getFirstVaccinationsKum() * 100000.0 / this.getPopulation());
+			this.setFullVaccinationsPer100000Pop(this.getFullVaccinationsKum() * 100000.0 / this.getPopulation());
+			this.setTotalVaccinationsPer100000Pop(this.getTotalVaccinationsKum() * 100000.0 / this.getPopulation());
+		}
 	}
 
 	@Override

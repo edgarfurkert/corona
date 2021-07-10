@@ -374,8 +374,40 @@ public class CoronaWorldDataJsonImport extends CoronaDataImport {
 		data.setTerritoryCode(node.get("id") != null ? node.get("id").asText() : null);
 		data.setTerritoryParent(territoryParent);
 		data.setYear(data.getDateRep() != null ? data.getDateRep().getYear() : null);
-		if ("Baden-Wuerttemberg".equals(data.getTerritory())) {
-			data.setTerritory("Baden-Württemberg");
+
+		if (OrderIdEnum.FEDERALSTATE.equals(orderId)) {
+			switch (data.getTerritoryCode()) {
+			case "baden-wuerttemberg":
+				data.setTerritory("Baden-Württemberg"); 
+				break;
+			case "faroe_islands":
+				data.setTerritory("Faeroe Islands"); 
+				break;
+			case "macau":
+				data.setTerritory("Macao");
+				break;
+			case "guyane":
+				data.setTerritory("Guyana");
+				break;
+			}
+			switch (data.getTerritoryCode()) {
+			case "bermuda":
+			case "cayman_islands":
+			case "faroe_islands":
+			case "greenland":
+			case "macau":
+			case "montserrat":
+			case "guyane":
+			case "gibraltar":
+			case "hongKong":
+			case "isleOfMan":
+				Territory t = territoryProps.findByTerritoryId(CoronaData.getKey(data.getTerritory()));
+				if (t != null) {
+					data.setTerritoryParent(t.getTerritoryParent());
+					data.setOrderId(OrderIdEnum.COUNTRY.getOrderId());
+				}
+				break;
+			}
 		}
 		
 		return data;

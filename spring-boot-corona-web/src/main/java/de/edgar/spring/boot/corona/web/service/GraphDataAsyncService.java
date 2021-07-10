@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,6 +96,15 @@ public class GraphDataAsyncService {
 			        	cd.setActivePer100000Pop(0.0);
 			        	cd.setGeoId(d.getGeoId());
 			        	cd.setPopulation(d.getPopulation());
+			        	cd.setFirstVaccinations(d.getFirstVaccinations());
+			        	cd.setFirstVaccinationsKum(d.getFirstVaccinationsKum());
+			        	cd.setFirstVaccinationsPer100000Pop(d.getFirstVaccinationsPer100000Pop());			        	
+			        	cd.setFullVaccinations(d.getFullVaccinations());
+			        	cd.setFullVaccinationsKum(d.getFullVaccinationsKum());
+			        	cd.setFullVaccinationsPer100000Pop(d.getFullVaccinationsPer100000Pop());			        	
+			        	cd.setTotalVaccinations(d.getTotalVaccinations());
+			        	cd.setTotalVaccinationsKum(d.getTotalVaccinationsKum());
+			        	cd.setTotalVaccinationsPer100000Pop(d.getTotalVaccinationsPer100000Pop());			        	
 			        	coronaDataList.add(cd);
 			        	lastDate = date;
 			        	log.debug("getHistoricalData: {} - {}", date, cd.getPopulation());
@@ -129,6 +137,15 @@ public class GraphDataAsyncService {
 		        	cd.setActivePer100000Pop(d.getActivePer100000Pop());
 		        	cd.setGeoId(d.getGeoId());
 		        	cd.setPopulation(d.getPopulation());
+		        	cd.setFirstVaccinations(d.getFirstVaccinations());
+		        	cd.setFirstVaccinationsKum(d.getFirstVaccinationsKum());
+		        	cd.setFirstVaccinationsPer100000Pop(d.getFirstVaccinationsPer100000Pop());			        	
+		        	cd.setFullVaccinations(d.getFullVaccinations());
+		        	cd.setFullVaccinationsKum(d.getFullVaccinationsKum());
+		        	cd.setFullVaccinationsPer100000Pop(d.getFullVaccinationsPer100000Pop());			        	
+		        	cd.setTotalVaccinations(d.getTotalVaccinations());
+		        	cd.setTotalVaccinationsKum(d.getTotalVaccinationsKum());
+		        	cd.setTotalVaccinationsPer100000Pop(d.getTotalVaccinationsPer100000Pop());			        	
 		        	coronaDataList.add(cd);
 		        	log.debug("getHistoricalData: {} - {}", day, cd.getPopulation());
 				}
@@ -163,26 +180,55 @@ public class GraphDataAsyncService {
 		}
 		
 		if ("infectionsAnd".equals(cds.getSelectedGraphType()) && !"infections".equals(cds.getSelectedDataType())) {
-			calcDaysPer100000("infections", territoryMap);
+			calcDaysPer100000(cds, territoryMap);
 		}
 		
-		calcDaysPer100000(cds.getSelectedDataType(), territoryMap);
-	}
-	
-	private void calcDaysPer100000(String dataType, Map<String,List<CoronaData>> territoryMap) {
-		AtomicInteger days = new AtomicInteger();
-		days.set(daysToKum);
 		List<Long> valueList = new ArrayList<Long>();
 		AtomicLong sum = new AtomicLong();
 		territoryMap.keySet().forEach(t -> {
 			List<CoronaData> cdList = territoryMap.get(t);
+			int c = 0;
+			CoronaData coronaData, clone;
+			try {
+				for (LocalDate date = cds.getFromDate().minusDays(daysToKum); date.isBefore(cds.getToDate().plusDays(1)); date = date.plusDays(1)) {
+					if (c >= cdList.size()) {
+						clone = cdList.get(c-1).clone();
+						clone.setDateRep(date);
+						clone.setActive(0L);
+						clone.setCases(0L);
+						clone.setDeaths(0L);
+						clone.setRecovered(0L);
+						clone.setFirstVaccinations(0L);
+						clone.setFullVaccinations(0L);
+						clone.setTotalVaccinations(0L);
+						cdList.add(c, clone);
+					}
+					coronaData = cdList.get(c);
+					if (!coronaData.getDateRep().equals(date)) {
+						clone = coronaData.clone();
+						clone.setDateRep(date);
+						clone.setActive(0L);
+						clone.setCases(0L);
+						clone.setDeaths(0L);
+						clone.setRecovered(0L);
+						clone.setFirstVaccinations(0L);
+						clone.setFullVaccinations(0L);
+						clone.setTotalVaccinations(0L);
+						cdList.add(c, clone);
+					}
+					c++;
+				}
+			} catch (CloneNotSupportedException e) {
+				log.error("calcDaysPer100000: {}", e);
+				return;
+			}
 			cdList.forEach(cd -> {
 				Long value = null;
-				switch (dataType) {
+				switch (cds.getSelectedDataType()) {
 				case "infections":
 					value = cd.getCases();
 					log.debug("cases: {} {} - {}", cd.getTerritoryId(), cd.getDateRep(), value);
-					if (valueList.size() == days.get()) {
+					if (valueList.size() == daysToKum) {
 						cd.setCasesDaysKum(sum.get());
 						cd.setCasesDaysPer100000Pop(getCasesPerDaysAnd100000(cd));
 						log.debug("cases: {} - {}, {}, {}", cd.getDateRep(), cd.getCasesDaysKum(), cd.getCasesDaysPer100000Pop(), cd.getPopulation());
@@ -192,7 +238,7 @@ public class GraphDataAsyncService {
 				case "deaths": 
 					value = cd.getDeaths();
 					log.debug("deaths: {} {} - {}", cd.getTerritoryId(), cd.getDateRep(), value);
-					if (valueList.size() == days.get()) {
+					if (valueList.size() == daysToKum) {
 						cd.setDeathsDaysKum(sum.get());
 						cd.setDeathsDaysPer100000Pop(getDeathsPerDaysAnd100000(cd));
 						log.debug("deaths: {} - {}, {}, {}", cd.getDateRep(), cd.getDeathsDaysKum(), cd.getDeathsDaysPer100000Pop(), cd.getPopulation());
@@ -202,7 +248,7 @@ public class GraphDataAsyncService {
 				case "recovered": 
 					value = cd.getRecovered();
 					log.debug("recovered: {} {} - {}", cd.getTerritoryId(), cd.getDateRep(), value);
-					if (valueList.size() == days.get()) {
+					if (valueList.size() == daysToKum) {
 						cd.setRecoveredDaysKum(sum.get());
 						cd.setRecoveredDaysPer100000Pop(getRecoveredPerDaysAnd100000(cd));
 						log.debug("recovered: {} - {}, {}, {}", cd.getDateRep(), cd.getRecoveredDaysKum(), cd.getRecoveredDaysPer100000Pop(), cd.getPopulation());
@@ -212,18 +258,30 @@ public class GraphDataAsyncService {
 				case "active": 
 					value = cd.getActive();
 					log.debug("active: {} {} - {}", cd.getTerritoryId(), cd.getDateRep(), value);
-					if (valueList.size() == days.get()) {
+					if (valueList.size() == daysToKum) {
 						cd.setActiveDaysKum(sum.get());
 						cd.setActiveDaysPer100000Pop(getActivePerDaysAnd100000(cd));
 						log.debug("active: {} - {}, {}, {}", cd.getDateRep(), cd.getActiveDaysKum(), cd.getActiveDaysPer100000Pop(), cd.getPopulation());
 						sum.addAndGet(valueList.remove(0) * -1l);
 					}
 					break;
+				/*
+				case "vaccinationFirst": 
+					value = cd.getFirstVaccinations();
+					log.debug("active: {} {} - {}", cd.getTerritoryId(), cd.getDateRep(), value);
+					if (valueList.size() == daysToKum) {
+						cd.setFirstVaccinationsDaysKum(sum.get());
+						cd.setFirstVaccinationsDaysPer100000Pop(getFirstVaccinationsPerDaysAnd100000(cd));
+						log.debug("active: {} - {}, {}, {}", cd.getDateRep(), cd.getFirstVaccinationsDaysKum(), cd.getFirstVaccinationsDaysPer100000Pop(), cd.getPopulation());
+						sum.addAndGet(valueList.remove(0) * -1l);
+					}
+					break;
+				*/
 				}
 				sum.addAndGet(value);
 				valueList.add(value);
 			});
-			for (int i = 0; i < days.get(); i++) {
+			for (int i = 0; i < daysToKum; i++) {
 				cdList.remove(0);
 			}
 		});

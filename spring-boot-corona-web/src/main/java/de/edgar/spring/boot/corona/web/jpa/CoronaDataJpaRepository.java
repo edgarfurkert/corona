@@ -37,4 +37,10 @@ public interface CoronaDataJpaRepository extends CrudRepository<CoronaDataEntity
 
 	public Optional<CoronaDataEntity> getFirstByTerritoryIdAndActiveKumGreaterThanOrderByActiveKumAscDateRepAsc(String territoryId, Long isGreater);
 
+	public Optional<CoronaDataEntity> getFirstByTerritoryIdAndFirstVaccinationsKumGreaterThanOrderByFirstVaccinationsKumAscDateRepAsc(String territoryId, Long isGreater);
+
+	public Optional<CoronaDataEntity> getFirstByTerritoryIdAndFullVaccinationsKumGreaterThanOrderByFullVaccinationsKumAscDateRepAsc(String territoryId, Long isGreater);
+
+	public Optional<CoronaDataEntity> getFirstByTerritoryIdAndTotalVaccinationsKumGreaterThanOrderByTotalVaccinationsKumAscDateRepAsc(String territoryId, Long isGreater);
+
 }

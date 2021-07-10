@@ -47,6 +47,15 @@ public class CoronaDataEntity {
 	private Double deathsPer100000Pop;
 	private Double recoveredPer100000Pop;
 	private Double activePer100000Pop;
+	private Long firstVaccinations;
+	private Long fullVaccinations;
+	private Long totalVaccinations;
+	private Long firstVaccinationsKum;
+	private Long fullVaccinationsKum;
+	private Long totalVaccinationsKum;
+	private Double firstVaccinationsPer100000Pop;
+	private Double fullVaccinationsPer100000Pop;
+	private Double totalVaccinationsPer100000Pop;
 	private Long orderId;
 	
 	public CoronaDataEntity(String territoryId, String territory, String territoryParent, Long orderId) {
@@ -81,6 +90,15 @@ public class CoronaDataEntity {
 		data.setTerritoryCode(getTerritoryCode());
 		data.setTerritoryParent(getTerritoryParent());
 		data.setYear(getYear());
+		data.setFirstVaccinations(this.getFirstVaccinations());
+		data.setFullVaccinations(this.getFullVaccinations());
+		data.setTotalVaccinations(this.getTotalVaccinations());
+		data.setFirstVaccinationsKum(this.getFirstVaccinationsKum());
+		data.setFullVaccinationsKum(this.getFullVaccinationsKum());
+		data.setTotalVaccinationsKum(this.getTotalVaccinationsKum());
+		data.setFirstVaccinationsPer100000Pop(this.getFirstVaccinationsPer100000Pop());
+		data.setFullVaccinationsPer100000Pop(this.getFullVaccinationsPer100000Pop());
+		data.setTotalVaccinationsPer100000Pop(this.getTotalVaccinationsPer100000Pop());
 		data.setOrderId(getOrderId());
 		return data;
 	}
